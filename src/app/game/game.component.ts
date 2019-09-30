@@ -34,6 +34,7 @@ var twoKeyText: Phaser.Text;
 var threeKeyText: Phaser.Text;
 var fourKeyText: Phaser.Text;
 var starfield;
+
 function preload() {
   game.load.image("1key", "assets/games/1key.png");
   game.load.image("2key", "assets/games/2key.png");
@@ -53,9 +54,9 @@ function create() {
   questionText = game.add.text(game.world.centerX, game.height * 0.15, "What is 3x * 3?");
   questionText.anchor.set(0.5);
   oneKeyText = game.add.text(game.width * 0.2+oneKeyIcon.width, game.height * 0.2, "9x");
-  twoKeyText = game.add.text(oneKeyIcon.x + oneKeyIcon.width, oneKeyIcon.y + oneKeyIcon.height * 1.5, "3x^2");
-  threeKeyText = game.add.text(oneKeyIcon.x + oneKeyIcon.width, twoKeyIcon.y + twoKeyIcon.height * 1.5, "4x^2");
-  fourKeyText = game.add.text(oneKeyIcon.x + oneKeyIcon.width, threeKeyIcon.y + threeKeyIcon.height * 1.5, "5x^2");
+  twoKeyText = game.add.text(oneKeyIcon.x + oneKeyIcon.width, oneKeyIcon.y + oneKeyIcon.height * 1.5, "3x");
+  threeKeyText = game.add.text(oneKeyIcon.x + oneKeyIcon.width, twoKeyIcon.y + twoKeyIcon.height * 1.5, "4x");
+  fourKeyText = game.add.text(oneKeyIcon.x + oneKeyIcon.width, threeKeyIcon.y + threeKeyIcon.height * 1.5, "9");
 
   questionText.fill = "white";
   oneKeyText.fill = "white";
@@ -71,5 +72,25 @@ function create() {
 }
 function update() {
   starfield.tilePosition.y += 1;
+  if(oneKey.isDown){
+    oneKeyIcon.alpha = 1;
+  }else{
+    oneKeyIcon.alpha = 0.7;
+  }
+  if(twoKey.isDown){
+    twoKeyIcon.alpha = 1;
+  }else{
+    twoKeyIcon.alpha = 0.7;
+  }
+  if(threeKey.isDown){
+    threeKeyIcon.alpha = 1;
+  }else{
+    threeKeyIcon.alpha = 0.7;
+  }
+  if(fourKey.isDown){
+    fourKeyIcon.alpha = 1;
+  }else{
+    fourKeyIcon.alpha = 0.7;
+  }
 
 }
