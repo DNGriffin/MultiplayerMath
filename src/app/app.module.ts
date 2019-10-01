@@ -8,6 +8,7 @@ import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { AngularFireStorageModule } from '@angular/fire/storage';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { GameComponent } from './game/game.component';
+import { NavbarComponent } from './components/navbar/navbar.component';
 var firebaseConfig = {
   apiKey: "AIzaSyBLfTk9x_GXo0frYc-eRwevOntUB2uew8k",
   authDomain: "mulitplayermath.firebaseapp.com",
@@ -21,7 +22,8 @@ var firebaseConfig = {
 @NgModule({
   declarations: [
     AppComponent,
-    GameComponent
+    GameComponent,
+    NavbarComponent
   ],
   imports: [
     BrowserModule,
