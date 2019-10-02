@@ -18,6 +18,16 @@ import { AuthGuard } from './components/core/auth.guard';
 import { AuthService } from './components/core/auth.service';
 import { UserService } from './components/core/user.service';
 import { ReactiveFormsModule } from '@angular/forms';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
+var firebaseConfig = {
+  apiKey: "AIzaSyBLfTk9x_GXo0frYc-eRwevOntUB2uew8k",
+  authDomain: "mulitplayermath.firebaseapp.com",
+  databaseURL: "https://mulitplayermath.firebaseio.com",
+  projectId: "mulitplayermath",
+  storageBucket: "",
+  messagingSenderId: "285834359487",
+  appId: "1:285834359487:web:da7be87103590429e14c0a"
+};
 
 @NgModule({
   declarations: [
@@ -27,7 +37,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     SiteDescriptionComponent,
     WelcomePageComponent,
     LoginComponent,
-    RegisterComponent
+    RegisterComponent,
+    DashboardComponent
   ],
   imports: [
     BrowserModule,
