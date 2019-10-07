@@ -14,6 +14,9 @@ import { WelcomePageComponent } from './components/welcome-page/welcome-page.com
 import { LoginComponent } from './components/login/login.component';
 import { environment } from '../environments/environment';
 import { RegisterComponent } from './components/register/register.component';
+import { AuthGuard } from './components/core/auth.guard';
+import { AuthService } from './components/core/auth.service';
+import { UserService } from './components/core/user.service';
 
 @NgModule({
   declarations: [
@@ -33,7 +36,7 @@ import { RegisterComponent } from './components/register/register.component';
     AngularFireAuthModule, // auth
     AngularFireStorageModule // storage
   ],
-  providers: [],
+  providers: [AuthService, UserService, AuthGuard],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
