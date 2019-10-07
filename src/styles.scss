@@ -4,3 +4,36 @@
 body {
   background-color: $grayColor
 }
+
+.form-div {
+  border-radius: 15px;
+  border-style: solid;
+  border-width: 2px;
+  border-color: #5c99da;
+  padding: 10px;
+  background-color: white;
+  margin-left: auto;
+  margin-right: auto;
+  width: 45%;
+  box-shadow: 5px 5px 5px gray;
+}
+
+.title {
+  text-align: center;
+  text-decoration: underline;
+  margin-bottom: 40px;
+}
+
+.app-button {
+  border-radius: 10px;
+  border-width: 2px;
+  border-color: black;
+  border-style: solid;
+  padding: 4px;
+  background-color: rgb(240, 219, 149);
+}
+
+.button-div {
+  display: flex;
+  justify-content: center;
+}

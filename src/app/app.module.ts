@@ -19,6 +19,11 @@ import { AuthService } from './components/core/auth.service';
 import { UserService } from './components/core/user.service';
 import { ReactiveFormsModule } from '@angular/forms';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { SignupComponent } from './components/signup/signup.component';
+import { NavbarLoggedInComponent } from './components/navbar-logged-in/navbar-logged-in.component';
+import { SubscriptionsComponent } from './components/subscriptions/subscriptions.component';
+import { QuizWindowComponent } from './components/quiz-window/quiz-window.component';
+import { QuizContainerComponent } from './components/quiz-container/quiz-container.component';
 var firebaseConfig = {
   apiKey: "AIzaSyBLfTk9x_GXo0frYc-eRwevOntUB2uew8k",
   authDomain: "mulitplayermath.firebaseapp.com",
@@ -38,7 +43,12 @@ var firebaseConfig = {
     WelcomePageComponent,
     LoginComponent,
     RegisterComponent,
-    DashboardComponent
+    DashboardComponent,
+    SignupComponent,
+    NavbarLoggedInComponent,
+    SubscriptionsComponent,
+    QuizWindowComponent,
+    QuizContainerComponent
   ],
   imports: [
     BrowserModule,
