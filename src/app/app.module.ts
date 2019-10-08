@@ -12,15 +12,12 @@ import { NavbarComponent } from './components/navbar/navbar.component';
 import { SiteDescriptionComponent } from './components/site-description/site-description.component';
 import { WelcomePageComponent } from './components/welcome-page/welcome-page.component';
 import { LoginComponent } from './components/login/login.component';
-var firebaseConfig = {
-  apiKey: "AIzaSyBLfTk9x_GXo0frYc-eRwevOntUB2uew8k",
-  authDomain: "mulitplayermath.firebaseapp.com",
-  databaseURL: "https://mulitplayermath.firebaseio.com",
-  projectId: "mulitplayermath",
-  storageBucket: "",
-  messagingSenderId: "285834359487",
-  appId: "1:285834359487:web:da7be87103590429e14c0a"
-};
+import { environment } from '../environments/environment';
+import { RegisterComponent } from './components/register/register.component';
+import { AuthGuard } from './components/core/auth.guard';
+import { AuthService } from './components/core/auth.service';
+import { UserService } from './components/core/user.service';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -29,17 +26,19 @@ var firebaseConfig = {
     NavbarComponent,
     SiteDescriptionComponent,
     WelcomePageComponent,
-    LoginComponent
+    LoginComponent,
+    RegisterComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    AngularFireModule.initializeApp(firebaseConfig),
+    ReactiveFormsModule,
+    AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule, // firestore
     AngularFireAuthModule, // auth
     AngularFireStorageModule // storage
   ],
-  providers: [],
+  providers: [AuthService, UserService, AuthGuard],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

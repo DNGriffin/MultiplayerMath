@@ -1,15 +1,40 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { AuthService } from '../core/auth.service'
+import { Router, Params } from '@angular/router';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+  selector: 'page-login',
+  templateUrl: 'login.component.html',
+  styleUrls: ['login.scss']
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent {
 
-  constructor() { }
+  loginForm: FormGroup;
+  errorMessage: string = '';
 
-  ngOnInit() {
+  constructor(
+    public authService: AuthService,
+    private router: Router,
+    private fb: FormBuilder
+  ) {
+    this.createForm();
   }
 
+  createForm() {
+    this.loginForm = this.fb.group({
+      email: ['', Validators.required ],
+      password: ['',Validators.required]
+    });
+  }
+
+  tryLogin(value){
+    this.authService.doLogin(value)
+    .then(res => {
+      this.router.navigate(['/play']);
+    }, err => {
+      console.log(err);
+      this.errorMessage = err.message;
+    })
+  }
 }
