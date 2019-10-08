@@ -6,7 +6,6 @@ import { WelcomePageComponent } from './components/welcome-page/welcome-page.com
 import { AuthGuard } from './components/core/auth.guard';
 import { RegisterComponent } from './components/register/register.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
-import { SignupComponent } from './components/signup/signup.component';
 import { SubscriptionsComponent } from './components/subscriptions/subscriptions.component';
 
 const routes: Routes = [{
@@ -23,9 +22,6 @@ const routes: Routes = [{
     path: 'register', 
     component: RegisterComponent
     // canActivate: [AuthGuard] 
-  }, {
-    path: 'signup',
-    component: SignupComponent
   }, {
     path: 'dashboard',
     component: DashboardComponent

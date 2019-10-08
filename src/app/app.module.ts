@@ -19,7 +19,6 @@ import { AuthService } from './components/core/auth.service';
 import { UserService } from './components/core/user.service';
 import { ReactiveFormsModule } from '@angular/forms';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
-import { SignupComponent } from './components/signup/signup.component';
 import { NavbarLoggedInComponent } from './components/navbar-logged-in/navbar-logged-in.component';
 import { SubscriptionsComponent } from './components/subscriptions/subscriptions.component';
 import { QuizWindowComponent } from './components/quiz-window/quiz-window.component';
@@ -44,7 +43,6 @@ var firebaseConfig = {
     LoginComponent,
     RegisterComponent,
     DashboardComponent,
-    SignupComponent,
     NavbarLoggedInComponent,
     SubscriptionsComponent,
     QuizWindowComponent,
