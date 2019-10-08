@@ -17,6 +17,7 @@ import { RegisterComponent } from './components/register/register.component';
 import { AuthGuard } from './components/core/auth.guard';
 import { AuthService } from './components/core/auth.service';
 import { UserService } from './components/core/user.service';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -31,6 +32,7 @@ import { UserService } from './components/core/user.service';
   imports: [
     BrowserModule,
     AppRoutingModule,
+    ReactiveFormsModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule, // firestore
     AngularFireAuthModule, // auth
