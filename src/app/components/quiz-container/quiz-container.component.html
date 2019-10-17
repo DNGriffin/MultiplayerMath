@@ -1,12 +1,7 @@
 <div class="container-fluid">
   <div class="row">
-    <div class="col"><app-quiz-window></app-quiz-window></div>
-    <div class="col"><app-quiz-window></app-quiz-window></div>
-    <div class="col"><app-quiz-window></app-quiz-window></div>
-  </div>
-  <div class="row">
-    <div class="col"><app-quiz-window></app-quiz-window></div>
-    <div class="col"><app-quiz-window></app-quiz-window></div>
-    <div class="col"><app-quiz-window></app-quiz-window></div>
+    <div class="col"><app-quiz-window [quizTitle]="getQuizTitle(0)"></app-quiz-window></div>
+    <div class="col"><app-quiz-window [quizTitle]="getQuizTitle(1)"></app-quiz-window></div>
+    <div class="col"><app-quiz-window [quizTitle]="getQuizTitle(2)"></app-quiz-window></div>
   </div>
 </div>

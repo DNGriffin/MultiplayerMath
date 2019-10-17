@@ -11,8 +11,11 @@
   width: 300px;
   height: 150px;
   box-shadow: 5px 5px 5px gray;
+  text-align: center;
+  display: table; 
 }
 
 .quiz-title {
-  text-align: center;
+  display: table-cell;
+  vertical-align: middle;
 }
