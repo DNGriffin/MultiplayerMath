@@ -25,11 +25,17 @@ export class RegisterComponent {
    createForm() {
      this.registerForm = this.fb.group({
        email: ['', Validators.required ],
-       password: ['',Validators.required]
+       password: ['',Validators.required],
+       retypePassword: ['', Validators.required]
      });
    }
 
    tryRegister(value){
+    if (value.password != value.retypePassword) {
+      this.errorMessage = "Password does not match";
+      this.successMessage = "";
+      return;
+    }
      this.authService.doRegister(value)
      .then(res => {
        console.log(res);
