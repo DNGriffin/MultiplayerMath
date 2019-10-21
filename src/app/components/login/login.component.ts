@@ -31,7 +31,7 @@ export class LoginComponent {
   tryLogin(value){
     this.authService.doLogin(value)
     .then(res => {
-      this.router.navigate(['/play']);
+      this.router.navigate(['/dashboard']);
     }, err => {
       console.log(err);
       this.errorMessage = err.message;

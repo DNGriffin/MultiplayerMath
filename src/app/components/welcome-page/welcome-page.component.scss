@@ -1,19 +1,14 @@
-.app-button {
+.test-game-button {
   border-radius: 15px;
   border-style: solid;
   border-width: 2px;
-  border-color: rgb(109, 195, 245);
+  border-color: black;
   padding: 5px;
   background-color: rgb(240, 219, 149);
   width: 15%;
   box-shadow: 5px 5px 5px gray;
 }
 
-.app-button:hover {
+.test-game-button:hover {
   background-color: rgb(236, 212, 101);
-}
-
-.button-div {
-  display: flex;
-  justify-content: center;
 }

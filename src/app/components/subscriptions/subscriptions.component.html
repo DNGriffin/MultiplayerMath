@@ -1,0 +1,56 @@
+<div>
+  <app-navbar-logged-in></app-navbar-logged-in>
+  <br><br>
+  <h1 class="title">Subscriptions</h1>
+  <br><br>
+
+  <div class="subscriptions-div">
+    <h4>Subscriptions</h4>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Email</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">1</th>
+          <td>coby.drexler@wustl.edu</td>
+        </tr>
+        <tr>
+          <th scope="row">2</th>
+          <td>DevinGriffin@wustl.edu</td>
+        </tr>
+        <tr>
+          <th scope="row">3</th>
+          <td>MinhDo@wustl.edu</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <br><br>
+
+  <div class="form-div">
+    <h5 class="header">Add Subscription</h5>
+    <br>
+    <div class="button-div">
+      <div class="container">
+        <div class="row">
+          <div class="col">
+            <form [formGroup]="subscribeForm">
+              <div class="form-group">
+                <label>Email address</label>
+                <input type="email" formControlName="email" class="form-control">
+              </div>
+              <button type="submit" (click)="trySubscribe(subscribeForm.value)" class="btn btn-dark">Subscribe</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br><br>
+  
+</div>
