@@ -1,0 +1,48 @@
+<div>
+  <app-navbar-logged-in></app-navbar-logged-in>
+  <br>
+  <h1 class="title">Create Quiz</h1>
+  <br><br>
+  <div class="button-div">
+    <div class="container quizDiv">
+      <div class="row">
+        <div class="col">
+          <form [formGroup]="createQuizForm">
+            <label for="quizTitle"><strong>Quiz Title</strong></label>
+            <input id="quizTitle" formControlName="quizTitle" class="quizFormInput titleInput" type="text">
+            <br><br>
+            <hr>
+            <table id="quizId" class="table">
+              <thead>
+                <tr>
+                  <th scope="col">Question</th>
+                  <th scope="col">Correct Answer</th>
+                  <th scope="col">Fake #1</th>
+                  <th scope="col">Fake #2</th>
+                  <th scope="col">Fake #3</th>
+                </tr>
+              </thead>
+              <tbody id="quizFormBody">
+                <tr>
+                  <td><input formControlName="question" class="quizFormInput" type="text"></td>
+                  <td><input formControlName="answer" class="quizFormInput" type="text"></td>
+                  <td><input formControlName="fake1" class="quizFormInput" type="text"></td>
+                  <td><input formControlName="fake2" class="quizFormInput" type="text"></td>
+                  <td><input formControlName="fake3" class="quizFormInput" type="text"></td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="addQuestionDiv">
+              <i class="fas fa-plus plusIcon" (click)="addQuestion()"></i>
+              <br>
+              Add Question
+            </div>
+            <br><br>
+            <button type="submit" (click)="createQuiz(createQuizForm.value)" class="btn btn-dark">Create</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+  

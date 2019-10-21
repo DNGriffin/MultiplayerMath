@@ -23,6 +23,8 @@ import { NavbarLoggedInComponent } from './components/navbar-logged-in/navbar-lo
 import { SubscriptionsComponent } from './components/subscriptions/subscriptions.component';
 import { QuizWindowComponent } from './components/quiz-window/quiz-window.component';
 import { QuizContainerComponent } from './components/quiz-container/quiz-container.component';
+import { CreateQuizComponent } from './components/create-quiz/create-quiz.component';
+
 var firebaseConfig = {
   apiKey: "AIzaSyBLfTk9x_GXo0frYc-eRwevOntUB2uew8k",
   authDomain: "mulitplayermath.firebaseapp.com",
@@ -46,7 +48,8 @@ var firebaseConfig = {
     NavbarLoggedInComponent,
     SubscriptionsComponent,
     QuizWindowComponent,
-    QuizContainerComponent
+    QuizContainerComponent,
+    CreateQuizComponent
   ],
   imports: [
     BrowserModule,

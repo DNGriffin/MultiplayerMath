@@ -1,0 +1,28 @@
+.quizFormInput {
+  width: 100%;
+  border-color: black;
+  border-width: 2px;
+  border-radius: 3px;
+}
+
+.quizDiv {
+  border-style: solid;
+  border-width: 2px;
+  border-color: #5c99da;
+  border-radius: 15px;
+  padding: 30px;
+  background-color: white;
+  box-shadow: 5px 5px 5px gray;
+}
+
+.addQuestionDiv {
+  text-align: center;
+}
+
+.plusIcon:hover {
+  cursor: pointer;
+}
+
+.titleInput {
+  padding: 5px;
+}

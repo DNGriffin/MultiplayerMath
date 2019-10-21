@@ -7,6 +7,7 @@ import { AuthGuard } from './components/core/auth.guard';
 import { RegisterComponent } from './components/register/register.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { SubscriptionsComponent } from './components/subscriptions/subscriptions.component';
+import { CreateQuizComponent } from './components/create-quiz/create-quiz.component';
 
 const routes: Routes = [{
     path: '',
@@ -28,6 +29,9 @@ const routes: Routes = [{
   }, {
     path: 'subscriptions',
     component: SubscriptionsComponent
+  }, {
+    path: 'createQuiz',
+    component: CreateQuizComponent
   }
 ];
 
