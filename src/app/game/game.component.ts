@@ -109,6 +109,7 @@ function create() {
   fourClickIcon.alpha = 0.7;
 
   spaceship = game.add.sprite(game.width * 0.5, game.height * 0.8, "spaceship");
+  spaceship.anchor.set(0.5);
   game.physics.enable(spaceship, Phaser.Physics.ARCADE);
   spaceship.scale.set(2, 2);
   spaceship.body.gravity.y = 0;
@@ -165,7 +166,7 @@ function create() {
 
 }
 function createMissile(){
-  var missile = game.add.sprite(game.world.centerX, game.world.centerY, "missile");
+  var missile = game.add.sprite(spaceship.x, spaceship.y, "missile");
 
   missile.animations.add('fly2');
   missile.animations.play('fly2', 15, true);
