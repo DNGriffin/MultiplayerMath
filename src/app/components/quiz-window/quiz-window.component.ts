@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-quiz-window',
@@ -9,9 +10,13 @@ export class QuizWindowComponent implements OnInit {
 
   @Input() quizTitle: string;
 
-  constructor() { }
+  constructor(private router: Router) { }
 
   ngOnInit() {
   }
 
+  routeToGame(event) {
+    this.router.navigate(['play'])
+    console.log(event);
+  }
 }

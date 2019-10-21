@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-subscriptions',
@@ -7,9 +9,26 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SubscriptionsComponent implements OnInit {
 
-  constructor() { }
+  subscribeForm: FormGroup;
+  errorMessage: string = '';
+
+  constructor(
+    private router: Router,
+    private fb: FormBuilder
+  ) { 
+    this.createForm()
+  }
+
+  createForm() {
+    this.subscribeForm = this.fb.group({
+      email: ['', Validators.required]
+    });
+  }
 
   ngOnInit() {
   }
 
+  trySubscribe(value){
+    console.log("Subscribing!");
+  }
 }
