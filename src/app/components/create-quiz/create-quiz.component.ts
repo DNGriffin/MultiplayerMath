@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { QuizService } from 'src/app/quizes/quiz.service';
 
 @Component({
   selector: 'app-create-quiz',
@@ -9,18 +10,19 @@ import { Router } from '@angular/router';
 })
 export class CreateQuizComponent implements OnInit {
 
-  createQuizForm: FormGroup
+  quizForm: FormGroup
   numQuestions: number
 
   constructor(
     private router: Router,
-    public fb: FormBuilder
+    public fb: FormBuilder,
+    private quizService: QuizService
   ) { 
     this.createForm();
   }
 
   createForm(){
-    this.createQuizForm = this.fb.group({
+    this.quizForm = this.fb.group({
       title: ['', Validators.required],
       question: ['', Validators.required],
       answer: ['', Validators.required],
@@ -39,9 +41,9 @@ export class CreateQuizComponent implements OnInit {
     console.log("Adding Question #" + this.numQuestions);
   }
 
-  createQuiz(value) {
-    console.log("Submitting form with value: " + value.question);
-    
+  createQuiz(quizInfo: FormData) {
+    this.quizService.createQuiz(quizInfo);
+    this.quizForm.reset();
   }
 
 }

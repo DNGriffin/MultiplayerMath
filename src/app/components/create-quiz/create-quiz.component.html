@@ -7,7 +7,7 @@
     <div class="container quizDiv">
       <div class="row">
         <div class="col">
-          <form [formGroup]="createQuizForm">
+          <form [formGroup]="quizForm" (ngSubmit)="createQuiz(quizForm.value)">
             <label for="quizTitle"><strong>Quiz Title</strong></label>
             <input id="quizTitle" formControlName="title" class="quizFormInput titleInput" type="text">
             <br><br>
@@ -33,16 +33,17 @@
               </tbody>
             </table>
             <div class="addQuestionDiv">
-              <i class="fas fa-plus plusIcon" (click)="addQuestion()"></i>
+              <i class="fas fa-plus plusIcon"></i>
               <br>
               Add Question
             </div>
             <br><br>
-            <button type="submit" (click)="createQuiz(createQuizForm.value)" class="btn btn-dark">Create</button>
+            <button type="submit" class="btn btn-dark">Create</button>
           </form>
         </div>
       </div>
     </div>
   </div>
+  <br><br>
 </div>
-  
+

@@ -13,7 +13,7 @@ export class QuizContainerComponent implements OnInit {
   constructor(private quizService: QuizService) { }
 
   ngOnInit() {
-    this.quizes = this.quizService.getData();
+    this.quizes = this.quizService.quizesCollection.snapshotChanges();
   }
 
 }
