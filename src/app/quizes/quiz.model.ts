@@ -1,7 +1,5 @@
 export class Quiz {
-  id: string;
-  question1: Array<string>;
+  question: Array<string>;
   title: string;
   userEmail: string;
-  userId: string;
 }

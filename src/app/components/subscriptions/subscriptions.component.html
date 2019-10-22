@@ -14,17 +14,9 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <th scope="row">1</th>
-          <td>coby.drexler@wustl.edu</td>
-        </tr>
-        <tr>
-          <th scope="row">2</th>
-          <td>DevinGriffin@wustl.edu</td>
-        </tr>
-        <tr>
-          <th scope="row">3</th>
-          <td>MinhDo@wustl.edu</td>
+        <tr *ngFor="let subscription of subscriptions | async; let i = index">
+          <td scope="col">{{ i }}</td>
+          <td scope="col"> {{ subscription.payload.doc.data().subscribedEmail }} </td>
         </tr>
       </tbody>
     </table>
@@ -41,9 +33,11 @@
           <div class="col">
             <form [formGroup]="subscribeForm">
               <div class="form-group">
+                <input type="hidden" name="userEmail" formControlName="subscriberEmail" [ngModel]="getUserEmail()">
                 <label>Email address</label>
-                <input type="email" formControlName="email" class="form-control">
+                <input type="email" formControlName="subscribedEmail" class="form-control">
               </div>
+              <br>
               <button type="submit" (click)="trySubscribe(subscribeForm.value)" class="btn btn-dark">Subscribe</button>
             </form>
           </div>

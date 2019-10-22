@@ -23,7 +23,8 @@ export class CreateQuizComponent implements OnInit {
     this.numQuestions = 0
     this.quizForm = this.fb.group({
       title: '',
-      questions: this.fb.array([])
+      questions: this.fb.array([]),
+      userEmail: ['', Validators.required]
     })
   }
 
@@ -52,6 +53,11 @@ export class CreateQuizComponent implements OnInit {
   createQuiz(quizInfo: FormData) {
     this.quizService.createQuiz(quizInfo);
     this.quizForm.reset();
+  }
+
+  //TODO: Get correct user email
+  getUserEmail(): string {
+    return "email@email.com";
   }
 
 }
