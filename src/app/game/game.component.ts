@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { AUTO, Game } from 'phaser-ce';
+import { AngularFirestore } from '@angular/fire/firestore';
+import { Observable } from 'rxjs';
 var game: Phaser.Game;
+var database: AngularFirestore = null;
 
 @Component({
   selector: 'app-game',
@@ -9,9 +12,14 @@ var game: Phaser.Game;
 })
 export class GameComponent implements OnInit {
 
-  constructor() {
+  constructor(    private db: AngularFirestore
+    ) {
+    database = db;
+    loadQuestions();
     game = new Game(window.innerWidth, window.innerHeight, AUTO, 'game', { preload: preload, create: create, update: update });
   }
+  
+  
 
   ngOnInit() {
   }
@@ -46,7 +54,6 @@ var fourClickText: Phaser.Text;
 
 var spaceship: Phaser.Sprite;
 
-
 var questionText: Phaser.Text;
 
 
@@ -59,6 +66,22 @@ var questions = [["What is 3x*3?", "9x", "6x", "9", "6"],
 ["What is 5x-2?", "5x-2", "5x", "3x", "3"],
 ["What is (3x-3x)*3x?", "0", "9x", "27x", "9"]
 ]
+function loadQuestions(){
+  console.log("load quesitons");
+
+  var globalData;
+  globalData = database.collection('quizes', ref => ref.where('id', '==', "123").limit(1)).snapshotChanges();
+  globalData.subscribe(
+    (res) => {
+      var data = res[0].payload.doc.data();
+      for(var key in data){
+        console.log(data[key]);
+      }
+    },
+    (err) => console.log(err),
+    () => console.log('done!')
+  );
+}
 
 function preload() {
   game.load.spritesheet('missile', 'assets/games/missilesheet.png', 14, 4, 2);
