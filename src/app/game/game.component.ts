@@ -17,19 +17,19 @@ export class GameComponent implements OnInit {
 
   constructor(private db: AngularFirestore, private router: Router
   ) {
-    if(!this.router.getCurrentNavigation().extras.queryParams){
+    if (!this.router.getCurrentNavigation().extras.queryParams) {
       this.router.navigate(['/dashboard']);
     }
     id = this.router.getCurrentNavigation().extras.queryParams.id;
     quizTitle = this.router.getCurrentNavigation().extras.queryParams.title;
-    
+
     console.log(quizTitle);
     globalRouter = router;
-    
+
     console.log(id);
     database = db;
     loadQuestions();
-    game = new Game(window.innerWidth, window.innerHeight, AUTO, 'game', { preload: preload, create: create, update: update });
+    game = new Game(window.innerWidth, window.innerHeight, AUTO, 'game', { preload: preload, create: create, update: update, render: render });
   }
 
 
@@ -180,7 +180,7 @@ function create() {
     sprite.height = asteroidWidth;
   })
 
-  questionText = game.add.text(game.world.centerX, game.height * 0.15, "Are you ready to start?");
+  questionText = game.add.text(game.world.centerX, game.height * 0.15, "Are you ready to start? Press the [1] key");
   questionText.anchor.set(0.5);
   oneKeyText = game.add.text(game.width * 0.2 + oneKeyIcon.width, game.height * 0.2, "Start");
   twoKeyText = game.add.text(oneKeyIcon.x + oneKeyIcon.width, oneKeyIcon.y + oneKeyIcon.height * 1.5, "Start");
@@ -249,6 +249,38 @@ function createMissile() {
 }
 var canAnswer = true;
 var isGameOver = false;
+function spaceshipCollide(asteroid, space) {
+  scoreText.text = `Score: ${--score}`;
+
+  setTimeout(() => {
+    space.visible = true;
+    setTimeout(() => {
+      space.visible = false;
+      setTimeout(() => {
+        space.visible = true;
+        setTimeout(() => {
+          space.visible = false;
+          setTimeout(() => {
+            space.visible = true;
+          }, 100);
+        }, 100);
+      }, 100);
+    }, 100);
+  }, 100);
+  space.visible = false;
+  asteroid.y = game.height * 2;
+}
+
+function render() {
+
+  
+      // game.debug.body(spaceship);
+      // asteroidGroup.forEach(function (sprite) {
+      //   game.debug.body(sprite);
+
+      // })
+
+}
 function asteroidUpdate() {
   if (!isGameOver) {
     asteroidGroup.forEach(function (sprite) {
@@ -328,6 +360,10 @@ function nextQuestion() {
 
 }
 function update() {
+  asteroidGroup.forEach(function (sprite) {
+    game.physics.arcade.collide(sprite,spaceship, spaceshipCollide);
+  })
+
   if (!isGameOver) {
     if (isLeft) {
       hideRightText();
@@ -471,7 +507,7 @@ function gameOver() {
     game.destroy();
     questionIndex = -1;
   }, 3000);
-  
+
 
 }
 function fontSizer(text, frame) {
