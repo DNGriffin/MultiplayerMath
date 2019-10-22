@@ -13,7 +13,6 @@ export class QuizService {
   user: User
 
   constructor(private db: AngularFirestore) {
-    console.log("Current User below");
     UserService.prototype.getCurrentUser().then (function(result: User) {
       console.log(result);
     }, function(error) {

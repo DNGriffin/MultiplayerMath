@@ -22,8 +22,8 @@
                   <th scope="col">Fake #3</th>
                 </tr>
               </thead>
-              <tbody id="quizFormBody">
-                <tr>
+              <tbody id="quizFormBody" formArrayName="questions">
+                <tr *ngFor="let question of questionForms.controls; let i=index" [formGroupName]="i">       
                   <td><input formControlName="question" class="quizFormInput" type="text"></td>
                   <td><input formControlName="answer" class="quizFormInput" type="text"></td>
                   <td><input formControlName="fake1" class="quizFormInput" type="text"></td>
@@ -33,7 +33,7 @@
               </tbody>
             </table>
             <div class="addQuestionDiv">
-              <i class="fas fa-plus plusIcon"></i>
+              <i (click)="addQuestion()" class="fas fa-plus plusIcon"></i>
               <br>
               Add Question
             </div>

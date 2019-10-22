@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
 import { Router } from '@angular/router';
 import { QuizService } from 'src/app/quizes/quiz.service';
 
@@ -17,28 +17,36 @@ export class CreateQuizComponent implements OnInit {
     private router: Router,
     public fb: FormBuilder,
     private quizService: QuizService
-  ) { 
-    this.createForm();
+  ) {}
+
+  ngOnInit() {
+    this.numQuestions = 0
+    this.quizForm = this.fb.group({
+      title: '',
+      questions: this.fb.array([])
+    })
   }
 
-  createForm(){
-    this.quizForm = this.fb.group({
-      title: ['', Validators.required],
+  get questionForms() {
+    return this.quizForm.get('questions') as FormArray;
+  }
+
+  addQuestion() {
+    this.numQuestions++;
+
+    const question = this.fb.group({
       question: ['', Validators.required],
       answer: ['', Validators.required],
       fake1: ['', Validators.required],
       fake2: ['', Validators.required],
       fake3: ['', Validators.required]
-    });
+    })
+    
+    this.questionForms.push(question);
   }
 
-  ngOnInit() {
-    this.numQuestions = 1
-  }
-
-  addQuestion() {
-    this.numQuestions++;
-    console.log("Adding Question #" + this.numQuestions);
+  deletePhone(i) {
+    this.questionForms.removeAt(i);
   }
 
   createQuiz(quizInfo: FormData) {
