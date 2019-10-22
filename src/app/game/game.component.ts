@@ -204,10 +204,10 @@ function create() {
   aKey = game.input.keyboard.addKey(Phaser.Keyboard.A);
   dKey = game.input.keyboard.addKey(Phaser.Keyboard.D);
 
-  oneClickText = game.add.text(game.width * 0.8 + oneClickIcon.width, game.height * 0.2, "9x");
-  twoClickText = game.add.text(oneClickIcon.x + oneClickIcon.width, oneClickIcon.y + oneClickIcon.height * 1.5, "3x");
-  threeClickText = game.add.text(oneClickIcon.x + oneClickIcon.width, twoClickIcon.y + twoClickIcon.height * 1.5, "4x");
-  fourClickText = game.add.text(oneClickIcon.x + oneClickIcon.width, threeClickIcon.y + threeClickIcon.height * 1.5, "9");
+  oneClickText = game.add.text(game.width * 0.8 + oneClickIcon.width, game.height * 0.2, "Yes");
+  twoClickText = game.add.text(oneClickIcon.x + oneClickIcon.width, oneClickIcon.y + oneClickIcon.height * 1.5, "Yes");
+  threeClickText = game.add.text(oneClickIcon.x + oneClickIcon.width, twoClickIcon.y + twoClickIcon.height * 1.5, "Yes");
+  fourClickText = game.add.text(oneClickIcon.x + oneClickIcon.width, threeClickIcon.y + threeClickIcon.height * 1.5, "Yes");
 
   oneClickText.fill = "white";
   twoClickText.fill = "white";

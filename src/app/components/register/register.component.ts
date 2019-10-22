@@ -43,9 +43,9 @@ export class RegisterComponent {
        console.log(res.user.uid);
        this.errorMessage = "";
        this.successMessage = "Your account has been created";
-      //  console.log(res);
       this.addUserToCollection(res.user.uid, value.email);
       this.initUserSubscriptions(res.user.uid, value.email);
+      this.router.navigate(['/login']);
 
        
      }, err => {

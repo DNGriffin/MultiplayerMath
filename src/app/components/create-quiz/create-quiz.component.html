@@ -18,9 +18,9 @@
                 <tr>
                   <th scope="col">Question</th>
                   <th scope="col">Correct Answer</th>
-                  <th scope="col">Fake #1</th>
-                  <th scope="col">Fake #2</th>
-                  <th scope="col">Fake #3</th>
+                  <th scope="col">Choice #2</th>
+                  <th scope="col">Choice #3</th>
+                  <th scope="col">Choice #4</th>
                 </tr>
               </thead>
               <tbody id="quizFormBody" formArrayName="questions">
@@ -39,7 +39,7 @@
               Add Question
             </div>
             <br><br>
-            <button type="submit" class="btn btn-dark">Create</button>
+            <button type="submit" [disabled]="numQuestions == 0" class="btn btn-dark">Create</button>
           </form>
         </div>
       </div>
