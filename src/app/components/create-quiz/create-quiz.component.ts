@@ -21,7 +21,7 @@ export class CreateQuizComponent implements OnInit {
 
   createForm(){
     this.createQuizForm = this.fb.group({
-      quizTitle: ['', Validators.required],
+      title: ['', Validators.required],
       question: ['', Validators.required],
       answer: ['', Validators.required],
       fake1: ['', Validators.required],
@@ -41,6 +41,7 @@ export class CreateQuizComponent implements OnInit {
 
   createQuiz(value) {
     console.log("Submitting form with value: " + value.question);
+    
   }
 
 }

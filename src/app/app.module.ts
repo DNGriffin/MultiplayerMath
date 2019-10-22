@@ -24,6 +24,8 @@ import { SubscriptionsComponent } from './components/subscriptions/subscriptions
 import { QuizWindowComponent } from './components/quiz-window/quiz-window.component';
 import { QuizContainerComponent } from './components/quiz-container/quiz-container.component';
 import { CreateQuizComponent } from './components/create-quiz/create-quiz.component';
+import { QuizDetailsComponent } from './quizes/quiz-details/quiz-details.component';
+import { QuizesListComponent } from './quizes/quizes-list/quizes-list.component';
 
 var firebaseConfig = {
   apiKey: "AIzaSyBLfTk9x_GXo0frYc-eRwevOntUB2uew8k",
@@ -49,7 +51,9 @@ var firebaseConfig = {
     SubscriptionsComponent,
     QuizWindowComponent,
     QuizContainerComponent,
-    CreateQuizComponent
+    CreateQuizComponent,
+    QuizDetailsComponent,
+    QuizesListComponent
   ],
   imports: [
     BrowserModule,

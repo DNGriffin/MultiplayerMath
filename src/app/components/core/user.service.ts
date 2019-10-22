@@ -18,7 +18,7 @@ export class UserService {
     return new Promise<any>((resolve, reject) => {
       var user = firebase.auth().onAuthStateChanged(function(user){
         if (user) {
-          resolve(user);
+          resolve(user)
         } else {
           reject('No user logged in');
         }
