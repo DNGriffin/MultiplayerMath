@@ -9,6 +9,8 @@ import { Router } from '@angular/router';
 export class QuizWindowComponent implements OnInit {
 
   @Input() quizTitle: string;
+  @Input() id: string;
+
 
   constructor(private router: Router) { }
 
@@ -16,7 +18,8 @@ export class QuizWindowComponent implements OnInit {
   }
 
   routeToGame(event) {
-    this.router.navigate(['play'])
+    this.router.navigate(['play'], { queryParams: { id: this.id, title: this.quizTitle} });
+
     console.log(event);
   }
 }

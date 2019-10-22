@@ -2,9 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { AUTO, Game } from 'phaser-ce';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
+import { Router } from '@angular/router';
 var game: Phaser.Game;
 var database: AngularFirestore = null;
-
+var id;
+var quizTitle;
+var globalRouter;
 @Component({
   selector: 'app-game',
   templateUrl: './game.component.html',
@@ -12,14 +15,24 @@ var database: AngularFirestore = null;
 })
 export class GameComponent implements OnInit {
 
-  constructor(    private db: AngularFirestore
-    ) {
+  constructor(private db: AngularFirestore, private router: Router
+  ) {
+    if(!this.router.getCurrentNavigation().extras.queryParams){
+      this.router.navigate(['/dashboard']);
+    }
+    id = this.router.getCurrentNavigation().extras.queryParams.id;
+    quizTitle = this.router.getCurrentNavigation().extras.queryParams.title;
+    
+    console.log(quizTitle);
+    globalRouter = router;
+    
+    console.log(id);
     database = db;
     loadQuestions();
     game = new Game(window.innerWidth, window.innerHeight, AUTO, 'game', { preload: preload, create: create, update: update });
   }
-  
-  
+
+
 
   ngOnInit() {
   }
@@ -55,31 +68,44 @@ var fourClickText: Phaser.Text;
 var spaceship: Phaser.Sprite;
 
 var questionText: Phaser.Text;
+var scoreText: Phaser.Text;
+var score = 0;
 
 
 var starfield;
 var asteroid1, asteroid2, asteroid3, asteroid4, asteroid5;
 
-var questions = [["What is 3x*3?", "9x", "6x", "9", "6"],
+var questions = [["Press any key to start?", "", "", "", ""],
 ["What is 6x/6?", "x", "6", "1", "0"],
 ["What is 3(x+2x)", "9x", "9x^2", "6x", "9"],
 ["What is 5x-2?", "5x-2", "5x", "3x", "3"],
 ["What is (3x-3x)*3x?", "0", "9x", "27x", "9"]
 ]
-function loadQuestions(){
+function loadQuestions() {
   console.log("load quesitons");
 
+  // globalData = database.collection('quizes', ref => ref.where('title', '==', quizTitle).limit(1)).snapshotChanges();
   var globalData;
-  globalData = database.collection('quizes', ref => ref.where('id', '==', "123").limit(1)).snapshotChanges();
+
+  globalData = database.collection('quizes', ref => ref.where('title', '==', quizTitle)).snapshotChanges();
   globalData.subscribe(
     (res) => {
       var data = res[0].payload.doc.data();
-      for(var key in data){
-        console.log(data[key]);
+      var tempQuestions = data.questions;
+      var formattedQuestion = [];
+      questions = [];
+      for (var key in tempQuestions) {
+        formattedQuestion = [];
+        formattedQuestion[0] = tempQuestions[key].question;
+        formattedQuestion[1] = tempQuestions[key].answer;
+        formattedQuestion[2] = tempQuestions[key].fake1;
+        formattedQuestion[3] = tempQuestions[key].fake2;
+        formattedQuestion[4] = tempQuestions[key].fake3;
+        questions.push(formattedQuestion);
       }
     },
     (err) => console.log(err),
-    () => console.log('done!')
+    () => nextQuestion()
   );
 }
 
@@ -153,18 +179,22 @@ function create() {
     sprite.width = asteroidWidth;
     sprite.height = asteroidWidth;
   })
-  questionText = game.add.text(game.world.centerX, game.height * 0.15, "What is 3x * 3?");
+
+  questionText = game.add.text(game.world.centerX, game.height * 0.15, "Are you ready to start?");
   questionText.anchor.set(0.5);
-  oneKeyText = game.add.text(game.width * 0.2 + oneKeyIcon.width, game.height * 0.2, "9x");
-  twoKeyText = game.add.text(oneKeyIcon.x + oneKeyIcon.width, oneKeyIcon.y + oneKeyIcon.height * 1.5, "3x");
-  threeKeyText = game.add.text(oneKeyIcon.x + oneKeyIcon.width, twoKeyIcon.y + twoKeyIcon.height * 1.5, "4x");
-  fourKeyText = game.add.text(oneKeyIcon.x + oneKeyIcon.width, threeKeyIcon.y + threeKeyIcon.height * 1.5, "9");
+  oneKeyText = game.add.text(game.width * 0.2 + oneKeyIcon.width, game.height * 0.2, "Start");
+  twoKeyText = game.add.text(oneKeyIcon.x + oneKeyIcon.width, oneKeyIcon.y + oneKeyIcon.height * 1.5, "Start");
+  threeKeyText = game.add.text(oneKeyIcon.x + oneKeyIcon.width, twoKeyIcon.y + twoKeyIcon.height * 1.5, "Start");
+  fourKeyText = game.add.text(oneKeyIcon.x + oneKeyIcon.width, threeKeyIcon.y + threeKeyIcon.height * 1.5, "Start");
 
   questionText.fill = "white";
   oneKeyText.fill = "white";
   twoKeyText.fill = "white";
   threeKeyText.fill = "white";
   fourKeyText.fill = "white";
+  scoreText = game.add.text(game.world.centerX, game.height * 0.05, "Score: 0");
+  scoreText.anchor.set(0.5);
+  scoreText.fill = "white";
 
   oneKey = game.input.keyboard.addKey(Phaser.Keyboard.ONE);
   twoKey = game.input.keyboard.addKey(Phaser.Keyboard.TWO);
@@ -188,23 +218,23 @@ function create() {
   game.world.sendToBack(starfield);
 
 }
-function createMissile(){
+function createMissile() {
   var missile = game.add.sprite(spaceship.x, spaceship.y, "missile");
 
   missile.animations.add('fly2');
   missile.animations.play('fly2', 15, true);
   missile.anchor.setTo(0.5);
-  missile.rotation = -Math.PI/2;
+  missile.rotation = -Math.PI / 2;
   missile.width = game.width * .02;
-  missile.height = missile.width * (2/7);
+  missile.height = missile.width * (2 / 7);
   game.physics.enable(missile, Phaser.Physics.ARCADE);
 
-  missile.update = function (){
+  missile.update = function () {
     var nearestAsteroid: Phaser.Sprite;
     var nearestDistance = 9999999999;
     asteroidGroup.forEach(function (sprite) {
       var distanceBetween = distanceSQ(sprite, missile);
-      if(distanceBetween < nearestDistance){
+      if (distanceBetween < nearestDistance) {
         nearestAsteroid = sprite;
         nearestDistance = distanceBetween;
 
@@ -215,37 +245,53 @@ function createMissile(){
     missile.body.velocity.y = Math.sin(missile.rotation) * 200;
     game.physics.arcade.collide(missile, asteroidGroup, asteroidCollide);
   }
-  
+
 }
 var canAnswer = true;
+var isGameOver = false;
 function asteroidUpdate() {
-  asteroidGroup.forEach(function (sprite) {
-    if (sprite.y > sprite.height + game.height) {
-      sprite.y = -sprite.height;
-      sprite.body.angularVelocity = Math.random() * 200 - Math.random() * 200;
-      sprite.x = game.world.randomX;
-      var asteroidWidth = game.height * .10 + game.height * 0.15 * Math.random();
-      sprite.width = asteroidWidth;
-      sprite.height = asteroidWidth;
-    }
-    if (sprite.body.velocity.y > 200) {
-      sprite.body.velocity.y = 200;
-    }
-  })
+  if (!isGameOver) {
+    asteroidGroup.forEach(function (sprite) {
+      if (sprite.y > sprite.height + game.height) {
+        sprite.y = -sprite.height;
+        sprite.body.angularVelocity = Math.random() * 200 - Math.random() * 200;
+        sprite.x = game.world.randomX;
+        var asteroidWidth = game.height * .10 + game.height * 0.15 * Math.random();
+        sprite.width = asteroidWidth;
+        sprite.height = asteroidWidth;
+      }
+      if (sprite.body.velocity.y > 200) {
+        sprite.body.velocity.y = 200;
+      }
+    })
+  }
 }
-function distanceSQ(object,target) {
+function distanceSQ(object, target) {
   var xDif = object.x - target.x;
   var yDif = object.y - target.y;
   return (xDif * xDif) + (yDif * yDif);
 
 };
-function asteroidCollide(missile, asteroid){
+function asteroidCollide(missile, asteroid) {
   missile.kill();
   asteroid.y = game.height * 2;
 }
 function answerQuestion(index) {
-  createMissile();
   if (canAnswer) {
+    var selectAns;
+    if (index == 1) {
+      selectAns = oneKeyText.text;
+    } if (index == 2) {
+      selectAns = twoKeyText.text;
+    } if (index == 3) {
+      selectAns = threeKeyText.text;
+    } if (index == 4) {
+      selectAns = fourKeyText.text;
+    }
+    if (selectAns == ans) { //if ans correct
+      createMissile();
+      scoreText.text = `Score: ${++score}`;
+    }
     nextQuestion();
     canAnswer = false;
     setTimeout(() => {
@@ -254,12 +300,16 @@ function answerQuestion(index) {
   }
 }
 
-var questionIndex = 0;
+var questionIndex = -1;
 var ans = "";
 var isLeftTurn = true;
 function nextQuestion() {
   questionIndex++;
-  questionIndex = questionIndex % questions.length;
+  if (questionIndex >= questions.length) {
+    gameOver();
+    return;
+  }
+  // questionIndex = questionIndex % questions.length;
   questionText.text = questions[questionIndex][0];
   ans = questions[questionIndex][1];
   var tempAnswers = [];
@@ -278,72 +328,72 @@ function nextQuestion() {
 
 }
 function update() {
-  if(isLeft){
-    hideRightText();
-    showLeftText();
-  }else{
-    hideLeftText();
-    showRightText();
-  }
-  spaceship.y = game.height * 0.5;
+  if (!isGameOver) {
+    if (isLeft) {
+      hideRightText();
+      showLeftText();
+    } else {
+      hideLeftText();
+      showRightText();
+    }
+    spaceship.y = game.height * 0.5;
 
-  asteroidUpdate();
-  starfield.tilePosition.y += 1;
-  if (oneKey.isDown) {
-    oneKeyIcon.alpha = 1;
-    keyHandler(1);
-  } else {
-    oneKeyIcon.alpha = 0.7;
+    asteroidUpdate();
+    starfield.tilePosition.y += 1;
+    if (oneKey.isDown) {
+      oneKeyIcon.alpha = 1;
+      keyHandler(1);
+    } else {
+      oneKeyIcon.alpha = 0.7;
+    }
+    if (twoKey.isDown) {
+      twoKeyIcon.alpha = 1;
+      keyHandler(2);
+    } else {
+      twoKeyIcon.alpha = 0.7;
+    }
+    if (threeKey.isDown) {
+      keyHandler(3);
+      threeKeyIcon.alpha = 1;
+    } else {
+      threeKeyIcon.alpha = 0.7;
+    }
+    if (fourKey.isDown) {
+      keyHandler(4);
+      fourKeyIcon.alpha = 1;
+    } else {
+      fourKeyIcon.alpha = 0.7;
+    }
+    if (aKey.isDown) {
+      spaceship.body.velocity.x = -game.width * 0.3;
+    }
+    if (dKey.isDown) {
+      spaceship.body.velocity.x = +game.width * 0.3;
+    }
+    if (!aKey.isDown && !dKey.isDown) {
+      spaceship.body.velocity.x = 0;
+    }
   }
-  if (twoKey.isDown) {
-    twoKeyIcon.alpha = 1;
-    keyHandler(2);
-  } else {
-    twoKeyIcon.alpha = 0.7;
-  }
-  if (threeKey.isDown) {
-    keyHandler(3);
-    threeKeyIcon.alpha = 1;
-  } else {
-    threeKeyIcon.alpha = 0.7;
-  }
-  if (fourKey.isDown) {
-    keyHandler(4);
-    fourKeyIcon.alpha = 1;
-  } else {
-    fourKeyIcon.alpha = 0.7;
-  }
-  if(aKey.isDown){
-    spaceship.body.velocity.x = -game.width * 0.3;
-  }
-  if(dKey.isDown){
-    spaceship.body.velocity.x = +game.width * 0.3;
-  }
-  if(!aKey.isDown && !dKey.isDown){
-    spaceship.body.velocity.x = 0;
-  }
-
-
 }
-function hideLeftText(){
+function hideLeftText() {
   oneKeyText.visible = false;
   twoKeyText.visible = false;
   threeKeyText.visible = false;
   fourKeyText.visible = false;
 }
-function showLeftText(){
+function showLeftText() {
   oneKeyText.visible = true;
   twoKeyText.visible = true;
   threeKeyText.visible = true;
   fourKeyText.visible = true;
 }
-function hideRightText(){
+function hideRightText() {
   oneClickText.visible = false;
   twoClickText.visible = false;
   threeClickText.visible = false;
   fourClickText.visible = false;
 }
-function showRightText(){
+function showRightText() {
   oneClickText.visible = true;
   twoClickText.visible = true;
   threeClickText.visible = true;
@@ -351,45 +401,89 @@ function showRightText(){
 }
 var isLeft = true;
 
-function keyHandler(num){
-  if(isLeft){
+function keyHandler(num) {
+  if (isLeft) {
     isLeft = !isLeft;
     answerQuestion(num);
   }
 }
-function clickHandler(num){
-  if(!isLeft){
+function clickHandler(num) {
+  if (!isLeft) {
     isLeft = !isLeft;
     answerQuestion(num);
   }
 }
-function clickOne(){
+function clickOne() {
   clickHandler(1);
   oneClickIcon.alpha = 1.0;
   setTimeout(() => {
     oneClickIcon.alpha = 0.7;
   }, 500);
 }
-function clickTwo(){
+function clickTwo() {
   clickHandler(2);
   twoClickIcon.alpha = 1.0;
   setTimeout(() => {
     twoClickIcon.alpha = 0.7;
   }, 1000);
 }
-function clickThree(){
+function clickThree() {
   clickHandler(3);
   threeClickIcon.alpha = 1.0;
   setTimeout(() => {
     threeClickIcon.alpha = 0.7;
   }, 1000);
 }
-function clickFour(){
+function clickFour() {
   clickHandler(4);
   fourClickIcon.alpha = 1.0;
   setTimeout(() => {
     fourClickIcon.alpha = 0.7;
   }, 1000);
+
+}
+function gameOver() {
+  isGameOver = true;
+  questionText.text = `The completed the game!\nYou scored ${score}!\nThanks for playing!`;
+  questionText.fontSize = fontSizer(questionText, game) * 0.7;
+  questionText.y = game.world.centerY;
+
+  oneKeyIcon.destroy();
+  twoKeyIcon.destroy();
+  threeKeyIcon.destroy();
+  fourKeyIcon.destroy();
+  oneKeyText.destroy();
+  twoKeyText.destroy();
+  threeKeyText.destroy();
+  fourKeyText.destroy();
+
+  oneClickIcon.destroy();
+  twoClickIcon.destroy();
+  threeClickIcon.destroy();
+  fourClickIcon.destroy();
+  oneClickText.destroy();
+  twoClickText.destroy();
+  threeClickText.destroy();
+  fourClickText.destroy();
+  setTimeout(() => {
+    globalRouter.navigate(['/dashboard']);
+    isGameOver = false;
+    game.destroy();
+    questionIndex = -1;
+  }, 3000);
+  
+
+}
+function fontSizer(text, frame) {
+  var fontSize = 80;
+  text.fontSize = fontSize;
+  while (text.width > frame.width) {
+    fontSize -= 1;
+    text.fontSize = fontSize;
+  }
+
+  text.fontSize = fontSize * 0.98;
+  return fontSize * 0.98;
 
 }
 

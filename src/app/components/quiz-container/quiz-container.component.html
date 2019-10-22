@@ -1,8 +1,8 @@
 <div class="container-fluid">
 
   <div class="row">
-    <div class="col" *ngFor="let quiz of quizes | async; let i = index">
-      <app-quiz-window [quizTitle]="quiz.payload.doc.data().title"></app-quiz-window>
+    <div class="col" *ngFor="let quiz of quizIds; let i = index">
+      <app-quiz-window [id]="quizIds[i]" [quizTitle]="quizTitles[i]"></app-quiz-window>
     </div>
   </div>
 </div>

@@ -14,9 +14,9 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let subscription of subscriptions | async; let i = index">
+        <tr *ngFor="let email of emails; let i = index">
           <td scope="col">{{ i }}</td>
-          <td scope="col"> {{ subscription.payload.doc.data().subscribedEmail }} </td>
+          <td scope="col"> {{email}} </td>
         </tr>
       </tbody>
     </table>

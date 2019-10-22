@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { AuthService } from '../core/auth.service'
 import { Router, Params } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AngularFirestore } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-register',
@@ -17,7 +18,8 @@ export class RegisterComponent {
   constructor(
     public authService: AuthService,
     private router: Router,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private db: AngularFirestore, 
   ) {
     this.createForm();
    }
@@ -38,15 +40,35 @@ export class RegisterComponent {
     }
      this.authService.doRegister(value)
      .then(res => {
-       console.log(res);
+       console.log(res.user.uid);
        this.errorMessage = "";
        this.successMessage = "Your account has been created";
+      //  console.log(res);
+      this.addUserToCollection(res.user.uid, value.email);
+      this.initUserSubscriptions(res.user.uid, value.email);
+
        
      }, err => {
        console.log(err);
        this.errorMessage = err.message;
        this.successMessage = "";
      })
+   }
+   addUserToCollection(id, email){
+    this.db.collection('users').add({
+      id: id,
+      email: email
+    }).then(ref => {
+
+    });
+   }
+   initUserSubscriptions(id, email){
+    this.db.collection('subscriptions').add({
+      id: id,
+      emails: [email, "example@example.com"]
+    }).then(ref => {
+
+    });
    }
 
 }

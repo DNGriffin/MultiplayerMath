@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
 import { Router } from '@angular/router';
 import { QuizService } from 'src/app/quizes/quiz.service';
+import { AngularFirestore } from '@angular/fire/firestore';
+import { AngularFireAuth } from '@angular/fire/auth';
 
 @Component({
   selector: 'app-create-quiz',
@@ -12,12 +14,19 @@ export class CreateQuizComponent implements OnInit {
 
   quizForm: FormGroup
   numQuestions: number
-
+  uid: string;
+  email: string;
   constructor(
     private router: Router,
     public fb: FormBuilder,
-    private quizService: QuizService
-  ) {}
+    private quizService: QuizService,
+    private db: AngularFirestore,
+    private afAuth: AngularFireAuth,
+
+
+  ) {    this.uid = afAuth.auth.currentUser.uid;
+    this.getEmailAsync();
+  }
 
   ngOnInit() {
     this.numQuestions = 0
@@ -55,9 +64,22 @@ export class CreateQuizComponent implements OnInit {
     this.quizForm.reset();
   }
 
-  //TODO: Get correct user email
   getUserEmail(): string {
-    return "email@email.com";
+    return this.email;
+  }
+  getEmailAsync(){
+    var users;
+
+    users = this.db.collection('users', ref => ref.where('id', '==', this.uid)).snapshotChanges();
+    users.subscribe(
+      (res) => {
+        var data = res[0].payload.doc.data();
+        console.log(data);
+        this.email = data.email;
+      },
+      (err) => console.log(err),
+      () => console.log("got email")
+    );
   }
 
 }
