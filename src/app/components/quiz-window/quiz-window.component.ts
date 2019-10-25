@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Router } from '@angular/router';
+import { QuizService } from 'src/app/quizes/quiz.service';
 
 @Component({
   selector: 'app-quiz-window',
@@ -12,7 +13,10 @@ export class QuizWindowComponent implements OnInit {
   @Input() id: string;
 
 
-  constructor(private router: Router) { }
+  constructor(
+    private router: Router,
+    private quizService: QuizService,
+    ) { }
 
   ngOnInit() {
   }
@@ -31,5 +35,9 @@ export class QuizWindowComponent implements OnInit {
     this.router.navigate(['play/online'], { queryParams: { id: this.id, title: this.quizTitle} });
 
     console.log(event);
+  }
+
+  deleteQuiz(event, quizId) {
+    this.quizService.deleteQuiz(quizId)
   }
 }

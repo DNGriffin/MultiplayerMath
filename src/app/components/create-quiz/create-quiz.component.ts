@@ -58,7 +58,7 @@ export class CreateQuizComponent implements OnInit {
     this.questionForms.push(question);
   }
 
-  deletePhone(i) {
+  deleteQuestion(i) {
     this.questionForms.removeAt(i);
   }
 
@@ -79,7 +79,6 @@ export class CreateQuizComponent implements OnInit {
     users.subscribe(
       (res) => {
         var data = res[0].payload.doc.data();
-        console.log(data);
         this.email = data.email;
       },
       (err) => console.log(err),

@@ -23,33 +23,40 @@ export class QuizContainerComponent implements OnInit {
     ) { }
 
   ngOnInit() {
-    this.quizes = this.getQuizes();
     this.getSubscriptionEmails();
   }
 
-  //TODO: Get quizes that have the same email as the user, one of the user's subscriptions, or that have the canned quiz identifier (special email of some sort)
-  getQuizes() {
-    return this.quizService.quizesCollection.snapshotChanges();
-  }
-  getQuizesFromEmails(){
-
-    for(var i = 0;i<this.emails.length;i++){
-      console.log("made it in loop get quiz");
-    var quizCol = this.db.collection('quizes', ref => ref.where('userEmail', '==', this.emails[i])).snapshotChanges();
-    quizCol.subscribe(
+  listenForDeletes() {
+    this.db.collection('quizes', ref => ref.where('userEmail', '==', this.emails[0])).snapshotChanges().subscribe(
       (res) => {
-        console.log("made it in quizcol sub");
-        for(var j = 0;j<res.length;j++){
-          var data: any = res[j].payload.doc.data();
-          this.quizIds.push(res[j].payload.doc.id);
-          this.quizTitles.push(data.title);
-          console.log(data.title);
-        }
-        
+        console.log("received a delete notification");
       },
-      (err) => console.log(err),
-      () => console.log("got sub emails")
-    );
+      (err) => {
+        console.log(err);
+      }
+    )
+  }
+
+  getQuizesFromEmails(){
+    for(var i = 0; i < this.emails.length;i++){
+      console.log("made it in loop get quiz");
+      var quizCol = this.db.collection('quizes', ref => ref.where('userEmail', '==', this.emails[i])).snapshotChanges();
+      quizCol.subscribe(
+        (res) => {
+          console.log("made it in quizcol sub");
+          for(var j = 0;j<res.length;j++){
+            var data: any = res[j].payload.doc.data();
+            this.quizIds.push(res[j].payload.doc.id);
+            this.quizTitles.push(data.title);
+            console.log("Pushing now:");
+            console.log(data);
+          }
+          console.log("quizTitles:");
+          console.log(this.quizTitles);
+        },
+        (err) => console.log(err),
+        () => console.log("got sub emails")
+      );
     }
   }
 
@@ -63,6 +70,7 @@ export class QuizContainerComponent implements OnInit {
         this.emails = data.emails;
         console.log(this.emails);
         this.getQuizesFromEmails();
+        this.listenForDeletes();
       },
       (err) => console.log(err),
       () => console.log('finished')
