@@ -32,14 +32,17 @@ export class QuizContainerComponent implements OnInit {
       var quizCol = this.db.collection('quizes', ref => ref.where('userEmail', '==', this.emails[i])).snapshotChanges();
       quizCol.subscribe(
         (res) => {
-          for(var j = 0;j < res.length;j++){
+          for(var j = 0;j < res.length; j++){
             var data: any = res[j].payload.doc.data();
-            this.quizIds.push(res[j].payload.doc.id);
-            this.playableQuizes.push(data);
-            if(data.userEmail == this.afAuth.auth.currentUser.email) {
-              this.quizOwner.push(true);
-            } else {
-              this.quizOwner.push(false);
+            if(!this.quizIds.includes(res[j].payload.doc.id)) {
+              this.quizIds.push(res[j].payload.doc.id);
+              this.playableQuizes.push(data);
+              console.log("Playable Quizes Count: " + this.playableQuizes.length);
+              if(data.userEmail == this.afAuth.auth.currentUser.email) {
+                this.quizOwner.push(true);
+              } else {
+                this.quizOwner.push(false);
+              }
             }
           }
         },
