@@ -6,34 +6,31 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { AngularFireAuth } from '@angular/fire/auth';
 
 @Component({
-  selector: 'app-create-quiz',
-  templateUrl: './create-quiz.component.html',
-  styleUrls: ['./create-quiz.component.scss']
+  selector: 'app-edit-quiz',
+  templateUrl: './edit-quiz.component.html',
+  styleUrls: ['./edit-quiz.component.scss']
 })
-export class CreateQuizComponent implements OnInit {
+export class EditQuizComponent implements OnInit {
 
-  quizForm: FormGroup
+  quizEditForm: FormGroup
   numQuestions: number
-  uid: string;
-  email: string;
+  uid: string
+  email: string
+
   constructor(
     private router: Router,
     public fb: FormBuilder,
     private quizService: QuizService,
     private db: AngularFirestore,
-    private afAuth: AngularFireAuth
-
-
-  ) {    
+    private afAuth: AngularFireAuth,
+  ) {
     this.uid = afAuth.auth.currentUser.uid;
     this.getEmailAsync();
-  }
-
-  difficulties: string[] = ['easy', 'medium', 'hard'];
+   }
 
   ngOnInit() {
     this.numQuestions = 0;
-    this.quizForm = this.fb.group({
+    this.quizEditForm = this.fb.group({
       title: '',
       questions: this.fb.array([]),
       userEmail: ['', Validators.required]
@@ -41,7 +38,7 @@ export class CreateQuizComponent implements OnInit {
   }
 
   get questionForms() {
-    return this.quizForm.get('questions') as FormArray;
+    return this.quizEditForm.get('questions') as FormArray;
   }
 
   addQuestion() {
@@ -52,22 +49,15 @@ export class CreateQuizComponent implements OnInit {
       answer: ['', Validators.required],
       fake1: ['', Validators.required],
       fake2: ['', Validators.required],
-      fake3: ['', Validators.required],
-      difficulty: ['', Validators.required]
+      fake3: ['', Validators.required]
     })
     
     this.questionForms.push(question);
   }
 
-  deleteQuestion(i) {
-    this.questionForms.removeAt(i);
-  }
-
-  createQuiz(quizInfo: FormData) {
-    console.log("lol");
-    console.log(quizInfo);
-    this.quizService.createQuiz(quizInfo);
-    this.quizForm.reset();
+  updateQuiz(quizInfo: FormData) {
+    // this.quizService.createQuiz(quizInfo);
+    this.quizEditForm.reset();
   }
 
   getUserEmail(): string {

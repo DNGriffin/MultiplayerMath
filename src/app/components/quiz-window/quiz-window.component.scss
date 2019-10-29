@@ -14,7 +14,7 @@
   display: table; 
 }
 
-.quiz-title:hover, .deleteButton:hover {
+.quiz-title:hover, .deleteButton:hover, .editButton:hover {
   cursor: pointer;
 }
 
@@ -22,4 +22,13 @@
   text-align: center;
   display: table-cell;
   vertical-align: middle;
+}
+
+.deleteButton {
+  margin-left: 5px;
+}
+
+.quizOptions {
+  position: absolute;
+  top: 25px;
 }

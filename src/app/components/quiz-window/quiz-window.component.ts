@@ -9,10 +9,11 @@ import { QuizService } from 'src/app/quizes/quiz.service';
 })
 export class QuizWindowComponent implements OnInit {
 
-  @Input() quizTitle: string;
+  @Input() quizData: any;
   @Input() id: string;
   @Input() didCreateQuiz: boolean;
   @Output() didDelete: EventEmitter<string> = new EventEmitter();
+  @Output() didEdit: EventEmitter<string> = new EventEmitter();
 
   constructor(private router: Router) { }
 
@@ -20,7 +21,7 @@ export class QuizWindowComponent implements OnInit {
   }
 
   routeToGame(event) {
-    this.router.navigate(['play'], { queryParams: { id: this.id, title: this.quizTitle} });
+    this.router.navigate(['play'], { queryParams: { id: this.id, title: this.quizData.title } });
 
     console.log(event);
   }
@@ -37,5 +38,9 @@ export class QuizWindowComponent implements OnInit {
 
   deleteQuiz(quizId) {
     this.didDelete.emit(quizId);
+  }
+
+  editQuiz(quizId) {
+    this.didEdit.emit(quizId);
   }
 }

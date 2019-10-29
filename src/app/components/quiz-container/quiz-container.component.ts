@@ -14,8 +14,8 @@ export class QuizContainerComponent implements OnInit {
 
   quizes: any
   emails: any[];
-  quizTitles = [];
   quizIds = [];
+  playableQuizes = [];
   quizOwner = [];
 
   constructor(private quizService: QuizService,
@@ -35,7 +35,7 @@ export class QuizContainerComponent implements OnInit {
           for(var j = 0;j < res.length;j++){
             var data: any = res[j].payload.doc.data();
             this.quizIds.push(res[j].payload.doc.id);
-            this.quizTitles.push(data.title);
+            this.playableQuizes.push(data);
             if(data.userEmail == this.afAuth.auth.currentUser.email) {
               this.quizOwner.push(true);
             } else {
@@ -67,9 +67,9 @@ export class QuizContainerComponent implements OnInit {
 
   onDeleted(quizId: string) {
     this.quizService.deleteQuiz(quizId);
-    this.quizTitles = [];
     this.quizIds = [];
     this.quizOwner = [];
+    this.playableQuizes = [];
     this.getQuizesFromEmails();
   }
 }
