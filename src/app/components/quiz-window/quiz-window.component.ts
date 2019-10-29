@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 import { QuizService } from 'src/app/quizes/quiz.service';
 
@@ -11,12 +11,10 @@ export class QuizWindowComponent implements OnInit {
 
   @Input() quizTitle: string;
   @Input() id: string;
+  @Input() didCreateQuiz: boolean;
+  @Output() didDelete: EventEmitter<string> = new EventEmitter();
 
-
-  constructor(
-    private router: Router,
-    private quizService: QuizService,
-    ) { }
+  constructor(private router: Router) { }
 
   ngOnInit() {
   }
@@ -37,7 +35,7 @@ export class QuizWindowComponent implements OnInit {
     console.log(event);
   }
 
-  deleteQuiz(event, quizId) {
-    this.quizService.deleteQuiz(quizId)
+  deleteQuiz(quizId) {
+    this.didDelete.emit(quizId);
   }
 }

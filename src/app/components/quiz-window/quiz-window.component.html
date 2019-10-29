@@ -1,5 +1,5 @@
 <div class="quiz-div">
-  <i class="fas fa-trash deleteButton" (click)="deleteQuiz($event, this.id)"></i>
+  <i *ngIf="didCreateQuiz" class="fas fa-trash deleteButton" (click)="deleteQuiz(this.id)"></i>
   <p class="quiz-title" (click)="routeToGame($event,id)">{{ quizTitle }}</p>
 </div>
 <button (click)="routeToSoloGame($event,id)" type="button" class="btn btn-primary">Play Solo</button>

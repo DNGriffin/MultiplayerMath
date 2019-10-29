@@ -16,6 +16,7 @@ export class QuizContainerComponent implements OnInit {
   emails: any[];
   quizTitles = [];
   quizIds = [];
+  quizOwner = [];
 
   constructor(private quizService: QuizService,
     private db: AngularFirestore,
@@ -26,33 +27,21 @@ export class QuizContainerComponent implements OnInit {
     this.getSubscriptionEmails();
   }
 
-  listenForDeletes() {
-    this.db.collection('quizes', ref => ref.where('userEmail', '==', this.emails[0])).snapshotChanges().subscribe(
-      (res) => {
-        console.log("received a delete notification");
-      },
-      (err) => {
-        console.log(err);
-      }
-    )
-  }
-
   getQuizesFromEmails(){
     for(var i = 0; i < this.emails.length;i++){
-      console.log("made it in loop get quiz");
       var quizCol = this.db.collection('quizes', ref => ref.where('userEmail', '==', this.emails[i])).snapshotChanges();
       quizCol.subscribe(
         (res) => {
-          console.log("made it in quizcol sub");
-          for(var j = 0;j<res.length;j++){
+          for(var j = 0;j < res.length;j++){
             var data: any = res[j].payload.doc.data();
             this.quizIds.push(res[j].payload.doc.id);
             this.quizTitles.push(data.title);
-            console.log("Pushing now:");
-            console.log(data);
+            if(data.userEmail == this.afAuth.auth.currentUser.email) {
+              this.quizOwner.push(true);
+            } else {
+              this.quizOwner.push(false);
+            }
           }
-          console.log("quizTitles:");
-          console.log(this.quizTitles);
         },
         (err) => console.log(err),
         () => console.log("got sub emails")
@@ -70,10 +59,17 @@ export class QuizContainerComponent implements OnInit {
         this.emails = data.emails;
         console.log(this.emails);
         this.getQuizesFromEmails();
-        this.listenForDeletes();
       },
       (err) => console.log(err),
       () => console.log('finished')
     );
+  }
+
+  onDeleted(quizId: string) {
+    this.quizService.deleteQuiz(quizId);
+    this.quizTitles = [];
+    this.quizIds = [];
+    this.quizOwner = [];
+    this.getQuizesFromEmails();
   }
 }
