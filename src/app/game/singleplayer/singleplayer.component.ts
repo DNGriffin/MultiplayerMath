@@ -9,11 +9,11 @@ var id;
 var quizTitle;
 var globalRouter;
 @Component({
-  selector: 'app-game',
-  templateUrl: './game.component.html',
-  styleUrls: ['./game.component.scss']
+  selector: 'app-singleplayer',
+  templateUrl: './singleplayer.component.html',
+  styleUrls: ['./singleplayer.component.scss']
 })
-export class GameComponent implements OnInit {
+export class SingleplayerComponent implements OnInit {
 
   constructor(private db: AngularFirestore, private router: Router
   ) {
@@ -29,7 +29,7 @@ export class GameComponent implements OnInit {
     console.log(id);
     database = db;
     loadQuestions();
-    game = new Game(window.innerWidth, window.innerHeight, AUTO, 'game', { preload: preload, create: create, update: update, render: render });
+    game = new Game(window.innerWidth, window.innerHeight, AUTO, 'singleplayer', { preload: preload, create: create, update: update, render: render });
   }
 
   ngOnInit() {
@@ -54,14 +54,6 @@ var twoKeyText: Phaser.Text;
 var threeKeyText: Phaser.Text;
 var fourKeyText: Phaser.Text;
 
-var oneClickIcon: Phaser.Button;
-var twoClickIcon: Phaser.Button;
-var threeClickIcon: Phaser.Button;
-var fourClickIcon: Phaser.Button;
-var oneClickText: Phaser.Text;
-var twoClickText: Phaser.Text;
-var threeClickText: Phaser.Text;
-var fourClickText: Phaser.Text;
 
 var spaceship: Phaser.Sprite;
 
@@ -138,22 +130,6 @@ function create() {
   threeKeyIcon = game.add.sprite(oneKeyIcon.x, twoKeyIcon.y + twoKeyIcon.height * 1.5, "3key");
   fourKeyIcon = game.add.sprite(oneKeyIcon.x, threeKeyIcon.y + threeKeyIcon.height * 1.5, "4key");
 
-  oneClickIcon = game.add.button(game.width * 0.8, game.height * 0.2, "click");
-  twoClickIcon = game.add.button(oneClickIcon.x, oneClickIcon.y + oneClickIcon.height * 1.5, "click");
-  threeClickIcon = game.add.button(oneClickIcon.x, twoClickIcon.y + twoClickIcon.height * 1.5, "click");
-  fourClickIcon = game.add.button(oneClickIcon.x, threeClickIcon.y + threeClickIcon.height * 1.5, "click");
-
-  oneClickIcon.onInputDown.add(clickOne);
-  twoClickIcon.onInputDown.add(clickTwo);
-  threeClickIcon.onInputDown.add(clickThree);
-  fourClickIcon.onInputDown.add(clickFour);
-
-
-  oneClickIcon.alpha = 0.7;
-  twoClickIcon.alpha = 0.7;
-  threeClickIcon.alpha = 0.7;
-  fourClickIcon.alpha = 0.7;
-
   spaceship = game.add.sprite(game.width * 0.5, game.height * 0.8, "spaceship");
   spaceship.anchor.set(0.5);
   game.physics.enable(spaceship, Phaser.Physics.ARCADE);
@@ -201,15 +177,7 @@ function create() {
   aKey = game.input.keyboard.addKey(Phaser.Keyboard.A);
   dKey = game.input.keyboard.addKey(Phaser.Keyboard.D);
 
-  oneClickText = game.add.text(game.width * 0.8 + oneClickIcon.width, game.height * 0.2, "Yes");
-  twoClickText = game.add.text(oneClickIcon.x + oneClickIcon.width, oneClickIcon.y + oneClickIcon.height * 1.5, "Yes");
-  threeClickText = game.add.text(oneClickIcon.x + oneClickIcon.width, twoClickIcon.y + twoClickIcon.height * 1.5, "Yes");
-  fourClickText = game.add.text(oneClickIcon.x + oneClickIcon.width, threeClickIcon.y + threeClickIcon.height * 1.5, "Yes");
 
-  oneClickText.fill = "white";
-  twoClickText.fill = "white";
-  threeClickText.fill = "white";
-  fourClickText.fill = "white";
   game.world.sendToBack(asteroidGroup);
   game.world.sendToBack(spaceship);
   game.world.sendToBack(starfield);
@@ -234,6 +202,7 @@ function createMissile() {
       if (distanceBetween < nearestDistance) {
         nearestAsteroid = sprite;
         nearestDistance = distanceBetween;
+
       };
     })
     missile.rotation = game.physics.arcade.angleBetween(missile, nearestAsteroid);
@@ -347,10 +316,6 @@ function nextQuestion() {
   twoKeyText.text = tempAnswers[1];
   threeKeyText.text = tempAnswers[2];
   fourKeyText.text = tempAnswers[3];
-  oneClickText.text = tempAnswers[0];
-  twoClickText.text = tempAnswers[1];
-  threeClickText.text = tempAnswers[2];
-  fourClickText.text = tempAnswers[3];
 
 }
 function update() {
@@ -359,13 +324,7 @@ function update() {
   })
 
   if (!isGameOver) {
-    if (isLeft) {
-      hideRightText();
-      showLeftText();
-    } else {
-      hideLeftText();
-      showRightText();
-    }
+    
     spaceship.y = game.height * 0.5;
 
     asteroidUpdate();
@@ -405,73 +364,13 @@ function update() {
     }
   }
 }
-function hideLeftText() {
-  oneKeyText.visible = false;
-  twoKeyText.visible = false;
-  threeKeyText.visible = false;
-  fourKeyText.visible = false;
-}
-function showLeftText() {
-  oneKeyText.visible = true;
-  twoKeyText.visible = true;
-  threeKeyText.visible = true;
-  fourKeyText.visible = true;
-}
-function hideRightText() {
-  oneClickText.visible = false;
-  twoClickText.visible = false;
-  threeClickText.visible = false;
-  fourClickText.visible = false;
-}
-function showRightText() {
-  oneClickText.visible = true;
-  twoClickText.visible = true;
-  threeClickText.visible = true;
-  fourClickText.visible = true;
-}
-var isLeft = true;
+
 
 function keyHandler(num) {
-  if (isLeft) {
-    isLeft = !isLeft;
     answerQuestion(num);
-  }
 }
-function clickHandler(num) {
-  if (!isLeft) {
-    isLeft = !isLeft;
-    answerQuestion(num);
-  }
-}
-function clickOne() {
-  clickHandler(1);
-  oneClickIcon.alpha = 1.0;
-  setTimeout(() => {
-    oneClickIcon.alpha = 0.7;
-  }, 500);
-}
-function clickTwo() {
-  clickHandler(2);
-  twoClickIcon.alpha = 1.0;
-  setTimeout(() => {
-    twoClickIcon.alpha = 0.7;
-  }, 1000);
-}
-function clickThree() {
-  clickHandler(3);
-  threeClickIcon.alpha = 1.0;
-  setTimeout(() => {
-    threeClickIcon.alpha = 0.7;
-  }, 1000);
-}
-function clickFour() {
-  clickHandler(4);
-  fourClickIcon.alpha = 1.0;
-  setTimeout(() => {
-    fourClickIcon.alpha = 0.7;
-  }, 1000);
 
-}
+
 function gameOver() {
   isGameOver = true;
   questionText.text = `The completed the game!\nYou scored ${score}!\nThanks for playing!`;
@@ -486,15 +385,6 @@ function gameOver() {
   twoKeyText.destroy();
   threeKeyText.destroy();
   fourKeyText.destroy();
-
-  oneClickIcon.destroy();
-  twoClickIcon.destroy();
-  threeClickIcon.destroy();
-  fourClickIcon.destroy();
-  oneClickText.destroy();
-  twoClickText.destroy();
-  threeClickText.destroy();
-  fourClickText.destroy();
   setTimeout(() => {
     globalRouter.navigate(['/dashboard']);
     isGameOver = false;

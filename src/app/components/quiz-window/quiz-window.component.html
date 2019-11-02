@@ -1,3 +1,8 @@
-<div class="quiz-div" (click)="routeToGame($event,id)">
+<div class="quiz-div">
   <p class="quiz-title">{{ quizTitle }}</p>
+ 
 </div>
+<button (click)="routeToSoloGame($event,id)" type="button" class="btn btn-primary">Play Solo</button>
+<button (click)="routeToGame($event,id)" type="button" class="btn btn-primary">Play Multiplayer</button>
+<button (click)="routeToOnlineGame($event,id)" type="button" class="btn btn-primary">Play Multiplayer Online</button>
+

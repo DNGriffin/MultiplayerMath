@@ -7,6 +7,8 @@ import { RegisterComponent } from './components/register/register.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { SubscriptionsComponent } from './components/subscriptions/subscriptions.component';
 import { CreateQuizComponent } from './components/create-quiz/create-quiz.component';
+import { SingleplayerComponent } from './game/singleplayer/singleplayer.component';
+import { NetworkedComponent } from './game/networked/networked.component';
 
 const routes: Routes = [{
     path: '',
@@ -14,7 +16,13 @@ const routes: Routes = [{
   }, { 
     path: 'play',
     component: GameComponent
-  }, {
+  },{ 
+    path: 'play/solo',
+    component: SingleplayerComponent
+  },{ 
+    path: 'play/online',
+    component: NetworkedComponent
+  },{
     path: 'login',
     component: LoginComponent,
   }, { 

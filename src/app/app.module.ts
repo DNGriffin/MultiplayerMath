@@ -24,6 +24,8 @@ import { SubscriptionsComponent } from './components/subscriptions/subscriptions
 import { QuizWindowComponent } from './components/quiz-window/quiz-window.component';
 import { QuizContainerComponent } from './components/quiz-container/quiz-container.component';
 import { CreateQuizComponent } from './components/create-quiz/create-quiz.component';
+import { SingleplayerComponent } from './game/singleplayer/singleplayer.component';
+import { NetworkedComponent } from './game/networked/networked.component';
 
 var firebaseConfig = {
   apiKey: "AIzaSyBLfTk9x_GXo0frYc-eRwevOntUB2uew8k",
@@ -50,6 +52,8 @@ var firebaseConfig = {
     QuizWindowComponent,
     QuizContainerComponent,
     CreateQuizComponent,
+    SingleplayerComponent,
+    NetworkedComponent,
   ],
   imports: [
     BrowserModule,
