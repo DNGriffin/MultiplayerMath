@@ -33,24 +33,48 @@ export class EditQuizComponent implements OnInit {
    }
 
   ngOnInit() {
+    this.quizEditForm = this.fb.group({
+      title: '',
+      questions: this.fb.array([]),
+      userEmail: ['', Validators.required]
+    });
+    this.numQuestions = 0;
+
     this._Activatedroute.paramMap.subscribe(params => { 
       this.id = params.get('id');
       var myself = this
       this.db.collection('quizes').doc(this.id).ref.get().then(function(doc) {
         myself.quiz = doc.data();
+        for(var i = 0; i < myself.quiz.questions.length; i++) {
+          myself.createQuestion(
+            myself.quiz.questions[i].question, 
+            myself.quiz.questions[i].answer, 
+            myself.quiz.questions[i].fake1,
+            myself.quiz.questions[i].fake2,
+            myself.quiz.questions[i].fake3
+          );
+        }
+        myself.quizEditForm.patchValue({
+          title: myself.quiz.title
+        });
       });
     });
-
-    this.numQuestions = 0;
-    this.quizEditForm = this.fb.group({
-      title: '',
-      questions: this.fb.array([]),
-      userEmail: ['', Validators.required]
-    })
   }
 
   get questionForms() {
     return this.quizEditForm.get('questions') as FormArray;
+  }
+
+  createQuestion(question, answer, fake1, fake2, fake3) {
+    const q = this.fb.group({
+      question: [question, Validators.required],
+      answer: [answer, Validators.required],
+      fake1: [fake1, Validators.required],
+      fake2: [fake2, Validators.required],
+      fake3: [fake3, Validators.required]
+    })
+    
+    this.questionForms.push(q);
   }
 
   addQuestion() {
@@ -68,7 +92,6 @@ export class EditQuizComponent implements OnInit {
   }
 
   updateQuiz(quizInfo: FormData) {
-    // this.quizService.createQuiz(quizInfo);
     this.quizEditForm.reset();
   }
 
