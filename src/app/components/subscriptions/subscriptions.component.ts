@@ -24,8 +24,6 @@ export class SubscriptionsComponent implements OnInit {
     private subscriptionService: SubscriptionService,
     private db: AngularFirestore,
     private afAuth: AngularFireAuth,
-
-
   ) {
     this.getSubscriptionEmails();
     this.createForm()
@@ -39,13 +37,10 @@ export class SubscriptionsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.subscriptions = this.getSubscriptions();
   }
 
   trySubscribe(value) {
-    console.log(value);
     this.emails.push(value.subscribedEmail);
-    console.log(this.emails);
     this.db.doc(`subscriptions/${this.subscriptionsDocId}`).update(
       {
         emails: this.emails
@@ -60,23 +55,14 @@ export class SubscriptionsComponent implements OnInit {
       (res) => {
         var data = res[0].payload.doc.data();
         this.emails = data.emails;
-        console.log(this.emails);
-
         this.subscriptionsDocId = res[0].payload.doc.id;
-        console.log(this.subscriptionsDocId);
       },
       (err) => console.log(err),
       () => console.log("got sub emails")
     );
   }
 
-  //Changed setup, not needed anymore.
-  getSubscriptions() {
-    return this.subscriptionService.subscriptionsCollection.snapshotChanges();
-  }
-
-  //not needed anymore, changed structure;
-  getUserEmail() {
-    return "coby.drexler@wustl.edu";
+  removeSubscription(email: string) {
+    this.subscriptionService.unsubscribe(email);
   }
 }

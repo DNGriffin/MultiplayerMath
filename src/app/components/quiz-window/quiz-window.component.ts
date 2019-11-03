@@ -13,8 +13,7 @@ export class QuizWindowComponent implements OnInit {
   @Input() id: string;
   @Input() didCreateQuiz: boolean;
   @Output() didDelete: EventEmitter<string> = new EventEmitter();
-  @Output() didEdit: EventEmitter<string> = new EventEmitter();
-
+ 
   constructor(private router: Router) { }
 
   ngOnInit() {
@@ -39,8 +38,9 @@ export class QuizWindowComponent implements OnInit {
   deleteQuiz(quizId) {
     this.didDelete.emit(quizId);
   }
-
-  editQuiz(quizId) {
-    this.didEdit.emit(quizId);
+ 
+  editQuiz() {
+    this.router.navigateByUrl('/editQuiz', { state: { quiz: this.quizData } });
   }
+
 }

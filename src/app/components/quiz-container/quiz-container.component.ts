@@ -37,7 +37,6 @@ export class QuizContainerComponent implements OnInit {
             if(!this.quizIds.includes(res[j].payload.doc.id)) {
               this.quizIds.push(res[j].payload.doc.id);
               this.playableQuizes.push(data);
-              console.log("Playable Quizes Count: " + this.playableQuizes.length);
               if(data.userEmail == this.afAuth.auth.currentUser.email) {
                 this.quizOwner.push(true);
               } else {
@@ -60,7 +59,6 @@ export class QuizContainerComponent implements OnInit {
       (res) => {
         var data = res[0].payload.doc.data();
         this.emails = data.emails;
-        console.log(this.emails);
         this.getQuizesFromEmails();
       },
       (err) => console.log(err),

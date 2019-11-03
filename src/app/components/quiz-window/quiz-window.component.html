@@ -1,6 +1,6 @@
 <div class="quiz-div">
   <div class="quizOptions" *ngIf="didCreateQuiz">
-    <i class="fas fa-edit editButton" routerLink="/editQuiz"></i>
+    <i class="fas fa-edit editButton" [routerLink]="['/editQuiz', this.id]"></i>
     <i class="fas fa-trash deleteButton" (click)="deleteQuiz(this.id)"></i>
   </div>
   <p class="quiz-title" (click)="routeToGame($event,id)">{{ quizData.title }}</p>

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { QuizService } from 'src/app/quizes/quiz.service';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { AngularFireAuth } from '@angular/fire/auth';
@@ -16,6 +16,8 @@ export class EditQuizComponent implements OnInit {
   numQuestions: number
   uid: string
   email: string
+  quiz: any
+  id: string
 
   constructor(
     private router: Router,
@@ -23,12 +25,22 @@ export class EditQuizComponent implements OnInit {
     private quizService: QuizService,
     private db: AngularFirestore,
     private afAuth: AngularFireAuth,
+    private route: ActivatedRoute,
+    private _Activatedroute:ActivatedRoute
   ) {
     this.uid = afAuth.auth.currentUser.uid;
     this.getEmailAsync();
    }
 
   ngOnInit() {
+    this._Activatedroute.paramMap.subscribe(params => { 
+      this.id = params.get('id');
+      var myself = this
+      this.db.collection('quizes').doc(this.id).ref.get().then(function(doc) {
+        myself.quiz = doc.data();
+      });
+    });
+
     this.numQuestions = 0;
     this.quizEditForm = this.fb.group({
       title: '',
