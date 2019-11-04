@@ -28,6 +28,8 @@ export class CreateQuizComponent implements OnInit {
     this.getEmailAsync();
   }
 
+  difficulties: string[] = ['easy', 'medium', 'hard'];
+
   ngOnInit() {
     this.numQuestions = 0
     this.quizForm = this.fb.group({
@@ -49,7 +51,8 @@ export class CreateQuizComponent implements OnInit {
       answer: ['', Validators.required],
       fake1: ['', Validators.required],
       fake2: ['', Validators.required],
-      fake3: ['', Validators.required]
+      fake3: ['', Validators.required],
+      difficulty: ['', Validators.required]
     })
     
     this.questionForms.push(question);
@@ -60,6 +63,8 @@ export class CreateQuizComponent implements OnInit {
   }
 
   createQuiz(quizInfo: FormData) {
+    console.log("lol");
+    console.log(quizInfo);
     this.quizService.createQuiz(quizInfo);
     this.quizForm.reset();
   }
