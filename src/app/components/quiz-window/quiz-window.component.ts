@@ -25,12 +25,12 @@ export class QuizWindowComponent implements OnInit {
     console.log(event);
   }
   routeToSoloGame(event) {
-    this.router.navigate(['play/solo'], { queryParams: { id: this.id, title: this.quizTitle} });
+    this.router.navigate(['play/solo'], { queryParams: { id: this.id, title: this.quizData.title} });
 
     console.log(event);
   }
   routeToOnlineGame(event) {
-    this.router.navigate(['play/online'], { queryParams: { id: this.id, title: this.quizTitle} });
+    this.router.navigate(['play/online'], { queryParams: { id: this.id, title: this.quizData.title} });
 
     console.log(event);
   }

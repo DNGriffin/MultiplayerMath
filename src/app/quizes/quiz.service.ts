@@ -8,7 +8,7 @@ import { UserService } from '../components/core/user.service';
   providedIn: 'root'
 })
 export class QuizService {
-  
+
   quizesCollection: AngularFirestoreCollection;
   user: User;
   quizDoc: AngularFirestoreDocument<any>;
@@ -16,7 +16,7 @@ export class QuizService {
   constructor(private db: AngularFirestore) {
     this.getData();
   }
-x
+
   public getData() {
     this.quizesCollection = this.db.collection("quizes");
     return this.quizesCollection;
@@ -29,5 +29,12 @@ x
   public deleteQuiz(quizId: string){
     this.quizDoc = this.db.doc(`quizes/${quizId}`);
     this.quizDoc.delete();
+  }
+
+  public updateQuiz(quizId: string, updatedQuizForm){
+    this.db
+    .collection('quizes')
+    .doc(quizId)
+    .set( { questions: updatedQuizForm.questions, title: updatedQuizForm.title }, { merge: true });
   }
 }

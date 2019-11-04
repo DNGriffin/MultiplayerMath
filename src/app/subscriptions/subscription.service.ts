@@ -8,7 +8,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
   providedIn: 'root'
 })
 export class SubscriptionService {
-  
+
   subscriptionsCollection: AngularFirestoreCollection;
 
   constructor(
@@ -40,7 +40,7 @@ export class SubscriptionService {
           return email != emailToDelete;
         })
         this.updateSubscriptions(res[0].payload.doc.id, newEmails);
-      } 
+      }
     )
   }
 

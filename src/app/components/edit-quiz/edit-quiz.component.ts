@@ -30,7 +30,9 @@ export class EditQuizComponent implements OnInit {
   ) {
     this.uid = afAuth.auth.currentUser.uid;
     this.getEmailAsync();
-   }
+  }
+
+  difficulties: string[] = ['easy', 'medium', 'hard'];
 
   ngOnInit() {
     this.quizEditForm = this.fb.group({
@@ -51,7 +53,8 @@ export class EditQuizComponent implements OnInit {
             myself.quiz.questions[i].answer, 
             myself.quiz.questions[i].fake1,
             myself.quiz.questions[i].fake2,
-            myself.quiz.questions[i].fake3
+            myself.quiz.questions[i].fake3,
+            myself.quiz.questions[i].difficulty
           );
         }
         myself.quizEditForm.patchValue({
@@ -65,13 +68,14 @@ export class EditQuizComponent implements OnInit {
     return this.quizEditForm.get('questions') as FormArray;
   }
 
-  createQuestion(question, answer, fake1, fake2, fake3) {
+  createQuestion(question, answer, fake1, fake2, fake3, difficulty) {
     const q = this.fb.group({
       question: [question, Validators.required],
       answer: [answer, Validators.required],
       fake1: [fake1, Validators.required],
       fake2: [fake2, Validators.required],
-      fake3: [fake3, Validators.required]
+      fake3: [fake3, Validators.required],
+      difficulty: [difficulty, Validators.required]
     })
     
     this.questionForms.push(q);
@@ -86,13 +90,13 @@ export class EditQuizComponent implements OnInit {
       fake1: ['', Validators.required],
       fake2: ['', Validators.required],
       fake3: ['', Validators.required]
-    })
-    
+    });
     this.questionForms.push(question);
   }
 
   updateQuiz(quizInfo: FormData) {
-    this.quizEditForm.reset();
+    this.quizService.updateQuiz(this.id, quizInfo);
+    this.router.navigate(['/dashboard']);
   }
 
   getUserEmail(): string {
