@@ -36,10 +36,12 @@
         <div class="row">
           <div class="col">
             <form [formGroup]="subscribeForm">
-              <div class="form-group">
-                <input type="hidden" name="userEmail" formControlName="subscriberEmail">
+              <div class="form-group" formArrayName="accessCodes">
                 <label>Email address</label>
-                <input type="email" formControlName="subscribedEmail" class="form-control">
+                <input type="email" formControlName="email" class="form-control">
+                <br>
+                <label for="quizAccessCode">Quiz Access Code</label>
+                <input id="quizAccessCode" formControlName="quizAccessCode" class="form-control quizFormInput quizAccessCodeInput" type="text">
               </div>
               <br>
               <button type="submit" (click)="trySubscribe(subscribeForm.value)" class="btn btn-dark">Subscribe</button>

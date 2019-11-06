@@ -10,8 +10,11 @@
           <form [formGroup]="quizForm" (ngSubmit)="createQuiz(quizForm.value)">
             <label for="quizTitle"><strong>Quiz Title</strong></label>
             <input type="hidden" formControlName="userEmail" [ngModel]="getUserEmail()">
-            <input id="quizTitle" formControlName="title" class="quizFormInput titleInput" type="text">
+            <input id="quizTitle" placeholder="Quiz Title" formControlName="title" class="quizFormInput titleInput" type="text">
             <br><br>
+            <label for="quizAccessCode"><strong>Quiz Access Code</strong></label>
+            <input id="quizAccessCode" placeholder="Leave blank for global access" formControlName="quizAccessCode" class="quizFormInput quizAccessCodeInput" type="text">
+            <br>
             <hr>
             <table id="quizId" class="table">
               <thead>

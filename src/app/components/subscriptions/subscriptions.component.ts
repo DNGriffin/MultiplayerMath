@@ -26,14 +26,6 @@ export class SubscriptionsComponent implements OnInit {
     private afAuth: AngularFireAuth,
   ) {
     this.getSubscriptionEmails();
-    this.createForm()
-  }
-
-  createForm() {
-    this.subscribeForm = this.fb.group({
-      subscriberEmail: ['', Validators.required],
-      subscribedEmail: ['', Validators.required] //check that this email exists in the database before saving to firebase
-    });
   }
 
   ngOnInit() {
@@ -61,7 +53,7 @@ export class SubscriptionsComponent implements OnInit {
       () => console.log("got sub emails")
     );
   }
-
+ 
   removeSubscription(email: string) {
     this.subscriptionService.unsubscribe(email);
   }
