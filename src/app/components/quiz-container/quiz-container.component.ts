@@ -14,8 +14,9 @@ export class QuizContainerComponent implements OnInit {
 
   quizes: any
   emails: any[];
-  quizTitles = [];
   quizIds = [];
+  playableQuizes = [];
+  quizOwner = [];
 
   constructor(private quizService: QuizService,
     private db: AngularFirestore,
@@ -23,33 +24,30 @@ export class QuizContainerComponent implements OnInit {
     ) { }
 
   ngOnInit() {
-    this.quizes = this.getQuizes();
     this.getSubscriptionEmails();
   }
 
-  //TODO: Get quizes that have the same email as the user, one of the user's subscriptions, or that have the canned quiz identifier (special email of some sort)
-  getQuizes() {
-    return this.quizService.quizesCollection.snapshotChanges();
-  }
   getQuizesFromEmails(){
-
-    for(var i = 0;i<this.emails.length;i++){
-      console.log("made it in loop get quiz");
-    var quizCol = this.db.collection('quizes', ref => ref.where('userEmail', '==', this.emails[i])).snapshotChanges();
-    quizCol.subscribe(
-      (res) => {
-        console.log("made it in quizcol sub");
-        for(var j = 0;j<res.length;j++){
-          var data: any = res[j].payload.doc.data();
-          this.quizIds.push(res[j].payload.doc.id);
-          this.quizTitles.push(data.title);
-          console.log(data.title);
-        }
-        
-      },
-      (err) => console.log(err),
-      () => console.log("got sub emails")
-    );
+    for(var i = 0; i < this.emails.length;i++){
+      var quizCol = this.db.collection('quizes', ref => ref.where('userEmail', '==', this.emails[i])).snapshotChanges();
+      quizCol.subscribe(
+        (res) => {
+          for(var j = 0;j < res.length; j++){
+            var data: any = res[j].payload.doc.data();
+            if(!this.quizIds.includes(res[j].payload.doc.id)) {
+              this.quizIds.push(res[j].payload.doc.id);
+              this.playableQuizes.push(data);
+              if(data.userEmail == this.afAuth.auth.currentUser.email) {
+                this.quizOwner.push(true);
+              } else {
+                this.quizOwner.push(false);
+              }
+            }
+          }
+        },
+        (err) => console.log(err),
+        () => console.log("got sub emails")
+      );
     }
   }
 
@@ -61,11 +59,18 @@ export class QuizContainerComponent implements OnInit {
       (res) => {
         var data = res[0].payload.doc.data();
         this.emails = data.emails;
-        console.log(this.emails);
         this.getQuizesFromEmails();
       },
       (err) => console.log(err),
       () => console.log('finished')
     );
+  }
+
+  onDeleted(quizId: string) {
+    this.quizService.deleteQuiz(quizId);
+    this.quizIds = [];
+    this.quizOwner = [];
+    this.playableQuizes = [];
+    this.getQuizesFromEmails();
   }
 }

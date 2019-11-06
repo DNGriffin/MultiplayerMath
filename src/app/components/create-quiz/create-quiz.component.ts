@@ -21,17 +21,18 @@ export class CreateQuizComponent implements OnInit {
     public fb: FormBuilder,
     private quizService: QuizService,
     private db: AngularFirestore,
-    private afAuth: AngularFireAuth,
+    private afAuth: AngularFireAuth
 
 
-  ) {    this.uid = afAuth.auth.currentUser.uid;
+  ) {    
+    this.uid = afAuth.auth.currentUser.uid;
     this.getEmailAsync();
   }
 
   difficulties: string[] = ['easy', 'medium', 'hard'];
 
   ngOnInit() {
-    this.numQuestions = 0
+    this.numQuestions = 0;
     this.quizForm = this.fb.group({
       title: '',
       questions: this.fb.array([]),
@@ -58,7 +59,7 @@ export class CreateQuizComponent implements OnInit {
     this.questionForms.push(question);
   }
 
-  deletePhone(i) {
+  deleteQuestion(i) {
     this.questionForms.removeAt(i);
   }
 
@@ -72,6 +73,7 @@ export class CreateQuizComponent implements OnInit {
   getUserEmail(): string {
     return this.email;
   }
+
   getEmailAsync(){
     var users;
 
@@ -79,7 +81,6 @@ export class CreateQuizComponent implements OnInit {
     users.subscribe(
       (res) => {
         var data = res[0].payload.doc.data();
-        console.log(data);
         this.email = data.email;
       },
       (err) => console.log(err),

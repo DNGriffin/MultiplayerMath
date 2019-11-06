@@ -23,10 +23,8 @@ export class GameComponent implements OnInit {
     id = this.router.getCurrentNavigation().extras.queryParams.id;
     quizTitle = this.router.getCurrentNavigation().extras.queryParams.title;
 
-    console.log(quizTitle);
     globalRouter = router;
 
-    console.log(id);
     database = db;
     loadQuestions();
     game = new Game(window.innerWidth, window.innerHeight, AUTO, 'game', { preload: preload, create: create, update: update, render: render });

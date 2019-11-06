@@ -11,12 +11,14 @@
         <tr>
           <th scope="col">#</th>
           <th scope="col">Email</th>
+          <th scope="col">Unsubscribe</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let email of emails; let i = index">
           <td scope="col">{{ i }}</td>
           <td scope="col"> {{email}} </td>
+          <td scope="col"><i *ngIf="email !== this.afAuth.auth.currentUser.email" class="fas fa-minus-circle unsubscribe-icon" (click)="removeSubscription(email)"></i></td>
         </tr>
       </tbody>
     </table>
@@ -35,7 +37,7 @@
           <div class="col">
             <form [formGroup]="subscribeForm">
               <div class="form-group">
-                <input type="hidden" name="userEmail" formControlName="subscriberEmail" [ngModel]="getUserEmail()">
+                <input type="hidden" name="userEmail" formControlName="subscriberEmail">
                 <label>Email address</label>
                 <input type="email" formControlName="subscribedEmail" class="form-control">
               </div>
