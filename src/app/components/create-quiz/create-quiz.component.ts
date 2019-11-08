@@ -64,6 +64,7 @@ export class CreateQuizComponent implements OnInit {
   createQuiz(quizInfo: FormData) {
     this.quizService.createQuiz(quizInfo);
     this.quizForm.reset();
+    this.router.navigate(['/dashboard']);
   }
 
   getUserEmail(): string {

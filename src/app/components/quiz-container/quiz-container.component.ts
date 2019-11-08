@@ -13,7 +13,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
 export class QuizContainerComponent implements OnInit {
 
   quizes: any
-  emails: any[];
+  subs: any[];
   quizIds = [];
   playableQuizes = [];
   quizOwner = [];
@@ -27,13 +27,19 @@ export class QuizContainerComponent implements OnInit {
     this.getSubscriptionEmails();
   }
 
-  getQuizesFromEmails(){
-    for(var i = 0; i < this.emails.length;i++){
-      var quizCol = this.db.collection('quizes', ref => ref.where('userEmail', '==', this.emails[i])).snapshotChanges();
-      quizCol.subscribe(
-        (res) => {
-          for(var j = 0;j < res.length; j++){
-            var data: any = res[j].payload.doc.data();
+  getQuizesFromSubs(){
+    for(var i = 0; i < this.subs.length; i++){
+      var quizCol = this.db.collection('quizes', ref => ref.where('userEmail', '==', this.subs[i].email)).snapshotChanges();
+      this.subscribeToQuizCol(i, quizCol);
+    }
+  }
+
+  subscribeToQuizCol(subsIndex, quizCol) {
+    quizCol.subscribe(
+      (res) => {
+        for(var j = 0;j < res.length; j++){
+          var data: any = res[j].payload.doc.data();
+          if(this.canAccessQuiz(subsIndex, data)) {
             if(!this.quizIds.includes(res[j].payload.doc.id)) {
               this.quizIds.push(res[j].payload.doc.id);
               this.playableQuizes.push(data);
@@ -44,11 +50,15 @@ export class QuizContainerComponent implements OnInit {
               }
             }
           }
-        },
-        (err) => console.log(err),
-        () => console.log("got sub emails")
-      );
-    }
+        }
+      },
+      (err) => console.log(err),
+      () => console.log("got sub emails")
+    );
+  }
+
+  canAccessQuiz(subsIndex, quizData) {
+    return (quizData.quizAccessCode == this.subs[subsIndex].quizAccessCode || quizData.userEmail == this.afAuth.auth.currentUser.email)
   }
 
   getSubscriptionEmails() {
@@ -58,8 +68,8 @@ export class QuizContainerComponent implements OnInit {
     subs.subscribe(
       (res) => {
         var data = res[0].payload.doc.data();
-        this.emails = data.emails;
-        this.getQuizesFromEmails();
+        this.subs = data.subs;
+        this.getQuizesFromSubs();
       },
       (err) => console.log(err),
       () => console.log('finished')
@@ -71,6 +81,6 @@ export class QuizContainerComponent implements OnInit {
     this.quizIds = [];
     this.quizOwner = [];
     this.playableQuizes = [];
-    this.getQuizesFromEmails();
+    this.getQuizesFromSubs();
   }
 }

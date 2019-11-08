@@ -14,8 +14,7 @@ export class SubscriptionsComponent implements OnInit {
 
   subscribeForm: FormGroup;
   errorMessage: string = '';
-  subscriptions: any
-  emails: any[];
+  subs: any[];
   subscriptionsDocId: string;
 
   constructor(
@@ -26,16 +25,28 @@ export class SubscriptionsComponent implements OnInit {
     private afAuth: AngularFireAuth,
   ) {
     this.getSubscriptionEmails();
+    this.createForm();
   }
 
   ngOnInit() {
   }
 
-  trySubscribe(value) {
-    this.emails.push(value.subscribedEmail);
+  createForm() {
+    this.subscribeForm = this.fb.group({
+      accessCodes: this.fb.array([
+        this.fb.group({
+          email: ['', Validators.required],
+          quizAccessCode: ['', Validators.required]
+        })
+      ])
+    });
+  }
+
+  trySubscribe(value: any) {
+    this.subs.push(value.accessCodes[0])
     this.db.doc(`subscriptions/${this.subscriptionsDocId}`).update(
       {
-        emails: this.emails
+        subs: this.subs
       });
     this.subscribeForm.reset();
   }
@@ -46,7 +57,7 @@ export class SubscriptionsComponent implements OnInit {
     globalData.subscribe(
       (res) => {
         var data = res[0].payload.doc.data();
-        this.emails = data.emails;
+        this.subs = data.subs;
         this.subscriptionsDocId = res[0].payload.doc.id;
       },
       (err) => console.log(err),
@@ -54,7 +65,7 @@ export class SubscriptionsComponent implements OnInit {
     );
   }
  
-  removeSubscription(email: string) {
-    this.subscriptionService.unsubscribe(email);
+  removeSubscription(email: string, quizAccessCode: string) {
+    this.subscriptionService.unsubscribe(email, quizAccessCode);
   }
 }

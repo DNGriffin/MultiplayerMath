@@ -27,19 +27,20 @@ export class SubscriptionService {
     this.subscriptionsCollection.add(subscriptionObj);
   }
 
-  public unsubscribe(emailToDelete: string) {
+  //TODO: modify unsubscribe to satisfy database change
+  public unsubscribe(emailToDelete: string, accessCodeToDelete: string) {
     var myEmail = this.afAuth.auth.currentUser.email;
     var userId = this.afAuth.auth.currentUser.uid;
-    var newEmails = [];
+    var newSubs = [];
     var doc = this.db.collection('subscriptions', ref => ref.where('id', '==', userId)).snapshotChanges();
     doc.subscribe(
       (res) => {
         var data:any = res[0].payload.doc.data();
-        var currentEmails = data.emails;
-        newEmails = currentEmails.filter(function(email) {
-          return email != emailToDelete;
+        var currentSubs = data.subs;
+        newSubs = currentSubs.filter(function(sub) {
+          return sub.email != emailToDelete || sub.quizAccessCode != accessCodeToDelete;
         })
-        this.updateSubscriptions(res[0].payload.doc.id, newEmails);
+        this.updateSubscriptions(res[0].payload.doc.id, newSubs);
       }
     )
   }
@@ -48,7 +49,7 @@ export class SubscriptionService {
     return this.db
       .collection('subscriptions')
       .doc(subscriptionsId)
-      .set( { emails: newSubscriptions }, { merge: true });
+      .set( { subs: newSubscriptions }, { merge: true });
     
   }
 }

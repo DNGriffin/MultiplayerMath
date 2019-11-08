@@ -62,10 +62,23 @@ export class RegisterComponent {
 
     });
    }
+
+   //TODO subscribe the admin to all new users
    initUserSubscriptions(id, email){
     this.db.collection('subscriptions').add({
       id: id,
-      emails: [email, "example@example.com"]
+      subs: [
+        {
+        email: email,
+        quizAccessCode: ""
+        },
+        {
+          email: "admin@mmath.com",
+          quizAccessCode: ""
+        }
+      ]
+
+      
     }).then(ref => {
 
     });
