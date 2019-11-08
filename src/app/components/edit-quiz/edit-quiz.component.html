@@ -12,6 +12,8 @@
             <input type="hidden" formControlName="userEmail" [ngModel]="getUserEmail()">
             <input id="quizTitle" formControlName="title" class="quizFormInput titleInput" type="text">
             <br><br>
+            <label for="quizAccessCode"><strong>Quiz Access Code</strong></label>
+            <input id="quizAccessCode" placeholder="Leave blank for global access" formControlName="quizAccessCode" class="quizFormInput quizAccessCodeInput" type="text">
             <hr>
             <table id="quizId" class="table">
               <thead>

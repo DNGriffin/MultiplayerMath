@@ -11,7 +11,6 @@ import { AngularFireAuth } from '@angular/fire/auth';
   styleUrls: ['./create-quiz.component.scss']
 })
 export class CreateQuizComponent implements OnInit {
-
   quizForm: FormGroup
   numQuestions: number
   uid: string;
@@ -21,9 +20,7 @@ export class CreateQuizComponent implements OnInit {
     public fb: FormBuilder,
     private quizService: QuizService,
     private db: AngularFirestore,
-    private afAuth: AngularFireAuth
-
-
+    private afAuth: AngularFireAuth,
   ) {    
     this.uid = afAuth.auth.currentUser.uid;
     this.getEmailAsync();
@@ -36,6 +33,7 @@ export class CreateQuizComponent implements OnInit {
     this.quizForm = this.fb.group({
       title: '',
       questions: this.fb.array([]),
+      quizAccessCode: '',
       userEmail: ['', Validators.required]
     })
   }
@@ -64,10 +62,9 @@ export class CreateQuizComponent implements OnInit {
   }
 
   createQuiz(quizInfo: FormData) {
-    console.log("lol");
-    console.log(quizInfo);
     this.quizService.createQuiz(quizInfo);
     this.quizForm.reset();
+    this.router.navigate(['/dashboard']);
   }
 
   getUserEmail(): string {

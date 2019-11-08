@@ -37,6 +37,7 @@ export class EditQuizComponent implements OnInit {
   ngOnInit() {
     this.quizEditForm = this.fb.group({
       title: '',
+      quizAccessCode: '',
       questions: this.fb.array([]),
       userEmail: ['', Validators.required]
     });
@@ -58,7 +59,8 @@ export class EditQuizComponent implements OnInit {
           );
         }
         myself.quizEditForm.patchValue({
-          title: myself.quiz.title
+          title: myself.quiz.title,
+          quizAccessCode: myself.quiz.quizAccessCode
         });
       });
     });

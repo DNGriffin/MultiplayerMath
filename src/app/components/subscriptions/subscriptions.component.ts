@@ -14,8 +14,7 @@ export class SubscriptionsComponent implements OnInit {
 
   subscribeForm: FormGroup;
   errorMessage: string = '';
-  subscriptions: any
-  emails: any[];
+  subs: any[];
   subscriptionsDocId: string;
 
   constructor(
@@ -26,25 +25,28 @@ export class SubscriptionsComponent implements OnInit {
     private afAuth: AngularFireAuth,
   ) {
     this.getSubscriptionEmails();
-    this.createForm()
-  }
-
-  createForm() {
-    this.subscribeForm = this.fb.group({
-      subscriberEmail: ['', Validators.required],
-      subscribedEmail: ['', Validators.required] //check that this email exists in the database before saving to firebase
-    });
+    this.createForm();
   }
 
   ngOnInit() {
   }
 
-  trySubscribe(value) {
-    this.emails.push(value.subscribedEmail);
-    this.db.doc(`subscriptions/${this.subscriptionsDocId}`).update(
-      {
-        emails: this.emails
-      });
+  createForm() {
+    this.subscribeForm = this.fb.group({
+      accessCodes: this.fb.array([
+        this.fb.group({
+          email: ['', Validators.required],
+          quizAccessCode: ['', Validators.required]
+        })
+      ])
+    });
+  }
+
+  trySubscribe(value: any) {
+    this.subs.push(value.accessCodes[0])
+    this.db.doc(`subscriptions/${this.subscriptionsDocId}`).update({
+      subs: this.subs
+    });
     this.subscribeForm.reset();
   }
   getSubscriptionEmails() {
@@ -54,15 +56,15 @@ export class SubscriptionsComponent implements OnInit {
     globalData.subscribe(
       (res) => {
         var data = res[0].payload.doc.data();
-        this.emails = data.emails;
+        this.subs = data.subs;
         this.subscriptionsDocId = res[0].payload.doc.id;
       },
       (err) => console.log(err),
       () => console.log("got sub emails")
     );
   }
-
-  removeSubscription(email: string) {
-    this.subscriptionService.unsubscribe(email);
+ 
+  removeSubscription(email: string, quizAccessCode: string) {
+    this.subscriptionService.unsubscribe(email, quizAccessCode);
   }
 }
