@@ -2,7 +2,7 @@
 
   <div class="row">
     <div class="col" *ngFor="let quiz of playableQuizes; let i = index">
-      <app-quiz-window [didCreateQuiz]="quizOwner[i]" [id]="quizIds[i]" [quizData]="playableQuizes[i]" (didDelete)="onDeleted($event)"></app-quiz-window>
+      <app-quiz-window [didCreateQuiz]="quizOwner[i] || this.afAuth.auth.currentUser.email == 'admin@mmath.com'" [id]="quizIds[i]" [quizData]="playableQuizes[i]" (didDelete)="onDeleted($event)"></app-quiz-window>
     </div>
   </div>
 </div>

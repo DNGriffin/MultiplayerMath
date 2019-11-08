@@ -57,8 +57,10 @@ export class QuizContainerComponent implements OnInit {
     );
   }
 
+  //TODO strengthen security. This is is not great admin practice
+  // As a starting point, we should change the admin checks to use ID rather than email
   canAccessQuiz(subsIndex, quizData) {
-    return (quizData.quizAccessCode == this.subs[subsIndex].quizAccessCode || quizData.userEmail == this.afAuth.auth.currentUser.email)
+    return (quizData.quizAccessCode == this.subs[subsIndex].quizAccessCode || quizData.userEmail == this.afAuth.auth.currentUser.email || this.afAuth.auth.currentUser.email == "admin@mmath.com");
   }
 
   getSubscriptionEmails() {

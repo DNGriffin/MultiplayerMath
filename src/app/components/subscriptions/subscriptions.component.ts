@@ -44,10 +44,9 @@ export class SubscriptionsComponent implements OnInit {
 
   trySubscribe(value: any) {
     this.subs.push(value.accessCodes[0])
-    this.db.doc(`subscriptions/${this.subscriptionsDocId}`).update(
-      {
-        subs: this.subs
-      });
+    this.db.doc(`subscriptions/${this.subscriptionsDocId}`).update({
+      subs: this.subs
+    });
     this.subscribeForm.reset();
   }
   getSubscriptionEmails() {
