@@ -3,11 +3,11 @@
     <i class="fas fa-edit editButton" [routerLink]="['/editQuiz', this.id]"></i>
     <i class="fas fa-trash deleteButton" (click)="deleteQuiz(this.id)"></i>
   </div>
-  <p class="quiz-title" (click)="routeToGame($event,id)">{{ quizData.title }}</p>
-</div>
-<button (click)="routeToSoloGame($event,id)" type="button" class="btn btn-primary">Play Solo</button>
-<button (click)="routeToGame($event,id)" type="button" class="btn btn-primary">Play Multiplayer</button>
-<button (click)="routeToOnlineGame($event,id)" type="button" class="btn btn-primary">Play Multiplayer Online</button>
+  <p class="quiz-title">{{ quizData.title }}</p>
+  <button (click)="routeToSoloGame($event,id)" type="button" class="btn btn-secondary btn-sm">Single Player</button>
+<button (click)="routeToGame($event,id)" type="button" class="btn btn-secondary btn-sm">Local Multiplayer</button>
+<button (click)="routeToOnlineGame($event,id)" type="button" class="btn btn-secondary btn-sm">Online Multiplayer</button>
 
+</div>
 
 <router-outlet></router-outlet>

@@ -25,7 +25,7 @@ export class CreateQuizComponent implements OnInit {
     setTimeout(() => {
       this.uid = afAuth.auth.currentUser.uid;
       this.getEmailAsync();
-    }, 300);
+    }, 600);
     
   }
 

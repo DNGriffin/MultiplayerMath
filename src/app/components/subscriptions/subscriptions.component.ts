@@ -24,10 +24,11 @@ export class SubscriptionsComponent implements OnInit {
     private db: AngularFirestore,
     private afAuth: AngularFireAuth,
   ) {
+    this.createForm();
     setTimeout(() => {
       this.getSubscriptionEmails();
-      this.createForm();
-    }, 300);
+      
+    }, 600);
     
   }
 

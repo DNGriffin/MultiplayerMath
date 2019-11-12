@@ -26,7 +26,7 @@ export class QuizContainerComponent implements OnInit {
   ngOnInit() {
     setTimeout(() => {
       this.getSubscriptionEmails();
-    }, 300);
+    }, 600);
   }
 
   getQuizesFromSubs(){

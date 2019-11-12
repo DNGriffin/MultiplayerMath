@@ -20,8 +20,10 @@
 
 .quiz-title {
   text-align: center;
-  display: table-cell;
-  vertical-align: middle;
+}
+button{
+  display: block;
+  margin-top: 2px;
 }
 
 .deleteButton {
