@@ -26,6 +26,7 @@ import { QuizContainerComponent } from './components/quiz-container/quiz-contain
 import { CreateQuizComponent } from './components/create-quiz/create-quiz.component';
 import { SingleplayerComponent } from './game/singleplayer/singleplayer.component';
 import { NetworkedComponent } from './game/networked/networked.component';
+import { MultiplayerService } from './game/multiplayer.service';
 
 var firebaseConfig = {
   apiKey: "AIzaSyBLfTk9x_GXo0frYc-eRwevOntUB2uew8k",
@@ -64,7 +65,7 @@ var firebaseConfig = {
     AngularFireAuthModule, // auth
     AngularFireStorageModule // storage
   ],
-  providers: [AuthService, UserService, AuthGuard],
+  providers: [AuthService, UserService, AuthGuard, MultiplayerService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

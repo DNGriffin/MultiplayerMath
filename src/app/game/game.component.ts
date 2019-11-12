@@ -3,6 +3,7 @@ import { AUTO, Game } from 'phaser-ce';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
+
 var game: Phaser.Game;
 var database: AngularFirestore = null;
 var id;
@@ -17,6 +18,7 @@ export class GameComponent implements OnInit {
 
   constructor(private db: AngularFirestore, private router: Router
   ) {
+    
     if (!this.router.getCurrentNavigation().extras.queryParams) {
       this.router.navigate(['/dashboard']);
     }
@@ -79,6 +81,8 @@ var questions = [["Press any key to start?", "", "", "", ""],
 ["What is 5x-2?", "5x-2", "5x", "3x", "3"],
 ["What is (3x-3x)*3x?", "0", "9x", "27x", "9"]
 ]
+var difficulties = [];
+var difficulty;
 function loadQuestions() {
   console.log("load quesitons");
 
@@ -98,6 +102,7 @@ function loadQuestions() {
         formattedQuestion[2] = tempQuestions[key].fake1;
         formattedQuestion[3] = tempQuestions[key].fake2;
         formattedQuestion[4] = tempQuestions[key].fake3;
+        difficulties.push(tempQuestions[key].difficulty);
         questions.push(formattedQuestion);
       }
     },
@@ -276,9 +281,30 @@ function render() {
 
 }
 function asteroidUpdate() {
+
   if (!isGameOver) {
+    var numAsteroids = 0;
+    if (difficulty == "easy") {
+      numAsteroids = 5;
+    }
+    if (difficulty == "medium") {
+      numAsteroids = 3;
+    }
+    if (difficulty == "hard") {
+      numAsteroids = 1;
+    }
+    var numAboveBottomScreen = 0;
+
     asteroidGroup.forEach(function (sprite) {
-      if (sprite.y > sprite.height + game.height) {
+
+      if (sprite.y < game.height) {
+        numAboveBottomScreen++;
+      }
+    })
+    asteroidGroup.forEach(function (sprite) {
+      var rand = Math.floor(Math.random()*200);
+      if (sprite.y > sprite.height + game.height+rand && numAboveBottomScreen < numAsteroids) {
+        numAboveBottomScreen++;
         sprite.y = -sprite.height;
         sprite.body.angularVelocity = Math.random() * 200 - Math.random() * 200;
         sprite.x = game.world.randomX;
@@ -351,6 +377,7 @@ function nextQuestion() {
   twoClickText.text = tempAnswers[1];
   threeClickText.text = tempAnswers[2];
   fourClickText.text = tempAnswers[3];
+  difficulty = difficulties[questionIndex];
 
 }
 function update() {
@@ -513,4 +540,5 @@ function fontSizer(text, frame) {
   return fontSize * 0.98;
 
 }
+
 

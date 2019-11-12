@@ -3,6 +3,10 @@ import { AUTO, Game } from 'phaser-ce';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
+import * as io from 'socket.io-client';
+
+var url = 'http://47.24.182.243:3000';
+var socket;
 var game: Phaser.Game;
 var database: AngularFirestore = null;
 var id;
@@ -17,12 +21,14 @@ export class NetworkedComponent implements OnInit {
 
   constructor(private db: AngularFirestore, private router: Router
   ) {
+    socket = io(url);
+
     if (!this.router.getCurrentNavigation().extras.queryParams) {
       this.router.navigate(['/dashboard']);
     }
     id = this.router.getCurrentNavigation().extras.queryParams.id;
     quizTitle = this.router.getCurrentNavigation().extras.queryParams.title;
-
+    socket.emit("changeRoom", id);
     console.log(quizTitle);
     globalRouter = router;
 
@@ -66,12 +72,14 @@ var score = 0;
 var starfield;
 var asteroid1, asteroid2, asteroid3, asteroid4, asteroid5;
 
-var questions = [["Press any key to start?", "", "", "", ""],
+var questions = [["Press any key to start", "", "", "", ""],
 ["What is 6x/6?", "x", "6", "1", "0"],
 ["What is 3(x+2x)", "9x", "9x^2", "6x", "9"],
 ["What is 5x-2?", "5x-2", "5x", "3x", "3"],
 ["What is (3x-3x)*3x?", "0", "9x", "27x", "9"]
 ]
+var difficulties = [];
+var difficulty;
 function loadQuestions() {
   console.log("load quesitons");
 
@@ -91,6 +99,7 @@ function loadQuestions() {
         formattedQuestion[2] = tempQuestions[key].fake1;
         formattedQuestion[3] = tempQuestions[key].fake2;
         formattedQuestion[4] = tempQuestions[key].fake3;
+        difficulties.push(tempQuestions[key].difficulty);
         questions.push(formattedQuestion);
       }
     },
@@ -139,6 +148,7 @@ function create() {
 
   spaceship_networked = game.add.sprite(game.width * 0.5, game.height * 0.8, "spaceship");
   spaceship_networked.anchor.set(0.5);
+  spaceship_networked.visible = false;
   game.physics.enable(spaceship_networked, Phaser.Physics.ARCADE);
   spaceship_networked.scale.set(2, 2);
   spaceship_networked.body.gravity.y = 0;
@@ -159,8 +169,9 @@ function create() {
     sprite.width = asteroidWidth;
     sprite.height = asteroidWidth;
   })
-
   questionText = game.add.text(game.world.centerX, game.height * 0.15, "Are you ready to start? Press the [1] key");
+  questionText.text = "Waiting for teammate to connect.";
+
   questionText.anchor.set(0.5);
   oneKeyText = game.add.text(game.width * 0.2 + oneKeyIcon.width, game.height * 0.2, "Start");
   twoKeyText = game.add.text(oneKeyIcon.x + oneKeyIcon.width, oneKeyIcon.y + oneKeyIcon.height * 1.5, "Start");
@@ -190,7 +201,7 @@ function create() {
   game.world.sendToBack(spaceship_networked);
 
   game.world.sendToBack(starfield);
-moveTeammate();
+  moveTeammate();
 }
 function createMissile() {
   var missile = game.add.sprite(spaceship.x, spaceship.y, "missile");
@@ -224,6 +235,8 @@ var canAnswer = true;
 var isGameOver = false;
 function spaceshipCollide(asteroid, space) {
   scoreText.text = `Score: ${--score}`;
+  socket.emit("changeScore", -1);
+
 
   setTimeout(() => {
     space.visible = true;
@@ -245,17 +258,38 @@ function spaceshipCollide(asteroid, space) {
 }
 
 function render() {
-      // game.debug.body(spaceship);
-      // asteroidGroup.forEach(function (sprite) {
-      //   game.debug.body(sprite);
+  // game.debug.body(spaceship);
+  // asteroidGroup.forEach(function (sprite) {
+  //   game.debug.body(sprite);
 
-      // })
+  // })
 
 }
 function asteroidUpdate() {
+
   if (!isGameOver) {
+    var numAsteroids = 0;
+    if (difficulty == "easy") {
+      numAsteroids = 5;
+    }
+    if (difficulty == "medium") {
+      numAsteroids = 3;
+    }
+    if (difficulty == "hard") {
+      numAsteroids = 1;
+    }
+    var numAboveBottomScreen = 0;
+
     asteroidGroup.forEach(function (sprite) {
-      if (sprite.y > sprite.height + game.height) {
+
+      if (sprite.y < game.height) {
+        numAboveBottomScreen++;
+      }
+    })
+    asteroidGroup.forEach(function (sprite) {
+      var rand = Math.floor(Math.random() * 200);
+      if (sprite.y > sprite.height + game.height + rand && numAboveBottomScreen < numAsteroids) {
+        numAboveBottomScreen++;
         sprite.y = -sprite.height;
         sprite.body.angularVelocity = Math.random() * 200 - Math.random() * 200;
         sprite.x = game.world.randomX;
@@ -265,6 +299,9 @@ function asteroidUpdate() {
       }
       if (sprite.body.velocity.y > 200) {
         sprite.body.velocity.y = 200;
+      }
+      if (!teammateHasConnected) {
+        sprite.body.velocity.y = 0;
       }
     })
   }
@@ -291,9 +328,14 @@ function answerQuestion(index) {
     } if (index == 4) {
       selectAns = fourKeyText.text;
     }
-    if (selectAns == ans) { //if ans correct
+    if (selectAns == ans || questionIndex == -1) { //if ans correct
+      socket.emit("answerQuestion", true);
       createMissile();
       scoreText.text = `Score: ${++score}`;
+    } else {
+      scoreText.text = `Score: ${--score}`;
+      socket.emit("answerQuestion", false);
+
     }
     nextQuestion();
     canAnswer = false;
@@ -324,13 +366,16 @@ function nextQuestion() {
   twoKeyText.text = tempAnswers[1];
   threeKeyText.text = tempAnswers[2];
   fourKeyText.text = tempAnswers[3];
+  difficulty = difficulties[questionIndex];
 
 }
 
 
 function update() {
+  getNetworkData();
+  sendPosition(spaceship.x);
   asteroidGroup.forEach(function (sprite) {
-    game.physics.arcade.collide(sprite,spaceship, spaceshipCollide);
+    game.physics.arcade.collide(sprite, spaceship, spaceshipCollide);
   })
 
   if (!isGameOver) {
@@ -378,22 +423,25 @@ function update() {
 
 
 function keyHandler(num) {
+  if (teammateHasConnected) {
     answerQuestion(num);
+  }
+
 }
-function moveTeammate(){
-  var tween = game.add.tween(spaceship_networked).to( { x: game.world.randomX }, 4000, "Quart.easeOut");
-    // tweenB = game.add.tween(spriteB).to( { x: 600 }, 2000, "Quart.easeOut");
-    tween.start();
-    var mis = createMissile();
-    mis.x = spaceship_networked.x;
-  tween.onComplete.addOnce(()=>{moveTeammate()});
+function moveTeammate() {
+  var tween = game.add.tween(spaceship_networked).to({ x: game.world.randomX }, 4000, "Quart.easeOut");
+  // tweenB = game.add.tween(spriteB).to( { x: 600 }, 2000, "Quart.easeOut");
+  // tween.start();
+  var mis = createMissile();
+  mis.x = spaceship_networked.x;
+  // tween.onComplete.addOnce(()=>{moveTeammate()});
 }
 
 
 
 function gameOver() {
   isGameOver = true;
-  questionText.text = `The completed the game!\nYou scored ${score}!\nThanks for playing!`;
+  questionText.text = `You completed the game!\nYou scored ${score}!\nThanks for playing!`;
   questionText.fontSize = fontSizer(questionText, game) * 0.7;
   questionText.y = game.world.centerY;
 
@@ -423,5 +471,54 @@ function fontSizer(text, frame) {
   return fontSize * 0.98;
 
 }
+function sendPosition(x) {
+  socket.emit('sendPosition', x / game.width);
+}
+var canUpdateQuestion = true;
+var teammateHasConnected = false;
+var canUpdateScore = true;
+function teamateConnected() {
+  spaceship_networked.visible = true;
+  questionText.text = "Press [1] to start."
+}
+function getNetworkData() {
+  socket.on('updateCords', function (x) {
+    if (!teammateHasConnected) {
+      teamateConnected();
+    }
+    teammateHasConnected = true;
+    spaceship_networked.x = x * game.width;
+  });
+  socket.on('updateScore', function (delta) {
+    if (canUpdateScore) {
+      canUpdateScore = false;
+      console.log("update score");
+      score += delta;
+      scoreText.text = `Score: ${score}`;
+      setTimeout(() => {
+        canUpdateScore = true;
+      }, 500);
+    }
 
+  });
+  socket.on('updateQuestion', function (wasCorrect) {
+    console.log("update question");
+    if (canUpdateQuestion) {
+      canUpdateQuestion = false;
+      setTimeout(() => {
+        canUpdateQuestion = true;
+      }, 1000);
+      if (wasCorrect) { //if ans correct
+        var missile = createMissile();
+        missile.x = spaceship_networked.x;
+        missile.y = spaceship_networked.y;
+        scoreText.text = `Score: ${++score}`;
+      } else {
+        scoreText.text = `Score: ${--score}`;
+      }
+      nextQuestion();
+    }
+  });
+
+}
 
