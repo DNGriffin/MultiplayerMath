@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
+import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from '@angular/fire/firestore';
 import { TouchSequence } from 'selenium-webdriver';
 import { User } from 'firebase';
 import { UserService } from '../components/core/user.service';
@@ -8,14 +8,15 @@ import { UserService } from '../components/core/user.service';
   providedIn: 'root'
 })
 export class QuizService {
-  
+
   quizesCollection: AngularFirestoreCollection;
-  user: User
+  user: User;
+  quizDoc: AngularFirestoreDocument<any>;
 
   constructor(private db: AngularFirestore) {
     this.getData();
   }
-x
+
   public getData() {
     this.quizesCollection = this.db.collection("quizes");
     return this.quizesCollection;
@@ -23,5 +24,17 @@ x
 
   public createQuiz(quizObj: Object) {
     this.quizesCollection.add(quizObj);
+  }
+
+  public deleteQuiz(quizId: string){
+    this.quizDoc = this.db.doc(`quizes/${quizId}`);
+    this.quizDoc.delete();
+  }
+
+  public updateQuiz(quizId: string, updatedQuizForm){
+    this.db
+    .collection('quizes')
+    .doc(quizId)
+    .set( { questions: updatedQuizForm.questions, title: updatedQuizForm.title }, { merge: true });
   }
 }

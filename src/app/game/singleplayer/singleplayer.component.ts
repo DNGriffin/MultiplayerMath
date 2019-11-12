@@ -3,6 +3,7 @@ import { AUTO, Game } from 'phaser-ce';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
+import { LocationStrategy } from '@angular/common';
 var game: Phaser.Game;
 var database: AngularFirestore = null;
 var id;
@@ -15,8 +16,16 @@ var globalRouter;
 })
 export class SingleplayerComponent implements OnInit {
 
-  constructor(private db: AngularFirestore, private router: Router
+  constructor(private db: AngularFirestore, private router: Router, location: LocationStrategy
   ) {
+    location.onPopState(() => {
+      if(!destroyed){
+        destroyed = true;
+        game.destroy();
+        console.log("destroy game");
+        resetVariables();
+      }
+    });
     if (!this.router.getCurrentNavigation().extras.queryParams) {
       this.router.navigate(['/dashboard']);
     }
@@ -33,9 +42,11 @@ export class SingleplayerComponent implements OnInit {
   }
 
   ngOnInit() {
+    destroyed = false;
   }
 
 }
+
 var oneKey: Phaser.Key;
 var twoKey: Phaser.Key;
 var threeKey: Phaser.Key;
@@ -71,6 +82,13 @@ var questions = [["Press any key to start?", "", "", "", ""],
 ["What is 5x-2?", "5x-2", "5x", "3x", "3"],
 ["What is (3x-3x)*3x?", "0", "9x", "27x", "9"]
 ]
+
+var destroyed = false;
+
+function resetVariables(){
+  questionIndex = -1;
+  score = 0;
+}
 var difficulties = [];
 var difficulty;
 function loadQuestions() {
@@ -86,14 +104,16 @@ function loadQuestions() {
       var formattedQuestion = [];
       questions = [];
       for (var key in tempQuestions) {
-        formattedQuestion = [];
-        formattedQuestion[0] = tempQuestions[key].question;
-        formattedQuestion[1] = tempQuestions[key].answer;
-        formattedQuestion[2] = tempQuestions[key].fake1;
-        formattedQuestion[3] = tempQuestions[key].fake2;
-        formattedQuestion[4] = tempQuestions[key].fake3;
-        difficulties.push(tempQuestions[key].difficulty);
-        questions.push(formattedQuestion);
+        if (tempQuestions[key].question.length>3) {
+          formattedQuestion = [];
+          formattedQuestion[0] = tempQuestions[key].question;
+          formattedQuestion[1] = tempQuestions[key].answer;
+          formattedQuestion[2] = tempQuestions[key].fake1;
+          formattedQuestion[3] = tempQuestions[key].fake2;
+          formattedQuestion[4] = tempQuestions[key].fake3;
+          difficulties.push(tempQuestions[key].difficulty);
+          questions.push(formattedQuestion);
+        }
       }
     },
     (err) => console.log(err),
@@ -117,6 +137,7 @@ function preload() {
 var asteroidGroup;
 
 function create() {
+  destroyed = false;
   asteroid1 = game.add.sprite(game.world.randomX, -game.world.randomY, "asteroid1");
   asteroid2 = game.add.sprite(game.world.randomX, -game.world.randomY, "asteroid1");
   asteroid3 = game.add.sprite(game.world.randomX, -game.world.randomY, "asteroid1");
@@ -412,6 +433,8 @@ function gameOver() {
   fourKeyText.destroy();
   setTimeout(() => {
     globalRouter.navigate(['/dashboard']);
+    resetVariables();
+    resetVariables();
     isGameOver = false;
     game.destroy();
     questionIndex = -1;

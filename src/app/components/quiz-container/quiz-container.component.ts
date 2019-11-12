@@ -13,9 +13,10 @@ import { AngularFireAuth } from '@angular/fire/auth';
 export class QuizContainerComponent implements OnInit {
 
   quizes: any
-  emails: any[];
-  quizTitles = [];
+  subs: any[];
   quizIds = [];
+  playableQuizes = [];
+  quizOwner = [];
 
   constructor(private quizService: QuizService,
     private db: AngularFirestore,
@@ -23,34 +24,45 @@ export class QuizContainerComponent implements OnInit {
     ) { }
 
   ngOnInit() {
-    this.quizes = this.getQuizes();
-    this.getSubscriptionEmails();
+    setTimeout(() => {
+      this.getSubscriptionEmails();
+    }, 300);
   }
 
-  //TODO: Get quizes that have the same email as the user, one of the user's subscriptions, or that have the canned quiz identifier (special email of some sort)
-  getQuizes() {
-    return this.quizService.quizesCollection.snapshotChanges();
+  getQuizesFromSubs(){
+    for(var i = 0; i < this.subs.length; i++){
+      var quizCol = this.db.collection('quizes', ref => ref.where('userEmail', '==', this.subs[i].email)).snapshotChanges();
+      this.subscribeToQuizCol(i, quizCol);
+    }
   }
-  getQuizesFromEmails(){
 
-    for(var i = 0;i<this.emails.length;i++){
-      console.log("made it in loop get quiz");
-    var quizCol = this.db.collection('quizes', ref => ref.where('userEmail', '==', this.emails[i])).snapshotChanges();
+  subscribeToQuizCol(subsIndex, quizCol) {
     quizCol.subscribe(
       (res) => {
-        console.log("made it in quizcol sub");
-        for(var j = 0;j<res.length;j++){
+        for(var j = 0;j < res.length; j++){
           var data: any = res[j].payload.doc.data();
-          this.quizIds.push(res[j].payload.doc.id);
-          this.quizTitles.push(data.title);
-          console.log(data.title);
+          if(this.canAccessQuiz(subsIndex, data)) {
+            if(!this.quizIds.includes(res[j].payload.doc.id)) {
+              this.quizIds.push(res[j].payload.doc.id);
+              this.playableQuizes.push(data);
+              if(data.userEmail == this.afAuth.auth.currentUser.email) {
+                this.quizOwner.push(true);
+              } else {
+                this.quizOwner.push(false);
+              }
+            }
+          }
         }
-        
       },
       (err) => console.log(err),
       () => console.log("got sub emails")
     );
-    }
+  }
+
+  //TODO strengthen security. This is is not great admin practice
+  // As a starting point, we should change the admin checks to use ID rather than email
+  canAccessQuiz(subsIndex, quizData) {
+    return (quizData.quizAccessCode == this.subs[subsIndex].quizAccessCode || quizData.userEmail == this.afAuth.auth.currentUser.email || this.afAuth.auth.currentUser.email == "admin@mmath.com");
   }
 
   getSubscriptionEmails() {
@@ -60,12 +72,19 @@ export class QuizContainerComponent implements OnInit {
     subs.subscribe(
       (res) => {
         var data = res[0].payload.doc.data();
-        this.emails = data.emails;
-        console.log(this.emails);
-        this.getQuizesFromEmails();
+        this.subs = data.subs;
+        this.getQuizesFromSubs();
       },
       (err) => console.log(err),
       () => console.log('finished')
     );
+  }
+
+  onDeleted(quizId: string) {
+    this.quizService.deleteQuiz(quizId);
+    this.quizIds = [];
+    this.quizOwner = [];
+    this.playableQuizes = [];
+    this.getQuizesFromSubs();
   }
 }

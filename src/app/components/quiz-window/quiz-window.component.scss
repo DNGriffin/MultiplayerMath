@@ -11,15 +11,24 @@
   width: 300px;
   height: 150px;
   box-shadow: 5px 5px 5px gray;
-  text-align: center;
   display: table; 
 }
 
-.quiz-div:hover {
+.quiz-title:hover, .deleteButton:hover, .editButton:hover {
   cursor: pointer;
 }
 
 .quiz-title {
+  text-align: center;
   display: table-cell;
   vertical-align: middle;
+}
+
+.deleteButton {
+  margin-left: 5px;
+}
+
+.quizOptions {
+  position: absolute;
+  top: 25px;
 }

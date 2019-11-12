@@ -4,6 +4,7 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import * as io from 'socket.io-client';
+import { LocationStrategy } from '@angular/common';
 
 var url = 'http://47.24.182.243:3000';
 var socket;
@@ -19,8 +20,16 @@ var globalRouter;
 })
 export class NetworkedComponent implements OnInit {
 
-  constructor(private db: AngularFirestore, private router: Router
-  ) {
+  constructor(private db: AngularFirestore, private router: Router, location: LocationStrategy
+    ) {
+      location.onPopState(() => {
+        if(!destroyed){
+          destroyed = true;
+          game.destroy();
+          console.log("destroy game");
+          resetVariables();
+        }
+      });
     socket = io(url);
 
     if (!this.router.getCurrentNavigation().extras.queryParams) {
@@ -39,6 +48,7 @@ export class NetworkedComponent implements OnInit {
   }
 
   ngOnInit() {
+    destroyed = false;
   }
 
 }
@@ -71,7 +81,12 @@ var score = 0;
 
 var starfield;
 var asteroid1, asteroid2, asteroid3, asteroid4, asteroid5;
+var destroyed = false;
 
+function resetVariables(){
+  questionIndex = -1;
+  score = 0;
+}
 var questions = [["Press any key to start", "", "", "", ""],
 ["What is 6x/6?", "x", "6", "1", "0"],
 ["What is 3(x+2x)", "9x", "9x^2", "6x", "9"],
@@ -93,14 +108,16 @@ function loadQuestions() {
       var formattedQuestion = [];
       questions = [];
       for (var key in tempQuestions) {
-        formattedQuestion = [];
-        formattedQuestion[0] = tempQuestions[key].question;
-        formattedQuestion[1] = tempQuestions[key].answer;
-        formattedQuestion[2] = tempQuestions[key].fake1;
-        formattedQuestion[3] = tempQuestions[key].fake2;
-        formattedQuestion[4] = tempQuestions[key].fake3;
-        difficulties.push(tempQuestions[key].difficulty);
-        questions.push(formattedQuestion);
+        if (tempQuestions[key].question.length>3) {
+          formattedQuestion = [];
+          formattedQuestion[0] = tempQuestions[key].question;
+          formattedQuestion[1] = tempQuestions[key].answer;
+          formattedQuestion[2] = tempQuestions[key].fake1;
+          formattedQuestion[3] = tempQuestions[key].fake2;
+          formattedQuestion[4] = tempQuestions[key].fake3;
+          difficulties.push(tempQuestions[key].difficulty);
+          questions.push(formattedQuestion);
+        }
       }
     },
     (err) => console.log(err),
@@ -455,6 +472,7 @@ function gameOver() {
   fourKeyText.destroy();
   setTimeout(() => {
     globalRouter.navigate(['/dashboard']);
+    resetVariables();
     isGameOver = false;
     game.destroy();
     questionIndex = -1;

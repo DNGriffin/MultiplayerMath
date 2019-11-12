@@ -3,6 +3,7 @@ import { AUTO, Game } from 'phaser-ce';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
+import { LocationStrategy } from '@angular/common';
 
 var game: Phaser.Game;
 var database: AngularFirestore = null;
@@ -16,25 +17,32 @@ var globalRouter;
 })
 export class GameComponent implements OnInit {
 
-  constructor(private db: AngularFirestore, private router: Router
-  ) {
-    
+  constructor(private db: AngularFirestore, private router: Router, location: LocationStrategy
+    ) {
+      destroyed = false;
+      location.onPopState(() => {
+        if(!destroyed){
+          destroyed = true;
+          game.destroy();
+          console.log("destroy game");
+          resetVariables();
+        }
+      });
     if (!this.router.getCurrentNavigation().extras.queryParams) {
       this.router.navigate(['/dashboard']);
     }
     id = this.router.getCurrentNavigation().extras.queryParams.id;
     quizTitle = this.router.getCurrentNavigation().extras.queryParams.title;
 
-    console.log(quizTitle);
     globalRouter = router;
 
-    console.log(id);
     database = db;
     loadQuestions();
     game = new Game(window.innerWidth, window.innerHeight, AUTO, 'game', { preload: preload, create: create, update: update, render: render });
   }
 
   ngOnInit() {
+    destroyed = false;
   }
 
 }
@@ -46,7 +54,12 @@ var fourKey: Phaser.Key;
 var aKey: Phaser.Key;
 var dKey: Phaser.Key;
 
+var destroyed = false;
 
+function resetVariables(){
+  questionIndex = -1;
+  score = 0;
+}
 var oneKeyIcon: Phaser.Sprite;
 var twoKeyIcon: Phaser.Sprite;
 var threeKeyIcon: Phaser.Sprite;
@@ -96,14 +109,16 @@ function loadQuestions() {
       var formattedQuestion = [];
       questions = [];
       for (var key in tempQuestions) {
-        formattedQuestion = [];
-        formattedQuestion[0] = tempQuestions[key].question;
-        formattedQuestion[1] = tempQuestions[key].answer;
-        formattedQuestion[2] = tempQuestions[key].fake1;
-        formattedQuestion[3] = tempQuestions[key].fake2;
-        formattedQuestion[4] = tempQuestions[key].fake3;
-        difficulties.push(tempQuestions[key].difficulty);
-        questions.push(formattedQuestion);
+        if (tempQuestions[key].question.length>3) {
+          formattedQuestion = [];
+          formattedQuestion[0] = tempQuestions[key].question;
+          formattedQuestion[1] = tempQuestions[key].answer;
+          formattedQuestion[2] = tempQuestions[key].fake1;
+          formattedQuestion[3] = tempQuestions[key].fake2;
+          formattedQuestion[4] = tempQuestions[key].fake3;
+          difficulties.push(tempQuestions[key].difficulty);
+          questions.push(formattedQuestion);
+        }
       }
     },
     (err) => console.log(err),
@@ -273,11 +288,11 @@ function spaceshipCollide(asteroid, space) {
 }
 
 function render() {
-      // game.debug.body(spaceship);
-      // asteroidGroup.forEach(function (sprite) {
-      //   game.debug.body(sprite);
+  // game.debug.body(spaceship);
+  // asteroidGroup.forEach(function (sprite) {
+  //   game.debug.body(sprite);
 
-      // })
+  // })
 
 }
 function asteroidUpdate() {
@@ -302,8 +317,8 @@ function asteroidUpdate() {
       }
     })
     asteroidGroup.forEach(function (sprite) {
-      var rand = Math.floor(Math.random()*200);
-      if (sprite.y > sprite.height + game.height+rand && numAboveBottomScreen < numAsteroids) {
+      var rand = Math.floor(Math.random() * 200);
+      if (sprite.y > sprite.height + game.height + rand && numAboveBottomScreen < numAsteroids) {
         numAboveBottomScreen++;
         sprite.y = -sprite.height;
         sprite.body.angularVelocity = Math.random() * 200 - Math.random() * 200;
@@ -382,7 +397,7 @@ function nextQuestion() {
 }
 function update() {
   asteroidGroup.forEach(function (sprite) {
-    game.physics.arcade.collide(sprite,spaceship, spaceshipCollide);
+    game.physics.arcade.collide(sprite, spaceship, spaceshipCollide);
   })
 
   if (!isGameOver) {

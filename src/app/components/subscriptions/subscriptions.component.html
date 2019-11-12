@@ -11,12 +11,16 @@
         <tr>
           <th scope="col">#</th>
           <th scope="col">Email</th>
+          <th scope="col">Access Code</th>
+          <th scope="col">Unsubscribe</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let email of emails; let i = index">
+        <tr *ngFor="let sub of subs; let i = index">
           <td scope="col">{{ i }}</td>
-          <td scope="col"> {{email}} </td>
+          <td scope="col"> {{sub.email}} </td>
+          <td scope="col"> {{sub.quizAccessCode}} </td>
+          <td scope="col"><i *ngIf="sub.email !== this.afAuth.auth.currentUser.email && sub.email !== 'admin@mmath.com'" class="fas fa-minus-circle unsubscribe-icon" (click)="removeSubscription(sub.email, sub.quizAccessCode)"></i></td>
         </tr>
       </tbody>
     </table>
@@ -26,7 +30,7 @@
 
   <div class="form-div">
     <h5 class="header">Add Subscription</h5>
-    <p>Subscribe to a user to play all of their games.</p>
+    <p>Subscribe to a user's access code to play all of its games.</p>
 
     <br>
     <div class="button-div">
@@ -34,10 +38,14 @@
         <div class="row">
           <div class="col">
             <form [formGroup]="subscribeForm">
-              <div class="form-group">
-                <input type="hidden" name="userEmail" formControlName="subscriberEmail" [ngModel]="getUserEmail()">
-                <label>Email address</label>
-                <input type="email" formControlName="subscribedEmail" class="form-control">
+              <div class="form-group" formArrayName="accessCodes">
+                <div [formGroupName]="0">
+                  <label>Email address</label>
+                  <input type="email" formControlName="email" class="form-control">
+                  <br>
+                  <label for="quizAccessCode">Quiz Access Code</label>
+                  <input id="quizAccessCode" formControlName="quizAccessCode" class="form-control quizFormInput quizAccessCodeInput" type="text">
+                </div>
               </div>
               <br>
               <button type="submit" (click)="trySubscribe(subscribeForm.value)" class="btn btn-dark">Subscribe</button>

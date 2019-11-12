@@ -11,7 +11,6 @@ import { AngularFireAuth } from '@angular/fire/auth';
   styleUrls: ['./create-quiz.component.scss']
 })
 export class CreateQuizComponent implements OnInit {
-
   quizForm: FormGroup
   numQuestions: number
   uid: string;
@@ -22,17 +21,22 @@ export class CreateQuizComponent implements OnInit {
     private quizService: QuizService,
     private db: AngularFirestore,
     private afAuth: AngularFireAuth,
-
-
-  ) {    this.uid = afAuth.auth.currentUser.uid;
-    this.getEmailAsync();
+  ) {    
+    setTimeout(() => {
+      this.uid = afAuth.auth.currentUser.uid;
+      this.getEmailAsync();
+    }, 300);
+    
   }
 
+  difficulties: string[] = ['easy', 'medium', 'hard'];
+
   ngOnInit() {
-    this.numQuestions = 0
+    this.numQuestions = 0;
     this.quizForm = this.fb.group({
       title: '',
       questions: this.fb.array([]),
+      quizAccessCode: '',
       userEmail: ['', Validators.required]
     })
   }
@@ -49,24 +53,27 @@ export class CreateQuizComponent implements OnInit {
       answer: ['', Validators.required],
       fake1: ['', Validators.required],
       fake2: ['', Validators.required],
-      fake3: ['', Validators.required]
+      fake3: ['', Validators.required],
+      difficulty: ['', Validators.required]
     })
     
     this.questionForms.push(question);
   }
 
-  deletePhone(i) {
+  deleteQuestion(i) {
     this.questionForms.removeAt(i);
   }
 
   createQuiz(quizInfo: FormData) {
     this.quizService.createQuiz(quizInfo);
     this.quizForm.reset();
+    this.router.navigate(['/dashboard']);
   }
 
   getUserEmail(): string {
     return this.email;
   }
+
   getEmailAsync(){
     var users;
 
@@ -74,7 +81,6 @@ export class CreateQuizComponent implements OnInit {
     users.subscribe(
       (res) => {
         var data = res[0].payload.doc.data();
-        console.log(data);
         this.email = data.email;
       },
       (err) => console.log(err),
