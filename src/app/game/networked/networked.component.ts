@@ -86,6 +86,7 @@ var destroyed = false;
 function resetVariables(){
   questionIndex = -1;
   score = 0;
+  teammateHasConnected = false;
 }
 var questions = [["Press any key to start", "", "", "", ""],
 ["What is 6x/6?", "x", "6", "1", "0"],
