@@ -16,13 +16,11 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let sub of subs; let i = index">
-          <div *ngIf="i">
+        <tr *ngFor="let sub of subsButMe; let i = index">
           <td scope="col">{{ i }}</td>
           <td scope="col"> {{sub.email}} </td>
           <td scope="col"> {{sub.quizAccessCode}} </td>
           <td scope="col"><i *ngIf="sub.email !== this.afAuth.auth.currentUser.email && sub.email !== 'admin@mmath.com'" class="fas fa-minus-circle unsubscribe-icon" (click)="removeSubscription(sub.email, sub.quizAccessCode)"></i></td>
-            </div>
         </tr>
       </tbody>
     </table>

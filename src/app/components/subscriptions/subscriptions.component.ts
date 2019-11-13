@@ -15,6 +15,7 @@ export class SubscriptionsComponent implements OnInit {
   subscribeForm: FormGroup;
   errorMessage: string = '';
   subs: any[];
+  subsButMe: any[];
   subscriptionsDocId: string;
 
   constructor(
@@ -61,6 +62,7 @@ export class SubscriptionsComponent implements OnInit {
       (res) => {
         var data = res[0].payload.doc.data();
         this.subs = data.subs;
+        this.subsButMe = this.subs.filter(sub => sub.email != this.afAuth.auth.currentUser.email);
         this.subscriptionsDocId = res[0].payload.doc.id;
       },
       (err) => console.log(err),
