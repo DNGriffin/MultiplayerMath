@@ -30,6 +30,7 @@ export class CreateQuizComponent implements OnInit {
   }
 
   difficulties: string[] = ['easy', 'medium', 'hard'];
+  topics: string[] = ['Addition', 'Subtraction', 'Multiplication', 'Division', 'Fractions', 'Decimals', 'Algebra', 'Geometry', 'Calculus', 'Computer Science', 'Miscellaneous'];
 
   ngOnInit() {
     this.numQuestions = 0;
@@ -37,6 +38,8 @@ export class CreateQuizComponent implements OnInit {
       title: '',
       questions: this.fb.array([]),
       quizAccessCode: '',
+      quizLearningObjective: '',
+      quizTopic: '',
       userEmail: ['', Validators.required]
     })
   }

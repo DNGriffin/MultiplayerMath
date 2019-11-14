@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { QuizService } from 'src/app/quizes/quiz.service';
 import { defineBase } from '@angular/core/src/render3';
 import { FirebaseApp } from '@angular/fire';
@@ -11,6 +11,8 @@ import { AngularFireAuth } from '@angular/fire/auth';
   styleUrls: ['./quiz-container.component.scss']
 })
 export class QuizContainerComponent implements OnInit {
+
+  @Input() sectionTitle: string;
 
   quizes: any
   subs: any[];
