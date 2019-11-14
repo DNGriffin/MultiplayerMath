@@ -43,6 +43,7 @@ export class EditQuizComponent implements OnInit {
       questions: this.fb.array([]),
       quizLearningObjective: '',
       quizTopic: '',
+      quizPublicAccess: false,
       userEmail: ['', Validators.required]
     });
     this.numQuestions = 0;
@@ -66,7 +67,8 @@ export class EditQuizComponent implements OnInit {
           title: myself.quiz.title,
           quizAccessCode: myself.quiz.quizAccessCode,
           quizLearningObjective: myself.quiz.quizLearningObjective,
-          quizTopic: myself.quiz.quizTopic
+          quizTopic: myself.quiz.quizTopic,
+          quizPublicAccess: myself.quiz.quizPublicAccess
         });
       });
     });
@@ -103,6 +105,8 @@ export class EditQuizComponent implements OnInit {
   }
 
   updateQuiz(quizInfo: FormData) {
+    console.log("quiz info:");
+    console.log(quizInfo);
     this.quizService.updateQuiz(this.id, quizInfo);
     this.router.navigate(['/dashboard']);
   }

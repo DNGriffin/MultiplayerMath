@@ -25,6 +25,13 @@
             <select formControlName="quizTopic" id="quizTopic" class="quizFormInput">
               <option *ngFor="let topic of topics" [ngValue]="topic"> {{ topic }} </option>
             </select>
+            <br><br>
+            <label for="quizPublicAccess"><strong>Quiz Public Access</strong></label>
+            <br>
+            <label class="switch">
+              <input type="checkbox" [checked]="quiz.quizPublicAccess" id="quizPublicAccess" formControlName="quizPublicAccess">
+              <span class="slider round"></span>
+            </label>
             <br>
             <hr>
             <table id="quizId" class="table">
