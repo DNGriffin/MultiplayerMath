@@ -1,0 +1,9 @@
+<div>
+  <app-navbar-logged-in></app-navbar-logged-in>
+  <h1 class="title">{{ title }}</h1>
+  <tr *ngFor="let hs of highScore " >
+    <td>{{hs.email}}</td>
+    <td>{{hs.score}}</td> 
+    <!-- <td>{{hs}}</td> -->
+  </tr>
+</div>

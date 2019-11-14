@@ -43,4 +43,8 @@ export class QuizWindowComponent implements OnInit {
     this.router.navigateByUrl('/editQuiz', { state: { quiz: this.quizData } });
   }
 
+  showQuizStat() {
+    this.router.navigateByUrl('/quizStat', { state: { id: this.id }});
+  }
+
 }

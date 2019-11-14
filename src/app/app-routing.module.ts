@@ -10,6 +10,7 @@ import { CreateQuizComponent } from './components/create-quiz/create-quiz.compon
 import { SingleplayerComponent } from './game/singleplayer/singleplayer.component';
 import { NetworkedComponent } from './game/networked/networked.component';
 import { EditQuizComponent } from './components/edit-quiz/edit-quiz.component';
+import { QuizStatComponent } from './quiz-stat/quiz-stat.component';
 
 const routes: Routes = [{
     path: '',
@@ -41,6 +42,9 @@ const routes: Routes = [{
   }, {
     path: 'editQuiz/:id',
     component: EditQuizComponent
+  }, {
+    path: 'quizStat/:id',
+    component: QuizStatComponent
   }
 ];
 
