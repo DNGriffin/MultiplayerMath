@@ -40,7 +40,7 @@ export class CreateQuizComponent implements OnInit {
       quizAccessCode: '',
       quizLearningObjective: '',
       quizTopic: '',
-      quizPublicAccess: true,
+      quizPublicAccess: false,
       userEmail: ['', Validators.required]
     })
   }

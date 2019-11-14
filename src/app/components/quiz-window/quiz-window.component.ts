@@ -38,9 +38,5 @@ export class QuizWindowComponent implements OnInit {
   deleteQuiz(quizId) {
     this.didDelete.emit(quizId);
   }
- 
-  editQuiz() {
-    this.router.navigateByUrl('/editQuiz', { state: { quiz: this.quizData } });
-  }
 
 }

@@ -23,9 +23,15 @@
   cursor: pointer;
 }
 
-.titleInput {
+
+.titleInput, .quizAccessCodeInput, .learningObjectiveInput {
   padding: 5px;
 }
+
+.topicInput {
+  height: 35px;
+}
+
 
 
 // Slider css

@@ -105,8 +105,6 @@ export class EditQuizComponent implements OnInit {
   }
 
   updateQuiz(quizInfo: FormData) {
-    console.log("quiz info:");
-    console.log(quizInfo);
     this.quizService.updateQuiz(this.id, quizInfo);
     this.router.navigate(['/dashboard']);
   }

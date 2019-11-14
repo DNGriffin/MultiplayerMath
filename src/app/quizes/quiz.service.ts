@@ -35,6 +35,13 @@ export class QuizService {
     this.db
     .collection('quizes')
     .doc(quizId)
-    .set( { questions: updatedQuizForm.questions, title: updatedQuizForm.title }, { merge: true });
+    .set( { 
+      questions: updatedQuizForm.questions, 
+      title: updatedQuizForm.title, 
+      quizAccessCode: updatedQuizForm.quizAccessCode,
+      quizLearningObjective: updatedQuizForm.quizLearningObjective,
+      quizTopic: updatedQuizForm.quizTopic,
+      quizPublicAccess: updatedQuizForm.quizPublicAccess
+    }, { merge: true });
   }
 }
