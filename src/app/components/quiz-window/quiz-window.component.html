@@ -5,9 +5,8 @@
   </div>
   <p class="quiz-title">{{ quizData.title }}</p>
   <button (click)="routeToSoloGame($event,id)" type="button" class="btn btn-secondary btn-sm">Single Player</button>
-<button (click)="routeToGame($event,id)" type="button" class="btn btn-secondary btn-sm">Local Multiplayer</button>
-<button (click)="routeToOnlineGame($event,id)" type="button" class="btn btn-secondary btn-sm">Online Multiplayer</button>
-
+  <button (click)="routeToGame($event,id)" type="button" class="btn btn-secondary btn-sm">Local Multiplayer</button>
+  <button (click)="routeToOnlineGame($event,id)" type="button" class="btn btn-secondary btn-sm">Online Multiplayer</button>
 </div>
 
 <router-outlet></router-outlet>

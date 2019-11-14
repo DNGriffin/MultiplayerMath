@@ -1,0 +1,34 @@
+.scrolling-wrapper {
+  overflow-x: scroll;
+  overflow-y: hidden;
+  white-space: nowrap;
+  
+  .card {
+    display: inline-block;
+  }
+}
+
+.scrolling-wrapper-flexbox {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  
+  .card {
+    flex: 0 0 auto;
+    margin-right: 3px;
+  }
+}
+
+.quizzesContainer {
+  border-top: solid 3px black;
+  border-bottom: solid 3px black;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  padding-left: 15px;
+  background-color: white;
+}
+
+.sectionTitle {
+  position: relative;
+  left: 15px;
+}
