@@ -21,22 +21,17 @@ export class QuizWindowComponent implements OnInit {
 
   routeToGame(event) {
     this.router.navigate(['play'], { queryParams: { id: this.id, title: this.quizData.title } });
-
-    console.log(event);
   }
   routeToSoloGame(event) {
     this.router.navigate(['play/solo'], { queryParams: { id: this.id, title: this.quizData.title} });
-
-    console.log(event);
   }
   routeToOnlineGame(event) {
     this.router.navigate(['play/online'], { queryParams: { id: this.id, title: this.quizData.title} });
-
-    console.log(event);
   }
 
   deleteQuiz(quizId) {
-    this.didDelete.emit(quizId);
+    if (confirm("Are you sure you want to delete the quiz: " + this.quizData.title + "?")) {
+      this.didDelete.emit(quizId);
+    }
   }
-
 }
