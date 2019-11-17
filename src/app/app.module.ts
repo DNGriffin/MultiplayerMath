@@ -29,6 +29,7 @@ import { NetworkedComponent } from './game/networked/networked.component';
 
 import { EditQuizComponent } from './components/edit-quiz/edit-quiz.component';
 import { MultiplayerService } from './game/multiplayer.service';
+import { QuizDetailComponent } from './components/quiz-detail/quiz-detail.component';
 
 
 var firebaseConfig = {
@@ -59,6 +60,7 @@ var firebaseConfig = {
     SingleplayerComponent,
     NetworkedComponent,
     EditQuizComponent,
+    QuizDetailComponent,
   ],
   imports: [
     BrowserModule,

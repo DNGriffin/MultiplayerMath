@@ -1,0 +1,37 @@
+<app-navbar-logged-in></app-navbar-logged-in>
+<br>
+<h1 class="detailHeader">{{ this.quiz.title }}</h1>
+<hr>
+<br><br>
+
+<h3 class="sectionHeader">Play Game</h3>
+<div class="linkTableDiv">
+  <table>
+    <tr>
+      <th></th>
+      <th class="descriptionHeader"><strong>Description</strong></th>
+    </tr>
+    <tr>
+      <td class="buttonDiv"><button (click)="routeToSoloGame($event,id)" type="button" class="gameButton btn btn-primary btn-sm">Single Player</button></td>
+      <td class="description">
+        Play a single player version of the game. Use the number keys to select answers that
+        appear on the left side of the screen.
+      </td>
+    </tr>
+    <tr>
+      <td class="buttonDiv"><button (click)="routeToGame($event,id)" type="button" class="gameButton btn btn-primary btn-sm">Local Multiplayer</button></td>
+      <td class="description">
+        Play a local multiplayer version of the game. Player one will use the number 
+        keys to select answers that appear on the left side of the screen. Player two
+        will use the mouse to select answers that appear on the right side of the screen.
+      </td>
+    </tr>
+    <tr>
+      <td class="buttonDiv"><button (click)="routeToOnlineGame($event,id)" type="button" class="gameButton btn btn-primary btn-sm">Online Multiplayer</button></td>
+      <td class="description">
+        Play an online multiplayer version of the game. Click the link, and wait for an opponent to
+        join the game from another computer.
+      </td>
+    </tr>
+  </table>      
+</div>

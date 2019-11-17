@@ -19,16 +19,6 @@ export class QuizWindowComponent implements OnInit {
   ngOnInit() {
   }
 
-  routeToGame(event) {
-    this.router.navigate(['play'], { queryParams: { id: this.id, title: this.quizData.title } });
-  }
-  routeToSoloGame(event) {
-    this.router.navigate(['play/solo'], { queryParams: { id: this.id, title: this.quizData.title} });
-  }
-  routeToOnlineGame(event) {
-    this.router.navigate(['play/online'], { queryParams: { id: this.id, title: this.quizData.title} });
-  }
-
   deleteQuiz(quizId) {
     if (confirm("Are you sure you want to delete the quiz: " + this.quizData.title + "?")) {
       this.didDelete.emit(quizId);
