@@ -71,14 +71,6 @@ export class RegisterComponent {
     this.db.collection('subscriptions').add({
       id: id,
       subs: [
-        {
-        email: email,
-        quizAccessCode: ""
-        },
-        {
-          email: "admin@mmath.com",
-          quizAccessCode: ""
-        }
       ]   
     }).then(ref => {});
     this.addNewUserSubscriptionToAdmin(email);

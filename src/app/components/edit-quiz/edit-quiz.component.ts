@@ -25,7 +25,6 @@ export class EditQuizComponent implements OnInit {
     private quizService: QuizService,
     private db: AngularFirestore,
     private afAuth: AngularFireAuth,
-    private route: ActivatedRoute,
     private _Activatedroute:ActivatedRoute
   ) {
     this.uid = afAuth.auth.currentUser.uid;

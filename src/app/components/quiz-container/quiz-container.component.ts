@@ -20,6 +20,8 @@ export class QuizContainerComponent implements OnInit {
   playableQuizes = [];
   quizOwner = [];
 
+  topics: string[] = ['Addition', 'Subtraction', 'Multiplication', 'Division', 'Fractions', 'Decimals', 'Algebra', 'Geometry', 'Calculus', 'Computer Science', 'Miscellaneous'];
+
   constructor(private quizService: QuizService,
     private db: AngularFirestore,
     private afAuth: AngularFireAuth
@@ -45,7 +47,10 @@ export class QuizContainerComponent implements OnInit {
         this.getSubscriptionQuizzes();
         break;
       }
-      default: { 
+      default: {
+        if(this.topics.includes(this.sectionTitle)) {
+          this.getGenreQuizzes(this.sectionTitle);
+        }
         break; 
      }
     }
@@ -119,6 +124,26 @@ export class QuizContainerComponent implements OnInit {
         for(var j = 0;j < res.length; j++){
           var data: any = res[j].payload.doc.data();
           if(this.canAccessPrivateQuiz(subsIndex, data)) {
+            if(!this.quizIds.includes(res[j].payload.doc.id)) {
+              this.quizIds.push(res[j].payload.doc.id);
+              this.playableQuizes.push(data);
+              this.quizOwner.push(false);
+            }
+          }
+        }
+      },
+      (err) => console.log(err),
+      () => console.log("got sub emails")
+    );
+  }
+
+  getGenreQuizzes(genre: string) {
+    var genreQuizzes = this.db.collection('quizes', ref => ref.where('quizTopic', '==', genre)).snapshotChanges();
+    genreQuizzes.subscribe(
+      (res) => {
+        for(var j = 0;j < res.length; j++){
+          var data: any = res[j].payload.doc.data();
+          if(data.quizPublicAccess) {
             if(!this.quizIds.includes(res[j].payload.doc.id)) {
               this.quizIds.push(res[j].payload.doc.id);
               this.playableQuizes.push(data);
