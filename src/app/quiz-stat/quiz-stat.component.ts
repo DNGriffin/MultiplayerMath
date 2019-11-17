@@ -27,25 +27,11 @@ export class QuizStatComponent implements OnInit {
       this.id = params.get('id');
       var myself = this
       this.db.collection('quizStat').doc(this.id).ref.get().then(function(doc) {
-        myself.playNum = doc.data().playnum;
+        myself.playNum = doc.data().playNum;
         myself.averageScore = doc.data().averageScore
         myself.title = doc.data().title
         myself.highScore = doc.data().highScore
-        myself.highScore.sort((a,b) => a.score > b.score);
-        // for(var i = 0; i < myself.quiz.questions.length; i++) {
-        //   myself.createQuestion(
-        //     myself.quiz.questions[i].question, 
-        //     myself.quiz.questions[i].answer, 
-        //     myself.quiz.questions[i].fake1,
-        //     myself.quiz.questions[i].fake2,
-        //     myself.quiz.questions[i].fake3,
-        //     myself.quiz.questions[i].difficulty
-        //   );
-        // }
-        // myself.quizEditForm.patchValue({
-        //   title: myself.quiz.title,
-        //   quizAccessCode: myself.quiz.quizAccessCode
-        // });
+        myself.highScore.sort((a,b) => a.score < b.score);
       });
     });
     
