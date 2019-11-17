@@ -4,6 +4,7 @@
     <i class="fas fa-trash deleteButton" (click)="deleteQuiz(this.id)"></i>
   </div>
   <p class="quiz-title">{{ quizData.title }}</p>
+  <span class="createdBy">{{ quizData.userEmail }}</span>
 </div>
 
 <router-outlet></router-outlet>

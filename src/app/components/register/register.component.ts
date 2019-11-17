@@ -65,6 +65,8 @@ export class RegisterComponent {
     });
    }
 
+   //TODO: consider removing self and admin from subscriptions in favor
+   //      of separate handeling.
    initUserSubscriptions(id, email){
     this.db.collection('subscriptions').add({
       id: id,

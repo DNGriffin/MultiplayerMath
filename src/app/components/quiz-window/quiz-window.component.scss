@@ -37,3 +37,11 @@ button{
   position: absolute;
   top: 5px;
 }
+
+.createdBy {
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: .75em;
+}
