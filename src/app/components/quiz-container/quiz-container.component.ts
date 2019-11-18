@@ -166,6 +166,6 @@ export class QuizContainerComponent implements OnInit {
     this.quizIds = [];
     this.quizOwner = [];
     this.playableQuizes = [];
-    this.getQuizesFromSubs();
+    this.getQuizesToDisplay()
   }
 }

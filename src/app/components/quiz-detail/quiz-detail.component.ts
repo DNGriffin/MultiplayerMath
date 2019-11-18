@@ -33,6 +33,22 @@ export class QuizDetailComponent implements OnInit {
     });
   }
 
+  getQuizTitle() {
+    if(this.quiz != null) {
+      return this.quiz.title;
+    } else {
+      return "";
+    }
+  }
+
+  getQuizLearningObjective(){
+    if(this.quiz != null) {
+      return this.quiz.quizLearningObjective;
+    } else {
+      return "";
+    }
+  }
+
   routeToGame(event) {
     this.router.navigate(['play'], { queryParams: { id: this.id, title: this.quiz.title } });
   }

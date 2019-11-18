@@ -22,8 +22,9 @@ export class QuizService {
     return this.quizesCollection;
   }
 
-  public createQuiz(quizObj: Object) {
+  public createQuiz(quizObj: any) {
     this.quizesCollection.add(quizObj);
+
   }
 
   public deleteQuiz(quizId: string){
