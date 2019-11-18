@@ -14,6 +14,24 @@
             <br><br>
             <label for="quizAccessCode"><strong>Quiz Access Code</strong></label>
             <input id="quizAccessCode" placeholder="Leave blank for global access" formControlName="quizAccessCode" class="quizFormInput quizAccessCodeInput" type="text">
+            <br><br>
+            <label for="quizLearningObjective"><strong>Quiz Learning Objective</strong></label>
+            <br>
+            <textarea id="quizLearningObjective" formControlName="quizLearningObjective" rows="4" class="quizFormInput learningObjectiveInput">
+            </textarea>
+            <br><br>
+            <label for="quizTopic"><strong>Quiz Topic</strong></label>
+            <br>
+            <select formControlName="quizTopic" id="quizTopic" class="quizFormInput topicInput">
+              <option *ngFor="let topic of topics" [ngValue]="topic"> {{ topic }} </option>
+            </select>
+            <br><br>
+            <label for="quizPublicAccess"><strong>Quiz Public Access</strong></label>
+            <br>
+            <label class="switch">
+              <input type="checkbox" [checked]="false" id="quizPublicAccess" formControlName="quizPublicAccess">
+              <span class="slider round"></span>
+            </label>
             <br>
             <hr>
             <table id="quizId" class="table">

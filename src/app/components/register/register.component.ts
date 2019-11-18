@@ -65,18 +65,12 @@ export class RegisterComponent {
     });
    }
 
+   //TODO: consider removing self and admin from subscriptions in favor
+   //      of separate handeling.
    initUserSubscriptions(id, email){
     this.db.collection('subscriptions').add({
       id: id,
       subs: [
-        {
-        email: email,
-        quizAccessCode: ""
-        },
-        {
-          email: "admin@mmath.com",
-          quizAccessCode: ""
-        }
       ]   
     }).then(ref => {});
     this.addNewUserSubscriptionToAdmin(email);

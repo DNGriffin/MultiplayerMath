@@ -27,7 +27,6 @@ export class SubscriptionService {
     this.subscriptionsCollection.add(subscriptionObj);
   }
 
-  //TODO: modify unsubscribe to satisfy database change
   public unsubscribe(emailToDelete: string, accessCodeToDelete: string) {
     var myEmail = this.afAuth.auth.currentUser.email;
     var userId = this.afAuth.auth.currentUser.uid;

@@ -1,17 +1,17 @@
 .quiz-div {
-  border-radius: 15px;
+  color: white;
   border-style: solid;
   border-width: 2px;
   border-color: #5c99da;
   padding: 10px;
-  margin: 20px;
-  background-color: white;
-  margin-left: auto;
-  margin-right: auto;
+  margin-right: 10px;
   width: 300px;
   height: 150px;
-  box-shadow: 5px 5px 5px gray;
-  display: table; 
+  box-shadow: 10px 3px 10px gray;
+  display: table;
+  background-image: url("../../../assets/img/chalkBoard.png");
+  background-position: 550px 400px;
+  cursor: pointer;
 }
 
 .quiz-title:hover, .deleteButton:hover, .editButton:hover {
@@ -20,17 +20,33 @@
 
 .quiz-title {
   text-align: center;
+  position: relative;
+  top: 35px;
+  font-size: 1.3em;
 }
+
 button{
   display: block;
   margin-top: 2px;
 }
 
 .deleteButton {
+  margin-left: 240px;
+}
+
+.showStatButton {
   margin-left: 5px;
 }
 
 .quizOptions {
   position: absolute;
-  top: 25px;
+  top: 5px;
+}
+
+.createdBy {
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: .75em;
 }

@@ -22,8 +22,9 @@ export class QuizService {
     return this.quizesCollection;
   }
 
-  public createQuiz(quizObj: Object) {
+  public createQuiz(quizObj: any) {
     this.quizesCollection.add(quizObj);
+
   }
 
   public deleteQuiz(quizId: string){
@@ -35,6 +36,13 @@ export class QuizService {
     this.db
     .collection('quizes')
     .doc(quizId)
-    .set( { questions: updatedQuizForm.questions, title: updatedQuizForm.title }, { merge: true });
+    .set( { 
+      questions: updatedQuizForm.questions, 
+      title: updatedQuizForm.title, 
+      quizAccessCode: updatedQuizForm.quizAccessCode,
+      quizLearningObjective: updatedQuizForm.quizLearningObjective,
+      quizTopic: updatedQuizForm.quizTopic,
+      quizPublicAccess: updatedQuizForm.quizPublicAccess
+    }, { merge: true });
   }
 }

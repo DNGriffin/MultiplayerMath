@@ -1,0 +1,15 @@
+<h3 class="sectionTitle">Discover</h3>
+<div class="genresContainer">
+  <div class="scrolling-wrapper">
+    <span *ngFor="let genre of genres; let i = index">
+      <div class="genre-div card" [routerLink]="['/genres', genre]">
+        <p class="genre-title">{{ genre }}</p>
+      </div>
+    </span>
+  </div>
+</div>
+<br>
+<hr>
+<br>
+
+<router-outlet></router-outlet>

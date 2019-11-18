@@ -25,7 +25,6 @@ export class EditQuizComponent implements OnInit {
     private quizService: QuizService,
     private db: AngularFirestore,
     private afAuth: AngularFireAuth,
-    private route: ActivatedRoute,
     private _Activatedroute:ActivatedRoute
   ) {
     this.uid = afAuth.auth.currentUser.uid;
@@ -33,12 +32,17 @@ export class EditQuizComponent implements OnInit {
   }
 
   difficulties: string[] = ['easy', 'medium', 'hard'];
+  topics: string[] = ['Addition', 'Subtraction', 'Multiplication', 'Division', 'Fractions', 'Decimals', 'Algebra', 'Geometry', 'Calculus', 'Computer Science', 'Miscellaneous'];
+
 
   ngOnInit() {
     this.quizEditForm = this.fb.group({
       title: '',
       quizAccessCode: '',
       questions: this.fb.array([]),
+      quizLearningObjective: '',
+      quizTopic: '',
+      quizPublicAccess: false,
       userEmail: ['', Validators.required]
     });
     this.numQuestions = 0;
@@ -60,7 +64,10 @@ export class EditQuizComponent implements OnInit {
         }
         myself.quizEditForm.patchValue({
           title: myself.quiz.title,
-          quizAccessCode: myself.quiz.quizAccessCode
+          quizAccessCode: myself.quiz.quizAccessCode,
+          quizLearningObjective: myself.quiz.quizLearningObjective,
+          quizTopic: myself.quiz.quizTopic,
+          quizPublicAccess: myself.quiz.quizPublicAccess
         });
       });
     });
