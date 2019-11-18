@@ -10,9 +10,9 @@ import { AngularFirestore } from '@angular/fire/firestore';
 export class QuizStatComponent implements OnInit {
 
   id: string
-  highScore: any
-  averageScore: number
-  playNum: number
+  topScoreList: any
+  averagePercentCorrect: number
+  numPlays: number
   title: string
 
   constructor(
@@ -26,13 +26,14 @@ export class QuizStatComponent implements OnInit {
     this._Activatedroute.paramMap.subscribe(params => { 
       this.id = params.get('id');
       var myself = this
-      this.db.collection('quizStat').doc(this.id).ref.get().then(function(doc) {
-        myself.playNum = doc.data().playNum;
-        myself.averageScore = doc.data().averageScore
+      this.db.collection('quizes').doc(this.id).ref.get().then(function(doc) {
+        myself.numPlays = doc.data().numPlays;
+        myself.averagePercentCorrect = Math.round(doc.data().averagePercentCorrect * 100)
         myself.title = doc.data().title
-        myself.highScore = doc.data().highScore
-        myself.highScore.sort((a,b) => a.score < b.score);
+        myself.topScoreList = doc.data().topScoreList
+        myself.topScoreList.sort((a,b) => a.score < b.score);
       });
+  
     });
     
   }
