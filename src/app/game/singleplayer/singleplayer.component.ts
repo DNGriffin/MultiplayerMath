@@ -4,11 +4,13 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { LocationStrategy } from '@angular/common';
+import { AngularFireAuth } from '@angular/fire/auth';
 var game: Phaser.Game;
 var database: AngularFirestore = null;
 var id;
 var quizTitle;
 var globalRouter;
+var auth;
 @Component({
   selector: 'app-singleplayer',
   templateUrl: './singleplayer.component.html',
@@ -16,10 +18,11 @@ var globalRouter;
 })
 export class SingleplayerComponent implements OnInit {
 
-  constructor(private db: AngularFirestore, private router: Router, location: LocationStrategy
+  constructor(private db: AngularFirestore, private router: Router, location: LocationStrategy, private af: AngularFireAuth
   ) {
+    auth = af;
     location.onPopState(() => {
-      if(!destroyed){
+      if (!destroyed) {
         destroyed = true;
         game.destroy();
         console.log("destroy game");
@@ -76,6 +79,18 @@ var score = 0;
 var starfield;
 var asteroid1, asteroid2, asteroid3, asteroid4, asteroid5;
 
+// stats
+var numCorrect = 0;
+var numWrong = 0;
+var incorrectQuestionsSession = [];
+var incorrectQuestionsGlobal = [];
+var numPlays = 0;
+var averagePercentCorrect = 0;
+var highScore = 0;
+var highScoreEmail = "";
+var quizDocId = "";
+var topScoreList = [];
+
 var questions = [["Press any key to start?", "", "", "", ""],
 ["What is 6x/6?", "x", "6", "1", "0"],
 ["What is 3(x+2x)", "9x", "9x^2", "6x", "9"],
@@ -85,9 +100,19 @@ var questions = [["Press any key to start?", "", "", "", ""],
 
 var destroyed = false;
 
-function resetVariables(){
+function resetVariables() {
   questionIndex = -1;
   score = 0;
+  numCorrect = 0;
+  numWrong = 0;
+  incorrectQuestionsSession = [];
+  incorrectQuestionsGlobal = [];
+  numPlays = 0;
+  averagePercentCorrect = 0;
+  highScore = 0;
+  highScoreEmail = "";
+  quizDocId = "";
+  topScoreList = [];
 }
 var difficulties = [];
 var difficulty;
@@ -100,27 +125,99 @@ function loadQuestions() {
   globalData.subscribe(
     (res) => {
       var data = res[0].payload.doc.data();
+      quizDocId = res[0].payload.doc.id;
       var tempQuestions = data.questions;
+      var shouldInitStats
+      if (data.highScore) {
+        incorrectQuestionsGlobal = data.incorrectQuestionsGlobal;
+        numPlays = data.numPlays;
+        averagePercentCorrect = data.averagePercentCorrect;
+        highScore = data.highScore;
+        highScoreEmail = data.highScoreEmail;
+        topScoreList = data.topScoreList;
+      } else {
+        shouldInitStats = true;
+      }
+
       var formattedQuestion = [];
       questions = [];
+      var isInTopScore = false;
+      for (var i = 0; i < topScoreList.length; i++) {
+        if (topScoreList[i].email == auth.auth.currentUser.email) {
+          isInTopScore = true;
+        }
+      }
+
+      if (!isInTopScore) {
+        var topScore = { email: auth.auth.currentUser.email, score: 0 };
+        topScoreList.push(topScore);
+      }
+      console.log(`tempQuestions length: ${tempQuestions.length}`);
       for (var key in tempQuestions) {
-        if (tempQuestions[key].question.length>3) {
+        console.log(`question length key: ${tempQuestions[key].question.length}`);
+
+        if (tempQuestions[key].question.length > 1) {
           formattedQuestion = [];
           formattedQuestion[0] = tempQuestions[key].question;
           formattedQuestion[1] = tempQuestions[key].answer;
           formattedQuestion[2] = tempQuestions[key].fake1;
           formattedQuestion[3] = tempQuestions[key].fake2;
           formattedQuestion[4] = tempQuestions[key].fake3;
+          if (shouldInitStats) {
+            incorrectQuestionsGlobal.push(0);
+          }
+          incorrectQuestionsSession.push(0);
           difficulties.push(tempQuestions[key].difficulty);
           questions.push(formattedQuestion);
+
         }
       }
+      console.log(`questions length: ${questions.length}`);
+
     },
     (err) => console.log(err),
     () => nextQuestion()
   );
 }
+function saveQuestions() {
+  for (var i = 0; i < topScoreList.length; i++) {
+    if (topScoreList[i].email == auth.auth.currentUser.email && score > topScoreList[i].score) {
+      topScoreList[i].score = score;
+    }
+  }
+  if (score > highScore) {
+    highScore = score;
+    highScoreEmail = auth.auth.currentUser.email;
+  }
+  var percentCorrect = numCorrect / (numWrong + numCorrect);
+  averagePercentCorrect = (percentCorrect + averagePercentCorrect * numPlays) / (numPlays + 1);
+  numPlays++;
+  console.log(incorrectQuestionsGlobal);
+  console.log("global^ session v");
+  console.log(incorrectQuestionsSession);
 
+  for (var i = 0; i < incorrectQuestionsSession.length; i++) {
+    if (i >= incorrectQuestionsGlobal.length) {
+      incorrectQuestionsGlobal.push(0);
+    }
+    incorrectQuestionsGlobal[i] += incorrectQuestionsSession[i];
+  }
+  console.log(incorrectQuestionsGlobal);
+  console.log("global^ session v");
+  console.log(incorrectQuestionsSession);
+  topScoreList = topScoreList.sort((a, b) => parseInt(b.score) - parseInt(a.score));
+
+  database.doc(`quizes/${quizDocId}`).update(
+    {
+      highScore: highScore,
+      highScoreEmail: highScoreEmail,
+      numPlays: numPlays,
+      averagePercentCorrect: averagePercentCorrect,
+      incorrectQuestionsGlobal: incorrectQuestionsGlobal,
+      topScoreList: topScoreList
+
+    });
+}
 function preload() {
   game.load.spritesheet('missile', 'assets/games/missilesheet.png', 14, 4, 2);
 
@@ -261,11 +358,11 @@ function spaceshipCollide(asteroid, space) {
 }
 
 function render() {
-      // game.debug.body(spaceship);
-      // asteroidGroup.forEach(function (sprite) {
-      //   game.debug.body(sprite);
+  // game.debug.body(spaceship);
+  // asteroidGroup.forEach(function (sprite) {
+  //   game.debug.body(sprite);
 
-      // })
+  // })
 
 }
 function asteroidUpdate() {
@@ -290,8 +387,8 @@ function asteroidUpdate() {
       }
     })
     asteroidGroup.forEach(function (sprite) {
-      var rand = Math.floor(Math.random()*200);
-      if (sprite.y > sprite.height + game.height+rand && numAboveBottomScreen < numAsteroids) {
+      var rand = Math.floor(Math.random() * 200);
+      if (sprite.y > sprite.height + game.height + rand && numAboveBottomScreen < numAsteroids) {
         numAboveBottomScreen++;
         sprite.y = -sprite.height;
         sprite.body.angularVelocity = Math.random() * 200 - Math.random() * 200;
@@ -331,12 +428,18 @@ function answerQuestion(index) {
     if (selectAns == ans) { //if ans correct
       createMissile();
       scoreText.text = `Score: ${++score}`;
+      numCorrect++;
+    } else {
+      if (questionIndex >= 0 && questionIndex < questions.length) {
+        incorrectQuestionsSession[questionIndex]++;
+        numWrong++;
+      }
     }
     nextQuestion();
     canAnswer = false;
     setTimeout(() => {
       canAnswer = true;
-    }, 2000);
+    }, 500);
   }
 }
 
@@ -346,6 +449,9 @@ var isLeftTurn = true;
 function nextQuestion() {
   questionIndex++;
   if (questionIndex >= questions.length) {
+    console.log(`question index: ${questionIndex}`);
+    console.log(`question length: ${questions.length}`);
+
     gameOver();
     return;
   }
@@ -362,15 +468,14 @@ function nextQuestion() {
   threeKeyText.text = tempAnswers[2];
   fourKeyText.text = tempAnswers[3];
   difficulty = difficulties[questionIndex];
-
 }
 function update() {
   asteroidGroup.forEach(function (sprite) {
-    game.physics.arcade.collide(sprite,spaceship, spaceshipCollide);
+    game.physics.arcade.collide(sprite, spaceship, spaceshipCollide);
   })
 
   if (!isGameOver) {
-    
+
     spaceship.y = game.height * 0.5;
 
     asteroidUpdate();
@@ -413,7 +518,7 @@ function update() {
 
 
 function keyHandler(num) {
-    answerQuestion(num);
+  answerQuestion(num);
 }
 
 
@@ -422,7 +527,7 @@ function gameOver() {
   questionText.text = `The completed the game!\nYou scored ${score}!\nThanks for playing!`;
   questionText.fontSize = fontSizer(questionText, game) * 0.7;
   questionText.y = game.world.centerY;
-
+  saveQuestions();
   oneKeyIcon.destroy();
   twoKeyIcon.destroy();
   threeKeyIcon.destroy();
@@ -433,7 +538,6 @@ function gameOver() {
   fourKeyText.destroy();
   setTimeout(() => {
     globalRouter.navigate(['/dashboard']);
-    resetVariables();
     resetVariables();
     isGameOver = false;
     game.destroy();
