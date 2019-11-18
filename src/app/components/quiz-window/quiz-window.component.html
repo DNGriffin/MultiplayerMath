@@ -2,6 +2,7 @@
   <div class="quizOptions" *ngIf="didCreateQuiz">
     <i class="fas fa-edit editButton" [routerLink]="['/editQuiz', this.id]"></i>
     <i class="fas fa-trash deleteButton" (click)="deleteQuiz(this.id)"></i>
+    <i class="fas fa-chart-pie showStatButton" [routerLink]="['/quizStat', this.id]"></i>
   </div>
   <p class="quiz-title">{{ quizData.title }}</p>
   <span class="createdBy">{{ quizData.userEmail }}</span>

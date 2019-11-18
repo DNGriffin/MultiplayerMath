@@ -12,6 +12,7 @@ import { NetworkedComponent } from './game/networked/networked.component';
 import { EditQuizComponent } from './components/edit-quiz/edit-quiz.component';
 import { QuizDetailComponent } from './components/quiz-detail/quiz-detail.component';
 import { DiscoverGenreComponent } from './components/discover-genre/discover-genre.component';
+import { QuizStatComponent } from './quiz-stat/quiz-stat.component';
 
 const routes: Routes = [{
     path: '',
@@ -49,6 +50,9 @@ const routes: Routes = [{
   }, {
     path: 'genres/:genre',
     component: DiscoverGenreComponent
+  }, {
+    path: 'quizStat/:id',
+    component: QuizStatComponent
   }
 ];
 

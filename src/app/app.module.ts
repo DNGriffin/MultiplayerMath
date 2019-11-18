@@ -32,6 +32,7 @@ import { MultiplayerService } from './game/multiplayer.service';
 import { QuizDetailComponent } from './components/quiz-detail/quiz-detail.component';
 import { GenreContainerComponent } from './components/genre-container/genre-container.component';
 import { DiscoverGenreComponent } from './components/discover-genre/discover-genre.component';
+import { QuizStatComponent } from './quiz-stat/quiz-stat.component';
 
 
 var firebaseConfig = {
@@ -65,6 +66,7 @@ var firebaseConfig = {
     QuizDetailComponent,
     GenreContainerComponent,
     DiscoverGenreComponent,
+    QuizStatComponent,
   ],
   imports: [
     BrowserModule,
