@@ -1,24 +1,27 @@
 <div>
-  <app-navbar-logged-in></app-navbar-logged-in>
-  <h1 class="title">{{ title }}</h1>
-  <div class="generalStat">
-    <span>Average Percent: {{ averagePercentCorrect }}%</span>
-    <span>Play Time: {{ numPlays }}</span>
+  <h3 class="leaderboardHeader">Leaderboard and Statistics</h3>
+  <div class="leaderboardDiv">
+    <br>
+    <div class="generalStat">
+      <span>Average Percent: {{ averagePercentCorrect }}%</span>
+      <span>Play Time: {{ numPlays }}</span>
+    </div>
+    <table class="table-fill">
+      <thead>
+        <tr>
+          <th class="text-left">Email</th>
+          <th class="text-left">Score</th>
+        </tr>
+      </thead>
+      <tbody class="table-hover">
+        <tr *ngFor="let hs of topScoreList">
+          <td class="text-left">{{hs.email}}</td>
+          <td class="text-left">{{hs.score}}</td> 
+        </tr>
+      </tbody>
+    </table>
+    <br>
   </div>
-  <table class="table-fill">
-    <thead>
-      <tr>
-        <th class="text-left">Email</th>
-        <th class="text-left">Score</th>
-      </tr>
-    </thead>
-    <tbody class="table-hover">
-      <tr *ngFor="let hs of topScoreList">
-        <td class="text-left">{{hs.email}}</td>
-        <td class="text-left">{{hs.score}}</td> 
-      </tr>
-    </tbody>
-  </table>
 </div>
 
 

@@ -13,7 +13,6 @@ export class QuizStatComponent implements OnInit {
   topScoreList: any
   averagePercentCorrect: number
   numPlays: number
-  title: string
 
   constructor(
     private router: Router,
@@ -27,11 +26,17 @@ export class QuizStatComponent implements OnInit {
       this.id = params.get('id');
       var myself = this
       this.db.collection('quizes').doc(this.id).ref.get().then(function(doc) {
-        myself.numPlays = doc.data().numPlays;
-        myself.averagePercentCorrect = Math.round(doc.data().averagePercentCorrect * 100)
-        myself.title = doc.data().title
-        myself.topScoreList = doc.data().topScoreList
-        myself.topScoreList.sort((a,b) => a.score < b.score);
+        if(doc.data().numPlays) {
+          myself.numPlays = doc.data().numPlays;
+          myself.averagePercentCorrect = Math.round(doc.data().averagePercentCorrect * 100)
+          myself.topScoreList = doc.data().topScoreList
+          myself.topScoreList.sort((a,b) => a.score < b.score);
+        } else {
+          myself.numPlays = 0;
+          myself.averagePercentCorrect = 0;
+          myself.topScoreList = 0;
+        }
+        
       });
   
     });
