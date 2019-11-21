@@ -2,7 +2,7 @@
 <div class="quizzesContainer">
   <div class="scrolling-wrapper">
     <span *ngFor="let quiz of playableQuizes; let i = index">
-      <app-quiz-window class="card" [didCreateQuiz]="quizOwner[i] || this.afAuth.auth.currentUser.email == 'admin@mmath.com'" [id]="quizIds[i]" [quizData]="playableQuizes[i]" (didDelete)="onDeleted($event)"></app-quiz-window>
+      <app-quiz-window class="card" [didCreateQuiz]="quizOwner[i] || this.afAuth.auth.currentUser.email == 'admin@mmath.com'" [id]="quizIds[i]" [numLikes]="playableQuizes[i].numLikes" [likeEmails]="playableQuizes[i].likeEmails" [quizData]="playableQuizes[i]" (didLike)="onLike($event)" (didDelete)="onDeleted($event)"></app-quiz-window>
     </span>
   </div>
 </div>

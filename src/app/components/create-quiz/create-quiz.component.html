@@ -10,6 +10,9 @@
           <form [formGroup]="quizForm" (ngSubmit)="createQuiz(quizForm.value)">
             <label for="quizTitle"><strong>Quiz Title</strong></label>
             <input type="hidden" formControlName="userEmail" [ngModel]="getUserEmail()">
+            <input type="hidden" formControlName="createdAt" [ngModel]="getTimestamp()">
+            <input type="hidden" formControlName="numLikes">
+            <input type="hidden" formArrayName="likeEmails">
             <input id="quizTitle" placeholder="Quiz Title" formControlName="title" class="quizFormInput titleInput" type="text">
             <br><br>
             <label for="quizPublicAccess"><strong>Quiz Public Access</strong></label>

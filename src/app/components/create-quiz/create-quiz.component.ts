@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { QuizService } from 'src/app/quizes/quiz.service';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { AngularFireAuth } from '@angular/fire/auth';
+import * as firebase from 'firebase';
 
 @Component({
   selector: 'app-create-quiz',
@@ -42,7 +43,10 @@ export class CreateQuizComponent implements OnInit {
       quizLearningObjective: '',
       quizTopic: 'Addition',
       quizPublicAccess: true,
-      userEmail: ['', Validators.required]
+      userEmail: ['', Validators.required],
+      createdAt: Date.now(),
+      numLikes: 0,
+      likeEmails: this.fb.array([])
     })
   }
 
@@ -77,6 +81,11 @@ export class CreateQuizComponent implements OnInit {
 
   getUserEmail(): string {
     return this.email;
+  }
+
+  getTimestamp() {
+    const timestamp = firebase.firestore.FieldValue.serverTimestamp();
+    return timestamp;
   }
 
   getEmailAsync(){

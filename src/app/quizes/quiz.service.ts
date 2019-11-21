@@ -24,12 +24,21 @@ export class QuizService {
 
   public createQuiz(quizObj: any) {
     this.quizesCollection.add(quizObj);
-
   }
 
   public deleteQuiz(quizId: string){
     this.quizDoc = this.db.doc(`quizes/${quizId}`);
     this.quizDoc.delete();
+  }
+
+  public likeQuiz(quizId: string, newNumLikes: number, newLikeEmails: any) {
+    this.db
+      .collection('quizes')
+      .doc(quizId)
+      .set( {
+        numLikes: newNumLikes,
+        likeEmails: newLikeEmails
+      }, { merge: true });
   }
 
   public updateQuiz(quizId: string, updatedQuizForm){
