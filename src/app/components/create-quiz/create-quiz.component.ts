@@ -15,6 +15,7 @@ export class CreateQuizComponent implements OnInit {
   numQuestions: number
   uid: string;
   email: string;
+
   constructor(
     private router: Router,
     public fb: FormBuilder,
@@ -39,8 +40,8 @@ export class CreateQuizComponent implements OnInit {
       questions: this.fb.array([]),
       quizAccessCode: '',
       quizLearningObjective: '',
-      quizTopic: '',
-      quizPublicAccess: false,
+      quizTopic: 'Addition',
+      quizPublicAccess: true,
       userEmail: ['', Validators.required]
     })
   }
@@ -58,7 +59,7 @@ export class CreateQuizComponent implements OnInit {
       fake1: ['', Validators.required],
       fake2: ['', Validators.required],
       fake3: ['', Validators.required],
-      difficulty: ['', Validators.required]
+      difficulty: ['easy', Validators.required]
     })
     
     this.questionForms.push(question);
@@ -90,6 +91,11 @@ export class CreateQuizComponent implements OnInit {
       (err) => console.log(err),
       () => console.log("got email")
     );
+  }
+
+  quizIsPrivate(): boolean {
+    var checkbox = <HTMLInputElement> document.getElementById('quizPublicAccess');
+    return !checkbox.checked
   }
 
 }
