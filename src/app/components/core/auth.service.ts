@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import 'rxjs/add/operator/toPromise';
 import { AngularFireAuth } from '@angular/fire/auth';
 import * as firebase from 'firebase/app';
+import { resolve } from 'url';
 
 @Injectable()
 export class AuthService {
@@ -10,10 +11,19 @@ export class AuthService {
    public afAuth: AngularFireAuth
  ){}
 
+ SendVerificationMail() {
+  return this.afAuth.auth.currentUser.sendEmailVerification()
+  .then(res => {
+
+  })
+}
+
   doRegister(value){
     return new Promise<any>((resolve, reject) => {
       firebase.auth().createUserWithEmailAndPassword(value.email, value.password)
       .then(res => {
+        alert('Please validate your email address. Kindly check your inbox.');
+        this.SendVerificationMail();
         resolve(res);
       }, err => reject(err))
     })
@@ -22,8 +32,12 @@ export class AuthService {
   doLogin(value){
     return new Promise<any>((resolve, reject) => {
       firebase.auth().signInWithEmailAndPassword(value.email, value.password)
-      .then(res => {
-        resolve(res);
+      .then(result => {
+        if (result.user.emailVerified !== true) {
+          alert('Please validate your email address. Kindly check your inbox.');
+        } else {
+          resolve();
+        }
       }, err => reject(err))
     })
   }
