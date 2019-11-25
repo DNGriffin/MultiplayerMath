@@ -33,6 +33,7 @@ import { QuizDetailComponent } from './components/quiz-detail/quiz-detail.compon
 import { GenreContainerComponent } from './components/genre-container/genre-container.component';
 import { DiscoverGenreComponent } from './components/discover-genre/discover-genre.component';
 import { QuizStatComponent } from './quiz-stat/quiz-stat.component';
+import { ForgetPasswordComponent } from './components/forget-password/forget-password.component';
 
 
 var firebaseConfig = {
@@ -67,6 +68,7 @@ var firebaseConfig = {
     GenreContainerComponent,
     DiscoverGenreComponent,
     QuizStatComponent,
+    ForgetPasswordComponent,
   ],
   imports: [
     BrowserModule,
