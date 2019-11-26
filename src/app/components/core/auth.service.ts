@@ -11,6 +11,14 @@ export class AuthService {
    public afAuth: AngularFireAuth
  ){}
 
+ resetPassword(email: string) {
+  const fbAuth = firebase.auth();
+
+  return fbAuth.sendPasswordResetEmail(email)
+    .then(() => alert('Rest Email Sent Successfully!'))
+    .catch((error) => alert(error))
+}
+
  SendVerificationMail() {
   return this.afAuth.auth.currentUser.sendEmailVerification()
   .then(res => {
