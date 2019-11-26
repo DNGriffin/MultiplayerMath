@@ -15,7 +15,7 @@ export class AuthService {
   const fbAuth = firebase.auth();
 
   return fbAuth.sendPasswordResetEmail(email)
-    .then(() => alert('Email Sent Successfully!'))
+    .then(() => alert('Rest Email Sent Successfully!'))
     .catch((error) => alert(error))
 }
 
