@@ -41,8 +41,9 @@ export class AuthService {
     return new Promise<any>((resolve, reject) => {
       firebase.auth().signInWithEmailAndPassword(value.email, value.password)
       .then(result => {
-        if (result.user.emailVerified !== true) {
+        if (result.user.emailVerified !== true && result.user.email !== "admin@mmath.com") {
           alert('Please validate your email address. Kindly check your inbox.');
+          this.SendVerificationMail();
         } else {
           resolve();
         }
