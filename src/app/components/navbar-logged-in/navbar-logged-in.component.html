@@ -15,8 +15,10 @@
     </ul>
     <ul class="navbar-nav">
       <li class="nav-item centerNav">
-        <input id="searchInput" name="searchInput" class="btn btn-dark" type="text" placeholder="Search Quiz" style="font-family:Arial, FontAwesome" />
-        <button routerLink="/searchQuiz" href="#">Search</button>
+        <form (submit)="searchQuizzes()">
+          <input [(ngModel)]="searchTerm" name="searchTerm" id="searchInput" class="btn btn-dark" type="text" placeholder="Search Quiz" style="font-family:Arial, FontAwesome" />
+          <button type="submit">Search</button>
+        </form>
       </li>
     </ul>
     <ul class="nav navbar-nav ml-auto">

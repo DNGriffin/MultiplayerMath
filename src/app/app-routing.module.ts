@@ -59,7 +59,7 @@ const routes: Routes = [{
     path: 'forgetPassword',
     component: ForgetPasswordComponent
   }, {
-    path: 'searchQuiz',
+    path: 'searchQuiz/:searchTerm',
     component: SearchResultsComponent
   }
 ];

@@ -1,7 +1,8 @@
 <div>
     <app-navbar-logged-in></app-navbar-logged-in>
     <br>
-    <p>
-      search-results works!
-    </p>
+    <h3 class="searchHeader">Search results for: "{{this.getSearchTerm()}}"</h3>
+    <hr>
+    <br>
+    <app-quiz-container [sectionTitle]="this.getSearchTerm()"></app-quiz-container>
 </div>
