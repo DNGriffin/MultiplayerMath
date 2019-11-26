@@ -1,3 +1,24 @@
 .white-color {
   color: white;
 }
+
+/*Search input styling*/
+#searchInput::placeholder{
+  text-align: center;
+  color: rgb(167, 159, 159);
+}
+
+/*navBar search field styling*/
+#searchInput{
+  background-color:  rgb(244, 244, 244);
+  width: 215px;
+  height: 28px;
+  padding: 8px;
+  border: solid 1px rgb(167, 159, 159);
+  color: black;
+  text-align: left;
+}
+#searchInput:focus{
+  border: solid 1px rgb(167, 159, 159);
+  background-color: white;
+}

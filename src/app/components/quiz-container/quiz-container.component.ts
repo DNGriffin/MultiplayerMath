@@ -53,6 +53,8 @@ export class QuizContainerComponent implements OnInit {
           this.getGenreQuizzes(this.sectionTitle);
         } else if (this.sectionTitle == "New") {
           this.getNewQuizes();
+        } else {
+          this.getSearchResults(this.sectionTitle);
         }
         break; 
      }
@@ -171,6 +173,24 @@ export class QuizContainerComponent implements OnInit {
               this.playableQuizes.push(data);
               this.quizOwner.push(false);
             }
+          }
+        }
+      },
+      (err) => console.log(err),
+      () => console.log("got sub emails")
+    );
+  }
+
+  getSearchResults(searchTerm: string){
+    var searchResults = this.db.collection('quizes', ref => ref.where('quizPublicAccess', '==', true).where('title', '==', searchTerm)).snapshotChanges();
+    searchResults.subscribe(
+      (res) => {
+        for(var j = 0;j < res.length; j++){
+          var data: any = res[j].payload.doc.data();
+          if(!this.quizIds.includes(res[j].payload.doc.id)) {
+            this.quizIds.push(res[j].payload.doc.id);
+            this.playableQuizes.push(data);
+            this.quizOwner.push(false);
           }
         }
       },
