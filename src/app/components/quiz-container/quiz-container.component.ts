@@ -19,6 +19,7 @@ export class QuizContainerComponent implements OnInit {
   quizIds = [];
   playableQuizes = [];
   quizOwner = [];
+  didSubmitLike = false;
 
   topics: string[] = ['Addition', 'Subtraction', 'Multiplication', 'Division', 'Fractions', 'Decimals', 'Algebra', 'Geometry', 'Calculus', 'Computer Science', 'Miscellaneous'];
 
@@ -50,6 +51,8 @@ export class QuizContainerComponent implements OnInit {
       default: {
         if(this.topics.includes(this.sectionTitle)) {
           this.getGenreQuizzes(this.sectionTitle);
+        } else if (this.sectionTitle == "New") {
+          this.getNewQuizes();
         }
         break; 
      }
@@ -57,7 +60,7 @@ export class QuizContainerComponent implements OnInit {
   }
 
   getMyQuizes(){
-    var myQuizes = this.db.collection('quizes', ref => ref.where('userEmail', '==', this.afAuth.auth.currentUser.email)).snapshotChanges();
+    var myQuizes = this.db.collection('quizes', ref => ref.where('userEmail', '==', this.afAuth.auth.currentUser.email).orderBy('createdAt', 'desc')).snapshotChanges();
     myQuizes.subscribe(
       (res) => {
         for(var j = 0;j < res.length; j++){
@@ -75,7 +78,7 @@ export class QuizContainerComponent implements OnInit {
   }
 
   getAdminQuizzes() {
-    var adminQuizes = this.db.collection('quizes', ref => ref.where('userEmail', '==', "admin@mmath.com")).snapshotChanges();
+    var adminQuizes = this.db.collection('quizes', ref => ref.where('userEmail', '==', "admin@mmath.com").orderBy('numLikes', 'desc')).snapshotChanges();
     adminQuizes.subscribe(
       (res) => {
         for(var j = 0;j < res.length; j++){
@@ -111,6 +114,7 @@ export class QuizContainerComponent implements OnInit {
     );
   }
 
+  //Consider breaking this into different subcription components (click on a box for a particular subscriber)
   getQuizesFromSubs(){
     for(var i = 0; i < this.subs.length; i++){
       var quizCol = this.db.collection('quizes', ref => ref.where('userEmail', '==', this.subs[i].email)).snapshotChanges();
@@ -137,13 +141,31 @@ export class QuizContainerComponent implements OnInit {
     );
   }
 
+  getNewQuizes(){
+    var myQuizes = this.db.collection('quizes', ref => ref.where('quizPublicAccess', '==', true).orderBy('createdAt', 'desc').limit(10)).snapshotChanges();
+    myQuizes.subscribe(
+      (res) => {
+        for(var j = 0;j < res.length; j++){
+          var data: any = res[j].payload.doc.data();
+          if(!this.quizIds.includes(res[j].payload.doc.id)) {
+            this.quizIds.push(res[j].payload.doc.id);
+            this.playableQuizes.push(data);
+            this.quizOwner.push(false);
+          }
+        }
+      },
+      (err) => console.log(err),
+      () => console.log("got sub emails")
+    );
+  }
+
   getGenreQuizzes(genre: string) {
-    var genreQuizzes = this.db.collection('quizes', ref => ref.where('quizTopic', '==', genre)).snapshotChanges();
+    var genreQuizzes = this.db.collection('quizes', ref => ref.where('quizTopic', '==', genre).orderBy('numLikes', 'desc')).snapshotChanges();
     genreQuizzes.subscribe(
       (res) => {
         for(var j = 0;j < res.length; j++){
           var data: any = res[j].payload.doc.data();
-          if(data.quizPublicAccess) {
+          if(data.quizPublicAccess && data.userEmail != "admin@mmath.com") {
             if(!this.quizIds.includes(res[j].payload.doc.id)) {
               this.quizIds.push(res[j].payload.doc.id);
               this.playableQuizes.push(data);
@@ -167,5 +189,31 @@ export class QuizContainerComponent implements OnInit {
     this.quizOwner = [];
     this.playableQuizes = [];
     this.getQuizesToDisplay()
+  }
+
+  onLike(quizId: string) {
+    var quiz = this.db.collection('quizes').doc(quizId).snapshotChanges();
+    this.didSubmitLike = false;
+    quiz.subscribe(
+      (res) => {
+        var data: any = res.payload.data();
+        if(!this.didSubmitLike) {
+          this.didSubmitLike = true;
+          if(data.likeEmails.includes(this.afAuth.auth.currentUser.email)) {
+            var newLikeEmails = data.likeEmails.filter(email => email !== this.afAuth.auth.currentUser.email);
+            var newNumLikes = data.numLikes - 1;
+            this.quizService.likeQuiz(quizId, newNumLikes, newLikeEmails);
+          } else {
+            data.likeEmails.push(this.afAuth.auth.currentUser.email);
+            var nextNumLikes = data.numLikes + 1;
+            this.quizService.likeQuiz(quizId, nextNumLikes, data.likeEmails);
+          }
+          this.quizIds = [];
+          this.quizOwner = [];
+          this.playableQuizes = [];
+          this.getQuizesToDisplay();
+        }
+      }
+    )
   }
 }

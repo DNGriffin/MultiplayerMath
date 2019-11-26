@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { QuizService } from 'src/app/quizes/quiz.service';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { AngularFireAuth } from '@angular/fire/auth';
+import * as firebase from 'firebase';
 
 @Component({
   selector: 'app-create-quiz',
@@ -15,6 +16,7 @@ export class CreateQuizComponent implements OnInit {
   numQuestions: number
   uid: string;
   email: string;
+
   constructor(
     private router: Router,
     public fb: FormBuilder,
@@ -39,9 +41,12 @@ export class CreateQuizComponent implements OnInit {
       questions: this.fb.array([]),
       quizAccessCode: '',
       quizLearningObjective: '',
-      quizTopic: '',
-      quizPublicAccess: false,
-      userEmail: ['', Validators.required]
+      quizTopic: 'Addition',
+      quizPublicAccess: true,
+      userEmail: ['', Validators.required],
+      createdAt: Date.now(),
+      numLikes: 0,
+      likeEmails: this.fb.array([])
     })
   }
 
@@ -58,7 +63,7 @@ export class CreateQuizComponent implements OnInit {
       fake1: ['', Validators.required],
       fake2: ['', Validators.required],
       fake3: ['', Validators.required],
-      difficulty: ['', Validators.required]
+      difficulty: ['easy', Validators.required]
     })
     
     this.questionForms.push(question);
@@ -78,6 +83,11 @@ export class CreateQuizComponent implements OnInit {
     return this.email;
   }
 
+  getTimestamp() {
+    const timestamp = firebase.firestore.FieldValue.serverTimestamp();
+    return timestamp;
+  }
+
   getEmailAsync(){
     var users;
 
@@ -90,6 +100,11 @@ export class CreateQuizComponent implements OnInit {
       (err) => console.log(err),
       () => console.log("got email")
     );
+  }
+
+  quizIsPrivate(): boolean {
+    var checkbox = <HTMLInputElement> document.getElementById('quizPublicAccess');
+    return !checkbox.checked
   }
 
 }

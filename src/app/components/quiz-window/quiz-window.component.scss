@@ -11,7 +11,6 @@
   display: table;
   background-image: url("../../../assets/img/chalkBoard.png");
   background-position: 550px 400px;
-  cursor: pointer;
 }
 
 .quiz-title:hover, .deleteButton:hover, .editButton:hover {
@@ -23,6 +22,7 @@
   position: relative;
   top: 35px;
   font-size: 1.3em;
+  cursor: pointer;
 }
 
 button{
@@ -49,4 +49,28 @@ button{
   left: 50%;
   transform: translateX(-50%);
   font-size: .75em;
+}
+
+.likeCount {
+  position: absolute;
+  bottom: 5px;
+  font-size: .75em;
+  text-align: right;
+}
+
+.likeIconLiked {
+  cursor: pointer;
+  position: absolute;
+  bottom: 10px;
+  right: 20px;
+  text-align: right;
+  color: rgb(236, 214, 114);
+}
+
+.likeIconNotLiked {
+  cursor: pointer;
+  position: absolute;
+  bottom: 10px;
+  right: 20px;
+  text-align: right;
 }

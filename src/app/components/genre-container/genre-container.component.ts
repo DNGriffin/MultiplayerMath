@@ -7,7 +7,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class GenreContainerComponent implements OnInit {
 
-  genres: string[] = ['Addition', 'Subtraction', 'Multiplication', 'Division', 'Fractions', 'Decimals', 'Algebra', 'Geometry', 'Calculus', 'Computer Science', 'Miscellaneous'];
+  genres: string[] = ['New', 'Addition', 'Subtraction', 'Multiplication', 'Division', 'Fractions', 'Decimals', 'Algebra', 'Geometry', 'Calculus', 'CompSci', 'Miscellaneous'];
 
   constructor() { }
 

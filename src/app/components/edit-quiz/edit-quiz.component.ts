@@ -126,4 +126,9 @@ export class EditQuizComponent implements OnInit {
     );
   }
 
+  quizIsPrivate(): boolean {
+    var checkbox = <HTMLInputElement> document.getElementById('quizPublicAccess');
+    return !checkbox.checked
+  }
+
 }

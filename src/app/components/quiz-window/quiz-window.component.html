@@ -1,10 +1,13 @@
-<div class="quiz-div" [routerLink]="['/quiz', this.id]">
+<div class="quiz-div">
   <div class="quizOptions" *ngIf="didCreateQuiz">
     <i class="fas fa-edit editButton" [routerLink]="['/editQuiz', this.id]"></i>
     <i class="fas fa-trash deleteButton" (click)="deleteQuiz(this.id)"></i>
   </div>
-  <p class="quiz-title">{{ quizData.title }}</p>
+  <p class="quiz-title" [routerLink]="['/quiz', this.id]">{{ quizData.title }}</p>
+  <span class="likeCount">Likes: {{ numLikes }}</span>
   <span class="createdBy">{{ quizData.userEmail }}</span>
+  <i *ngIf="didLikedEmail()" class="fas fa-thumbs-up likeIconLiked" (click)="likeQuiz(this.id)"></i>
+  <i *ngIf="!didLikedEmail()" class="fas fa-thumbs-up likeIconNotLiked" (click)="likeQuiz(this.id)"></i>
 </div>
 
 <router-outlet></router-outlet>
