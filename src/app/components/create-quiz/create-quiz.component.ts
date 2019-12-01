@@ -24,6 +24,7 @@ export class CreateQuizComponent implements OnInit {
     private db: AngularFirestore,
     private afAuth: AngularFireAuth,
   ) {    
+    
     setTimeout(() => {
       this.uid = afAuth.auth.currentUser.uid;
       this.getEmailAsync();

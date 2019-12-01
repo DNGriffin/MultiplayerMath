@@ -1,1 +1,62 @@
-<div id="networked"></div>
+<div [hidden]="!showGame" id="networked"></div>
+<div [hidden]="showGame">
+  <app-navbar-logged-in></app-navbar-logged-in>
+  <br><br>
+  <h1 class="title">Multiplayer {{quizTitle}}</h1>
+  <div class="container">
+        <h2>Join an Auto-Filled Match <button (click)="autoFill()" class="btn btn-dark">Quick Play</button></h2>
+        <p>To play with a friend, invite them.</p>
+        <p>To play with a random, click Quick Play</p>
+        <hr>
+        <h2>Waiting for a player to join you... </h2>
+        <p></p>
+
+    <div class="row">
+
+      <div class="col-sm">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">Friends</th>
+                  <th scope="col"> </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let friend of friends; let i = index">
+                  <td scope="col"> {{friend}} </td>
+                  <td scope="col"><button (click)="inviteFriendHelper(friend)" class="btn btn-dark">Invite</button></td>
+                </tr>
+              </tbody>
+            </table>
+      </div>
+      <div class="col-sm">
+            <div>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">From</th>
+                    <th scope="col">Quiz</th>
+                    <th scope="col"> </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let inv of invites.slice().reverse(); let i = index">
+                    <td class="request" scope="col"> {{inv.email}} </td>
+                    <td class="request" scope="col"> {{inv.title}} </td>
+                    <td scope="col"><button (click)="joinFromInvite(i)" class="btn btn-dark">Join</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          
+    </div>
+    
+  </div>
+ 
+  <br><br>
+  <div class="container"></div>
+
+
+
+</div>

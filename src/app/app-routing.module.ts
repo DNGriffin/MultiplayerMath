@@ -14,6 +14,7 @@ import { QuizDetailComponent } from './components/quiz-detail/quiz-detail.compon
 import { DiscoverGenreComponent } from './components/discover-genre/discover-genre.component';
 import { QuizStatComponent } from './quiz-stat/quiz-stat.component';
 import { ForgetPasswordComponent } from './components/forget-password/forget-password.component';
+import { FriendsComponent } from './components/friends/friends.component';
 
 const routes: Routes = [{
     path: '',
@@ -57,6 +58,9 @@ const routes: Routes = [{
   }, {
     path: 'forgetPassword',
     component: ForgetPasswordComponent
+  }, {
+    path: 'friends',
+    component: FriendsComponent
   }
 ];
 

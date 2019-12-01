@@ -59,7 +59,10 @@ export class RegisterComponent {
    addUserToCollection(id, email){
     this.db.collection('users').add({
       id: id,
-      email: email
+      email: email,
+      friends: [],
+      requests: [],
+      invites: []
     }).then(ref => {
 
     });

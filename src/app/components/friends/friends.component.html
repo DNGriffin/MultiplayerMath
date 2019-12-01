@@ -1,0 +1,105 @@
+<div>
+  <app-navbar-logged-in></app-navbar-logged-in>
+  <br><br>
+  <h1 class="title">Friends</h1>
+  <br><br>
+  <div class="container">
+    <div class="row">
+      <div class="col-sm">
+          <h3>Friends</h3>
+
+        <div>
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Friends</th>
+                <th scope="col"> </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let friend of friends; let i = index">
+                <td scope="col"> {{friend}} </td>
+                <td scope="col"><i class="fas fa-minus-circle unsubscribe-icon" (click)="removeFriend(friend)"></i></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="col-sm">
+          <h3>Requests</h3>
+
+        <div>
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Requests</th>
+                <th scope="col"> </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let request of requests; let i = index">
+                <td class="request" scope="col"> {{request}} </td>
+                <td scope="col"><button (click)="acceptRequest(request)" class="btn btn-dark">Accept</button> <button
+                    (click)="ignoreRequest(request)" class="btn btn-dark">Ignore</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="col-sm">
+        <h3>Invites</h3>
+        <div>
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">From</th>
+                <th scope="col">Quiz</th>
+                <th scope="col"> </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let inv of invites.slice().reverse(); let i = index">
+                <td class="request" scope="col"> {{inv.email}} </td>
+                <td class="request" scope="col"> {{inv.title}} </td>
+                <td scope="col"><button (click)="joinFromInvite(i)" class="btn btn-dark">Join</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+
+
+  <br><br>
+
+  <div class="form-div">
+    <h5 class="header">Add a Friend</h5>
+    <!-- <p>Subscribe to a user's access code to play all of its games.</p> -->
+
+    <br>
+    <div class="button-div">
+      <div class="container">
+        <div class="row">
+          <div class="col">
+            <form [formGroup]="addFriendForm">
+              <div class="form-group">
+                <div>
+                  <label>Email address</label>
+                  <input type="email" formControlName="email" class="form-control">
+                  <br>
+                </div>
+              </div>
+              <br>
+              <button type="submit" (click)="addFriend(addFriendForm.value)" class="btn btn-dark">Add Friend</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br><br>
+
+</div>

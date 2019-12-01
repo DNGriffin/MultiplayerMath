@@ -12,6 +12,12 @@
       <li class="nav-item">
         <a routerLink="/subscriptions" class="nav-link" href="#">Subscriptions</a>
       </li>
+      <li class="nav-item">
+        <a routerLink="/friends" class="nav-link" href="#">Friends<span *ngIf="requests.length > 0" class="badge badge-light">{{requests.length}}</span></a>
+      </li>
+      <li class="nav-item">
+          <a routerLink="/friends" class="nav-link" href="#">Invites<span class="badge badge-light">{{invites.length}}</span></a>
+        </li>
     </ul>
     <ul class="nav navbar-nav ml-auto">
       <li class="nav-item">
