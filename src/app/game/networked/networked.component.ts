@@ -86,7 +86,7 @@ export class NetworkedComponent implements OnInit, OnDestroy {
     this.socket.emit("changeRoom", this.quizId);
     this.showGame = true;
   }
-  ngOnDestroy(){
+  ngOnDestroy() {
     this.socket.emit("leave", "null");
 
   }
@@ -510,7 +510,7 @@ export class NetworkedComponent implements OnInit, OnDestroy {
 
   update() {
     this.framesWithoutTeammate++;
-    if(this.framesWithoutTeammate > 300){
+    if (this.framesWithoutTeammate > 300) {
       this.socket.emit('cleanRoom', this.quizId);
       this.framesWithoutTeammate = 0;
     }

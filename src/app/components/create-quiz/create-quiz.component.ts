@@ -23,13 +23,13 @@ export class CreateQuizComponent implements OnInit {
     private quizService: QuizService,
     private db: AngularFirestore,
     private afAuth: AngularFireAuth,
-  ) {    
-    
-    setTimeout(() => {
-      this.uid = afAuth.auth.currentUser.uid;
-      this.getEmailAsync();
-    }, 600);
-    
+  ) {
+    afAuth.auth.onAuthStateChanged((user) => {
+      if (user) {
+        this.uid = afAuth.auth.currentUser.uid;
+        this.getEmailAsync();
+      }
+    });
   }
 
   difficulties: string[] = ['easy', 'medium', 'hard'];
@@ -66,7 +66,7 @@ export class CreateQuizComponent implements OnInit {
       fake3: ['', Validators.required],
       difficulty: ['easy', Validators.required]
     })
-    
+
     this.questionForms.push(question);
   }
 
@@ -89,7 +89,7 @@ export class CreateQuizComponent implements OnInit {
     return timestamp;
   }
 
-  getEmailAsync(){
+  getEmailAsync() {
     var users;
 
     users = this.db.collection('users', ref => ref.where('id', '==', this.uid)).snapshotChanges();
@@ -104,7 +104,7 @@ export class CreateQuizComponent implements OnInit {
   }
 
   quizIsPrivate(): boolean {
-    var checkbox = <HTMLInputElement> document.getElementById('quizPublicAccess');
+    var checkbox = <HTMLInputElement>document.getElementById('quizPublicAccess');
     return !checkbox.checked
   }
 

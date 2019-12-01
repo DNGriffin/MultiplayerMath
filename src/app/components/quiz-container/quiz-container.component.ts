@@ -30,8 +30,12 @@ export class QuizContainerComponent implements OnInit {
 
   ngOnInit() {
     setTimeout(() => {
-      this.getQuizesToDisplay();
     }, 600);
+    this.afAuth.auth.onAuthStateChanged((user) => {
+      if (user) {
+        this.getQuizesToDisplay();
+      }
+    });
   }
 
   getQuizesToDisplay() {

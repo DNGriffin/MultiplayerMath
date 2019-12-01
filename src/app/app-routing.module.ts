@@ -14,11 +14,8 @@ import { QuizDetailComponent } from './components/quiz-detail/quiz-detail.compon
 import { DiscoverGenreComponent } from './components/discover-genre/discover-genre.component';
 import { QuizStatComponent } from './quiz-stat/quiz-stat.component';
 import { ForgetPasswordComponent } from './components/forget-password/forget-password.component';
-<<<<<<< HEAD
 import { FriendsComponent } from './components/friends/friends.component';
-=======
 import { SearchResultsComponent } from './components/search-results/search-results.component';
->>>>>>> 64f950da63f3c70d74b074686fe82c5c7214788c
 
 const routes: Routes = [{
     path: '',
@@ -63,13 +60,11 @@ const routes: Routes = [{
     path: 'forgetPassword',
     component: ForgetPasswordComponent
   }, {
-<<<<<<< HEAD
     path: 'friends',
     component: FriendsComponent
-=======
+  },{
     path: 'searchQuiz/:searchTerm',
     component: SearchResultsComponent
->>>>>>> 64f950da63f3c70d74b074686fe82c5c7214788c
   }
 ];
 

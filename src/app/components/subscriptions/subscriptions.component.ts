@@ -26,10 +26,12 @@ export class SubscriptionsComponent implements OnInit {
     private afAuth: AngularFireAuth,
   ) {
     this.createForm();
-    setTimeout(() => {
-      this.getSubscriptionEmails();
-      
-    }, 600);
+    
+    afAuth.auth.onAuthStateChanged((user) => {
+      if (user) {
+        this.getSubscriptionEmails();
+      }
+    });
     
   }
 
