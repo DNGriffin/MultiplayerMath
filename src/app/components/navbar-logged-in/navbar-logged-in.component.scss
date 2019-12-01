@@ -1,6 +1,29 @@
 .white-color {
   color: white;
 }
+<<<<<<< HEAD
 span{
   margin-left: 2px;
+=======
+
+/*Search input styling*/
+#searchInput::placeholder{
+  text-align: center;
+  color: rgb(167, 159, 159);
+}
+
+/*navBar search field styling*/
+#searchInput{
+  background-color:  rgb(244, 244, 244);
+  width: 215px;
+  height: 28px;
+  padding: 8px;
+  border: solid 1px rgb(167, 159, 159);
+  color: black;
+  text-align: left;
+}
+#searchInput:focus{
+  border: solid 1px rgb(167, 159, 159);
+  background-color: white;
+>>>>>>> 64f950da63f3c70d74b074686fe82c5c7214788c
 }

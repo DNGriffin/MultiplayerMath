@@ -26,6 +26,7 @@ import { QuizContainerComponent } from './components/quiz-container/quiz-contain
 import { CreateQuizComponent } from './components/create-quiz/create-quiz.component';
 import { SingleplayerComponent } from './game/singleplayer/singleplayer.component';
 import { NetworkedComponent } from './game/networked/networked.component';
+import { FormsModule } from '@angular/forms';
 
 import { EditQuizComponent } from './components/edit-quiz/edit-quiz.component';
 import { MultiplayerService } from './game/multiplayer.service';
@@ -34,7 +35,11 @@ import { GenreContainerComponent } from './components/genre-container/genre-cont
 import { DiscoverGenreComponent } from './components/discover-genre/discover-genre.component';
 import { QuizStatComponent } from './quiz-stat/quiz-stat.component';
 import { ForgetPasswordComponent } from './components/forget-password/forget-password.component';
+<<<<<<< HEAD
 import { FriendsComponent } from './components/friends/friends.component';
+=======
+import { SearchResultsComponent } from './components/search-results/search-results.component';
+>>>>>>> 64f950da63f3c70d74b074686fe82c5c7214788c
 
 
 var firebaseConfig = {
@@ -70,7 +75,11 @@ var firebaseConfig = {
     DiscoverGenreComponent,
     QuizStatComponent,
     ForgetPasswordComponent,
+<<<<<<< HEAD
     FriendsComponent,
+=======
+    SearchResultsComponent,
+>>>>>>> 64f950da63f3c70d74b074686fe82c5c7214788c
   ],
   imports: [
     BrowserModule,
@@ -79,7 +88,8 @@ var firebaseConfig = {
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule, // firestore
     AngularFireAuthModule, // auth
-    AngularFireStorageModule // storage
+    AngularFireStorageModule, // storage
+    FormsModule
   ],
   providers: [AuthService, UserService, AuthGuard, MultiplayerService],
   bootstrap: [AppComponent]

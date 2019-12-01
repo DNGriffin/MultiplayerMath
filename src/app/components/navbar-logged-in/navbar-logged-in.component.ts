@@ -13,6 +13,8 @@ import { AngularFireAuth } from '@angular/fire/auth';
 export class NavbarLoggedInComponent implements OnInit {
   invites = [];
   requests = [];
+  searchTerm: string;
+
   constructor(
     private router: Router,
     public fb: FormBuilder,
@@ -27,6 +29,9 @@ export class NavbarLoggedInComponent implements OnInit {
       }
     });
   }
+
+
+  
 
   ngOnInit() {
   }
@@ -46,6 +51,10 @@ export class NavbarLoggedInComponent implements OnInit {
       (err) => console.log(err),
       () => console.log("")
     );
+  }
+
+  searchQuizzes() {
+    this.router.navigate([`../searchQuiz/${this.searchTerm}`]);
   }
 
 }
