@@ -40,15 +40,7 @@ export class QuizContainerComponent implements OnInit {
         this.getQuizesToDisplay();
       }
     });
-
-    // this.sub = this.route.params.subscribe(params => {
-    //   this.paramsChanged(params['id']);
-    // });
   }
-
-  // reloadWithNewSearchTerm(term:string) {
-  //   this.router.navigate([`../searchQuiz/${term}`]);
-  // }
 
   getQuizesToDisplay() {
     switch(this.sectionId) {
