@@ -4,10 +4,10 @@
   <h1 class="dashboardHeader">Multiplayer Math</h1>
   <hr>
   <br><br>
-  <app-quiz-container [sectionTitle]="'Quizzes out of the Box'"></app-quiz-container>
-  <app-quiz-container [sectionTitle]="'My Quizzes'"></app-quiz-container>
-  <app-quiz-container [sectionTitle]="'My Subscriptions'"></app-quiz-container>
+  <app-quiz-container [sectionTitle]="'Quizzes out of the Box'" [sectionId]="'adminQuizzes'"></app-quiz-container>
   <app-genre-container></app-genre-container>
+  <app-quiz-container [sectionTitle]="'My Quizzes'" [sectionId]="'myQuizzes'"></app-quiz-container>
+  <app-quiz-container [sectionTitle]="'My Subscriptions'" [sectionId]="'subscriptionQuizzes'"></app-quiz-container>
   <br>
 </div>
 
