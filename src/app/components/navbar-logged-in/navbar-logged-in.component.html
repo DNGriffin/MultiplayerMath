@@ -16,7 +16,7 @@
         <a routerLink="/friends" class="nav-link" href="#">Friends<span *ngIf="requests.length > 0" class="badge badge-light">{{requests.length}}</span></a>
       </li>
       <li class="nav-item">
-          <a routerLink="/friends" class="nav-link" href="#">Invites<span class="badge badge-light">{{invites.length}}</span></a>
+          <a routerLink="/friends" class="nav-link" href="#">Invites<span class="numInvites badge badge-light">{{invites.length}}</span></a>
         </li>
     </ul>
     <ul class="navbar-nav">

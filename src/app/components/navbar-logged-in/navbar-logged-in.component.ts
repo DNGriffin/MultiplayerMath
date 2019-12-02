@@ -54,7 +54,9 @@ export class NavbarLoggedInComponent implements OnInit {
   }
 
   searchQuizzes() {
-    this.router.navigate([`../searchQuiz/${this.searchTerm}`]);
+    this.router.navigateByUrl('/dashboard', { skipLocationChange: true }).then(() => {
+      this.router.navigate([`../searchQuiz/${this.searchTerm}`]);
+    });
   }
 
 }

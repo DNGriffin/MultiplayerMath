@@ -4,6 +4,7 @@ import { defineBase } from '@angular/core/src/render3';
 import { FirebaseApp } from '@angular/fire';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { AngularFireAuth } from '@angular/fire/auth';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-quiz-container',
@@ -13,6 +14,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
 export class QuizContainerComponent implements OnInit {
 
   @Input() sectionTitle: string;
+  @Input() sectionId: string;
 
   quizes: any
   subs: any[];
@@ -25,7 +27,9 @@ export class QuizContainerComponent implements OnInit {
 
   constructor(private quizService: QuizService,
     private db: AngularFirestore,
-    private afAuth: AngularFireAuth
+    private afAuth: AngularFireAuth,
+    private route : ActivatedRoute,
+    private router : Router
     ) { }
 
   ngOnInit() {
@@ -36,30 +40,39 @@ export class QuizContainerComponent implements OnInit {
         this.getQuizesToDisplay();
       }
     });
+
+    // this.sub = this.route.params.subscribe(params => {
+    //   this.paramsChanged(params['id']);
+    // });
   }
 
+  // reloadWithNewSearchTerm(term:string) {
+  //   this.router.navigate([`../searchQuiz/${term}`]);
+  // }
+
   getQuizesToDisplay() {
-    switch(this.sectionTitle) {
-      case 'My Quizzes': {
+    switch(this.sectionId) {
+      case 'myQuizzes': {
         this.getMyQuizes();
         break;
       }
-      case 'Quizzes out of the Box': {
+      case 'adminQuizzes': {
         this.getAdminQuizzes();
         break;
       }
-      case 'My Subscriptions': {
+      case 'subscriptionQuizzes': {
         this.getSubscriptionQuizzes();
         break;
       }
-      default: {
-        if(this.topics.includes(this.sectionTitle)) {
-          this.getGenreQuizzes(this.sectionTitle);
-        } else if (this.sectionTitle == "New") {
+      case 'genreQuizzes': {
+        if(this.sectionTitle == "New"){
           this.getNewQuizes();
         } else {
-          this.getSearchResults(this.sectionTitle);
+          this.getGenreQuizzes(this.sectionTitle);
         }
+      }
+      default: {
+        this.getSearchResults(this.sectionTitle);
         break; 
      }
     }
