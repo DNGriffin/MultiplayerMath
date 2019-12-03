@@ -127,7 +127,6 @@ import { AngularFireAuth } from '@angular/fire/auth';
   }
   
   loadQuestions() {
-    this.nextQuestion();
   }
   saveQuestions() {
   }
@@ -227,6 +226,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
     this.ammo1 = this.createMissileAmmo();
     this.ammo2 = this.createMissileAmmo();
     this.ammo3 = this.createMissileAmmo();
+    this.nextQuestion();
 
   
   }
@@ -401,6 +401,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
   
   
   nextQuestion() {
+    
     this.questionIndex++;
     if (this.questionIndex >= this.questions.length) {
       console.log(`question index: ${this.questionIndex}`);
