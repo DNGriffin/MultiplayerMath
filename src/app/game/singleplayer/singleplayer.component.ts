@@ -617,6 +617,8 @@ export class SingleplayerComponent implements OnInit {
     this.questionText.text = `The completed the game!\nYou scored ${this.score}!\nThanks for playing!`;
     this.questionText.fontSize = this.fontSizer(this.questionText, this.game) * 0.7;
     this.questionText.y = this.game.world.centerY;
+    this.fireText.visible = false;
+    this.moveText.visible = false;
     this.saveQuestions();
     this.oneKeyIcon.destroy();
     this.twoKeyIcon.destroy();

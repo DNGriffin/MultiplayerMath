@@ -515,6 +515,8 @@ import { AngularFireAuth } from '@angular/fire/auth';
     this.questionText.fontSize = this.fontSizer(this.questionText, this.game) * 0.7;
     this.questionText.y = this.game.world.centerY;
     this.saveQuestions();
+    this.fireText.visible = false;
+    this.moveText.visible = false;
     this.oneKeyIcon.destroy();
     this.twoKeyIcon.destroy();
     this.threeKeyIcon.destroy();
