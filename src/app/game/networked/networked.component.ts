@@ -674,6 +674,10 @@ export class NetworkedComponent implements OnInit, OnDestroy {
     this.framesWithoutTeammate++;
     if (this.framesWithoutTeammate > 300) {
       this.socket.emit('cleanRoom', this.quizId);
+      if(this.questionIndex>1){
+        this.gameOver();
+      }
+
       this.teammateHasConnected = false;
       this.framesWithoutTeammate = 0;
     }
