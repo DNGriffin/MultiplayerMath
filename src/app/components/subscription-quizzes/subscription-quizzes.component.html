@@ -1,0 +1,11 @@
+<div>
+  <app-navbar-logged-in></app-navbar-logged-in>
+  <br>
+  <h1 class="dashboardHeader">Subscription Quizzes</h1>
+  <hr>
+  <br><br>
+  <app-quiz-container [sectionTitle]="subscription.email" [subAccessCode]="subscription.quizAccessCode" [sectionId]="'subscriptionQuizzes'"></app-quiz-container>
+  <br>
+</div>
+
+<router-outlet></router-outlet>

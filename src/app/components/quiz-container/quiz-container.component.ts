@@ -15,6 +15,7 @@ export class QuizContainerComponent implements OnInit {
 
   @Input() sectionTitle: string;
   @Input() sectionId: string;
+  @Input() subAccessCode: string;
 
   quizes: any
   subs: any[];
@@ -53,7 +54,7 @@ export class QuizContainerComponent implements OnInit {
         break;
       }
       case 'subscriptionQuizzes': {
-        this.getSubscriptionQuizzes();
+        this.getSubscriptionQuizzes(this.sectionTitle, this.subAccessCode);
         break;
       }
       case 'genreQuizzes': {
@@ -62,6 +63,7 @@ export class QuizContainerComponent implements OnInit {
         } else {
           this.getGenreQuizzes(this.sectionTitle);
         }
+        break;
       }
       default: {
         this.getSearchResults(this.sectionTitle);
@@ -71,7 +73,7 @@ export class QuizContainerComponent implements OnInit {
   }
 
   getMyQuizes(){
-    var myQuizes = this.db.collection('quizes', ref => ref.where('userEmail', '==', this.afAuth.auth.currentUser.email).orderBy('createdAt', 'desc')).snapshotChanges();
+    var myQuizes = this.db.collection('quizes', ref => ref.where('userEmail', '==', this.afAuth.auth.currentUser.email).orderBy('numLikes', 'desc')).snapshotChanges();
     myQuizes.subscribe(
       (res) => {
         for(var j = 0;j < res.length; j++){
@@ -106,7 +108,25 @@ export class QuizContainerComponent implements OnInit {
     );
   }
 
-  getSubscriptionQuizzes() {
+  getSubscriptionQuizzes(email: string, accessCode: string){
+    var subscriptionQuizzes = this.db.collection('quizes', ref => ref.where('userEmail', '==', email).where('quizAccessCode', '==', accessCode).orderBy('numLikes', 'desc')).snapshotChanges();
+    subscriptionQuizzes.subscribe(
+      (res) => {
+        for(var j = 0;j < res.length; j++){
+          var data: any = res[j].payload.doc.data();
+          if(!this.quizIds.includes(res[j].payload.doc.id)) {
+            this.quizIds.push(res[j].payload.doc.id);
+            this.playableQuizes.push(data);
+            this.quizOwner.push(false);
+          }
+        }
+      },
+      (err) => console.log(err),
+      () => console.log("got sub emails")
+    );
+  }
+
+  getAllSubscriptionQuizzes() {
     this.getSubscriptionEmails();
   }
 
@@ -125,7 +145,6 @@ export class QuizContainerComponent implements OnInit {
     );
   }
 
-  //Consider breaking this into different subcription components (click on a box for a particular subscriber)
   getQuizesFromSubs(){
     for(var i = 0; i < this.subs.length; i++){
       var quizCol = this.db.collection('quizes', ref => ref.where('userEmail', '==', this.subs[i].email)).snapshotChanges();
@@ -176,7 +195,7 @@ export class QuizContainerComponent implements OnInit {
       (res) => {
         for(var j = 0;j < res.length; j++){
           var data: any = res[j].payload.doc.data();
-          if(data.quizPublicAccess && data.userEmail != "admin@mmath.com") {
+          if(data.quizPublicAccess) {
             if(!this.quizIds.includes(res[j].payload.doc.id)) {
               this.quizIds.push(res[j].payload.doc.id);
               this.playableQuizes.push(data);
@@ -191,12 +210,14 @@ export class QuizContainerComponent implements OnInit {
   }
 
   getSearchResults(searchTerm: string){
-    var searchResults = this.db.collection('quizes', ref => ref.where('quizPublicAccess', '==', true).where('title', '==', searchTerm)).snapshotChanges();
+    var searchResults = this.db.collection('quizes', ref => ref.where('quizPublicAccess', '==', true)).snapshotChanges();
     searchResults.subscribe(
       (res) => {
         for(var j = 0;j < res.length; j++){
           var data: any = res[j].payload.doc.data();
-          if(!this.quizIds.includes(res[j].payload.doc.id)) {
+          var titleToMatch: string = data.title.toLowerCase().replace(/\s/g, '');
+          var termToMatch: string = searchTerm.toLowerCase().replace(/\s/g, '');
+          if(titleToMatch.includes(termToMatch) && !this.quizIds.includes(res[j].payload.doc.id)){
             this.quizIds.push(res[j].payload.doc.id);
             this.playableQuizes.push(data);
             this.quizOwner.push(false);

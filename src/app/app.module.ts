@@ -37,6 +37,8 @@ import { QuizStatComponent } from './quiz-stat/quiz-stat.component';
 import { ForgetPasswordComponent } from './components/forget-password/forget-password.component';
 import { FriendsComponent } from './components/friends/friends.component';
 import { SearchResultsComponent } from './components/search-results/search-results.component';
+import { SubscriptionContainerComponent } from './components/subscription-container/subscription-container.component';
+import { SubscriptionQuizzesComponent } from './components/subscription-quizzes/subscription-quizzes.component';
 
 
 var firebaseConfig = {
@@ -74,6 +76,8 @@ var firebaseConfig = {
     ForgetPasswordComponent,
     FriendsComponent,
     SearchResultsComponent,
+    SubscriptionContainerComponent,
+    SubscriptionQuizzesComponent,
   ],
   imports: [
     BrowserModule,
