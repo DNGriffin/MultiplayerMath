@@ -191,12 +191,14 @@ export class QuizContainerComponent implements OnInit {
   }
 
   getSearchResults(searchTerm: string){
-    var searchResults = this.db.collection('quizes', ref => ref.where('quizPublicAccess', '==', true).where('title', '==', searchTerm)).snapshotChanges();
+    var searchResults = this.db.collection('quizes', ref => ref.where('quizPublicAccess', '==', true)).snapshotChanges();
     searchResults.subscribe(
       (res) => {
         for(var j = 0;j < res.length; j++){
           var data: any = res[j].payload.doc.data();
-          if(!this.quizIds.includes(res[j].payload.doc.id)) {
+          var titleToMatch: string = data.title.toLowerCase().replace(/\s/g, '');
+          var termToMatch: string = searchTerm.toLowerCase().replace(/\s/g, '');
+          if(titleToMatch.includes(termToMatch) && !this.quizIds.includes(res[j].payload.doc.id)){
             this.quizIds.push(res[j].payload.doc.id);
             this.playableQuizes.push(data);
             this.quizOwner.push(false);
