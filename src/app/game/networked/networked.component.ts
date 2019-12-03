@@ -237,11 +237,11 @@ export class NetworkedComponent implements OnInit, OnDestroy {
     console.log("load quesitons");
     // globalData = database.collection('quizes', ref => ref.where('title', '==', quizTitle).limit(1)).snapshotChanges();
     var globalData;
-    globalData = this.database.collection('quizes', ref => ref.where('title', '==', this.quizTitle)).snapshotChanges();
+    globalData = this.db.collection('quizes').doc(this.id).snapshotChanges();
     globalData.subscribe(
       (res) => {
-        var data = res[0].payload.doc.data();
-        this.quizDocId = res[0].payload.doc.id;
+        var data = res.payload.data();
+        this.quizDocId = res.payload.id;
         var tempQuestions = data.questions;
         var shouldInitStats
         if (data.highScore) {
