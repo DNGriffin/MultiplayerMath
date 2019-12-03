@@ -1,0 +1,69 @@
+.subsciption-div {
+  color: white;
+  border-style: solid;
+  border-width: 2px;
+  border-color: #5c99da;
+  padding: 10px;
+  margin-right: 10px;
+  width: 300px;
+  height: 150px;
+  box-shadow: 10px 3px 10px gray;
+  display: table;
+  background-image: url("../../../assets/img/chalkBoard.png");
+  background-position: 550px 400px;
+  cursor: pointer;
+}
+
+.subsciption-title:hover {
+  cursor: pointer;
+}
+
+.subsciption-title {
+  text-align: center;
+  position: relative;
+  top: 35px;
+  font-size: 1.3em;
+}
+
+.scrolling-wrapper {
+  overflow-x: scroll;
+  overflow-y: hidden;
+  white-space: nowrap;
+  
+  .card {
+    display: inline-block;
+  }
+}
+
+.scrolling-wrapper-flexbox {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  
+  .card {
+    flex: 0 0 auto;
+    margin-right: 3px;
+  }
+}
+
+.subsciptionsContainer {
+  border-top: solid 3px black;
+  border-bottom: solid 3px black;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  padding-left: 15px;
+  background-color: white;
+}
+
+.sectionTitle {
+  position: relative;
+  left: 15px;
+}
+
+.subsciption-accessCode {
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: .75em;
+}

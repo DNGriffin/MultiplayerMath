@@ -1,0 +1,16 @@
+<h3 class="sectionTitle">My Subscriptions</h3>
+<div class="subsciptionsContainer">
+  <div class="scrolling-wrapper">
+    <span *ngFor="let subscription of getSubscriptions(); let i = index">
+      <div class="subsciption-div card" [routerLink]="['/subscriptionQuizzes', subscription.email, subscription.quizAccessCode]">
+        <p class="subsciption-title">{{ subscription.email }}</p>
+        <span class="subsciption-accessCode">{{ subscription.quizAccessCode }}</span>
+      </div>
+    </span>
+  </div>
+</div>
+<br>
+<hr>
+<br>
+
+<router-outlet></router-outlet>

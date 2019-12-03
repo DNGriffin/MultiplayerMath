@@ -15,6 +15,7 @@ export class QuizContainerComponent implements OnInit {
 
   @Input() sectionTitle: string;
   @Input() sectionId: string;
+  @Input() subAccessCode: string;
 
   quizes: any
   subs: any[];
@@ -53,7 +54,7 @@ export class QuizContainerComponent implements OnInit {
         break;
       }
       case 'subscriptionQuizzes': {
-        this.getSubscriptionQuizzes();
+        this.getSubscriptionQuizzes(this.sectionTitle, this.subAccessCode);
         break;
       }
       case 'genreQuizzes': {
@@ -106,7 +107,25 @@ export class QuizContainerComponent implements OnInit {
     );
   }
 
-  getSubscriptionQuizzes() {
+  getSubscriptionQuizzes(email: string, accessCode: string){
+    var subscriptionQuizzes = this.db.collection('quizes', ref => ref.where('userEmail', '==', email).where('quizAccessCode', '==', accessCode)).snapshotChanges();
+    subscriptionQuizzes.subscribe(
+      (res) => {
+        for(var j = 0;j < res.length; j++){
+          var data: any = res[j].payload.doc.data();
+          if(!this.quizIds.includes(res[j].payload.doc.id)) {
+            this.quizIds.push(res[j].payload.doc.id);
+            this.playableQuizes.push(data);
+            this.quizOwner.push(false);
+          }
+        }
+      },
+      (err) => console.log(err),
+      () => console.log("got sub emails")
+    );
+  }
+
+  getAllSubscriptionQuizzes() {
     this.getSubscriptionEmails();
   }
 
@@ -125,7 +144,6 @@ export class QuizContainerComponent implements OnInit {
     );
   }
 
-  //Consider breaking this into different subcription components (click on a box for a particular subscriber)
   getQuizesFromSubs(){
     for(var i = 0; i < this.subs.length; i++){
       var quizCol = this.db.collection('quizes', ref => ref.where('userEmail', '==', this.subs[i].email)).snapshotChanges();
