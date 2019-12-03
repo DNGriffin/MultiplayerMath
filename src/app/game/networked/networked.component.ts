@@ -230,6 +230,7 @@ export class NetworkedComponent implements OnInit, OnDestroy {
     this.questionIndex = -1;
     this.score = 0;
     this.teammateHasConnected = false;
+    this.game.destroy();
     this.socket.disconnect();
   }
 
