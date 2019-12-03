@@ -17,7 +17,7 @@ import { take } from 'rxjs/operators';
   styleUrls: ['./networked.component.scss']
 })
 export class NetworkedComponent implements OnInit, OnDestroy {
-  url = 'http://47.24.182.243:3000';
+  url = 'http://ec2-3-136-112-3.us-east-2.compute.amazonaws.com:3000';
   socket;
   game: Phaser.Game;
   database: AngularFirestore = null;
@@ -29,6 +29,7 @@ export class NetworkedComponent implements OnInit, OnDestroy {
   quizTitle;
   invites = [];
   room = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+  ammo = 3;
   constructor(private db: AngularFirestore, location: LocationStrategy, private router: Router,
     public fb: FormBuilder,
     private subscriptionService: SubscriptionService,
@@ -165,6 +166,8 @@ export class NetworkedComponent implements OnInit, OnDestroy {
   twoKey: Phaser.Key;
   threeKey: Phaser.Key;
   fourKey: Phaser.Key;
+  fireKey: Phaser.Key;
+
 
   aKey: Phaser.Key;
   dKey: Phaser.Key;
@@ -179,6 +182,9 @@ export class NetworkedComponent implements OnInit, OnDestroy {
   threeKeyText: Phaser.Text;
   fourKeyText: Phaser.Text;
 
+  moveText: Phaser.Text;
+  fireText: Phaser.Text;
+
   spaceship: Phaser.Sprite;
   spaceship_networked: Phaser.Sprite;
 
@@ -187,6 +193,16 @@ export class NetworkedComponent implements OnInit, OnDestroy {
   scoreText: Phaser.Text;
   score = 0;
 
+  numCorrect = 0;
+  numWrong = 0;
+  incorrectQuestionsSession = [];
+  incorrectQuestionsGlobal = [];
+  numPlays = 0;
+  averagePercentCorrect = 0;
+  highScore = 0;
+  highScoreEmail = "";
+  quizDocId = "";
+  topScoreList = [];
 
   starfield;
   asteroid1; asteroid2; asteroid3; asteroid4; asteroid5;
@@ -219,32 +235,107 @@ export class NetworkedComponent implements OnInit, OnDestroy {
 
   loadQuestions() {
     console.log("load quesitons");
-
     // globalData = database.collection('quizes', ref => ref.where('title', '==', quizTitle).limit(1)).snapshotChanges();
     var globalData;
     globalData = this.database.collection('quizes', ref => ref.where('title', '==', this.quizTitle)).snapshotChanges();
     globalData.subscribe(
       (res) => {
         var data = res[0].payload.doc.data();
+        this.quizDocId = res[0].payload.doc.id;
         var tempQuestions = data.questions;
+        var shouldInitStats
+        if (data.highScore) {
+          this.incorrectQuestionsGlobal = data.incorrectQuestionsGlobal;
+          this.numPlays = data.numPlays;
+          this.averagePercentCorrect = data.averagePercentCorrect;
+          this.highScore = data.highScore;
+          this.highScoreEmail = data.highScoreEmail;
+          this.topScoreList = data.topScoreList;
+        } else {
+          shouldInitStats = true;
+        }
+  
         var formattedQuestion = [];
         this.questions = [];
+        var isInTopScore = false;
+        for (var i = 0; i < this.topScoreList.length; i++) {
+          if (this.topScoreList[i].email == this.afAuth.auth.currentUser.email) {
+            isInTopScore = true;
+          }
+        }
+  
+        if (!isInTopScore) {
+          var topScore = { email: this.afAuth.auth.currentUser.email, score: 0 };
+          this.topScoreList.push(topScore);
+        }
+        console.log(`tempQuestions length: ${tempQuestions.length}`);
         for (var key in tempQuestions) {
-          if (tempQuestions[key].question.length > 3) {
+          console.log(`question length key: ${tempQuestions[key].question.length}`);
+  
+          if (tempQuestions[key].question.length > 1) {
             formattedQuestion = [];
             formattedQuestion[0] = tempQuestions[key].question;
             formattedQuestion[1] = tempQuestions[key].answer;
             formattedQuestion[2] = tempQuestions[key].fake1;
             formattedQuestion[3] = tempQuestions[key].fake2;
             formattedQuestion[4] = tempQuestions[key].fake3;
+            if (shouldInitStats) {
+              this.incorrectQuestionsGlobal.push(0);
+            }
+            this.incorrectQuestionsSession.push(0);
             this.difficulties.push(tempQuestions[key].difficulty);
             this.questions.push(formattedQuestion);
+  
           }
         }
+        console.log(`questions length: ${this.questions.length}`);
+  
       },
       (err) => console.log(err),
       () => this.nextQuestion()
     );
+  }
+  saveQuestions() {
+    for (var i = 0; i < this.topScoreList.length; i++) {
+      if (this.topScoreList[i].email == this.afAuth.auth.currentUser.email && this.score > this.topScoreList[i].score) {
+        this.topScoreList[i].score = this.score;
+      }
+    }
+    if (this.score > this.highScore) {
+      this.highScore = this.score;
+      this.highScoreEmail = this.afAuth.auth.currentUser.email;
+    }
+    if(this.numWrong+this.numCorrect == 0){
+      this.numWrong = 1;
+    }
+    var percentCorrect = this.numCorrect / (this.numWrong + this.numCorrect);
+    this.averagePercentCorrect = (percentCorrect + this.averagePercentCorrect * this.numPlays) / (this.numPlays + 1);
+    
+    console.log(this.incorrectQuestionsGlobal);
+    console.log("global^ session v");
+    console.log(this.incorrectQuestionsSession);
+  
+    for (var i = 0; i < this.incorrectQuestionsSession.length; i++) {
+      if (i >= this.incorrectQuestionsGlobal.length) {
+        this.incorrectQuestionsGlobal.push(0);
+      }
+      this.incorrectQuestionsGlobal[i] += this.incorrectQuestionsSession[i];
+    }
+    console.log(this.incorrectQuestionsGlobal);
+    console.log("global^ session v");
+    console.log(this.incorrectQuestionsSession);
+    this.topScoreList = this.topScoreList.sort((a, b) => parseInt(b.score) - parseInt(a.score));
+  
+    this.database.doc(`quizes/${this.quizDocId}`).update(
+      {
+        highScore: this.highScore,
+        highScoreEmail: this.highScoreEmail,
+        numPlays: this.numPlays+1,
+        averagePercentCorrect: this.averagePercentCorrect,
+        incorrectQuestionsGlobal: this.incorrectQuestionsGlobal,
+        topScoreList: this.topScoreList
+  
+      });
   }
 
   preload() {
@@ -315,6 +406,13 @@ export class NetworkedComponent implements OnInit, OnDestroy {
     this.twoKeyText = this.game.add.text(this.oneKeyIcon.x + this.oneKeyIcon.width, this.oneKeyIcon.y + this.oneKeyIcon.height * 1.5, "Start");
     this.threeKeyText = this.game.add.text(this.oneKeyIcon.x + this.oneKeyIcon.width, this.twoKeyIcon.y + this.twoKeyIcon.height * 1.5, "Start");
     this.fourKeyText = this.game.add.text(this.oneKeyIcon.x + this.oneKeyIcon.width, this.threeKeyIcon.y + this.threeKeyIcon.height * 1.5, "Start");
+    this.moveText = this.game.add.text(this.game.width * 0.5, this.game.height * 0.4, "Press A and D to Move!");
+    this.moveText.anchor.set(0.5);
+    this.moveText.fill = "white";
+
+    this.fireText = this.game.add.text(this.game.width * 0.5, this.game.height * 0.6, "Press SPACE to fire a Missile!");
+    this.fireText.anchor.set(0.5);
+    this.fireText.fill = "white";
 
     this.questionText.fill = "white";
     this.oneKeyText.fill = "white";
@@ -329,6 +427,8 @@ export class NetworkedComponent implements OnInit, OnDestroy {
     this.twoKey = this.game.input.keyboard.addKey(Phaser.Keyboard.TWO);
     this.threeKey = this.game.input.keyboard.addKey(Phaser.Keyboard.THREE);
     this.fourKey = this.game.input.keyboard.addKey(Phaser.Keyboard.FOUR);
+    this.fireKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+
 
     this.aKey = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
     this.dKey = this.game.input.keyboard.addKey(Phaser.Keyboard.D);
@@ -341,6 +441,23 @@ export class NetworkedComponent implements OnInit, OnDestroy {
     this.game.world.sendToBack(this.starfield);
     this.moveTeammate();
     this.getNetworkData();
+    this.tween = this.game.add.tween(this.spaceship_networked).to( { x: 0 * this.game.width }, 500, "Linear", true);
+    this.ammo1 = this.createMissileAmmo();
+    this.ammo2 = this.createMissileAmmo();
+    this.ammo3 = this.createMissileAmmo();
+  }
+  ammo1;
+  ammo2;
+  ammo3;
+  createMissileAmmo(){
+    var missile = this.game.add.sprite(this.spaceship.x, this.spaceship.y, "missile");
+    missile.animations.add('fly2');
+    missile.animations.play('fly2', 15, true);
+    missile.anchor.setTo(0.5);
+    missile.rotation = -Math.PI / 2;
+    missile.width = this.game.width * .02;
+    missile.height = missile.width * (2 / 7);
+    return missile;
   }
   createMissile() {
     var missile = this.game.add.sprite(this.spaceship.x, this.spaceship.y, "missile");
@@ -438,7 +555,7 @@ export class NetworkedComponent implements OnInit, OnDestroy {
         if (sprite.body.velocity.y > 200) {
           sprite.body.velocity.y = 200;
         }
-        if (!this.teammateHasConnected) {
+        if (!this.teammateHasConnected || this.questionIndex == -1) {
           sprite.body.velocity.y = 0;
         }
       })
@@ -456,6 +573,14 @@ export class NetworkedComponent implements OnInit, OnDestroy {
 
   }
   answerQuestion(index) {
+    if (this.questionIndex >= this.questions.length) {
+      this.questionText.text = "Waiting for Teammate to complete game."
+      this.oneKeyText.text = "";
+      this.twoKeyText.text = "";
+      this.threeKeyText.text = "";
+      this.fourKeyText.text = "";
+      return;
+    }
     if (this.canAnswer) {
       var selectAns;
       if (index == 1) {
@@ -468,10 +593,16 @@ export class NetworkedComponent implements OnInit, OnDestroy {
         selectAns = this.fourKeyText.text;
       }
       if (selectAns == this.ans || this.questionIndex == -1) { //if ans correct
+        this.numCorrect++;
+        this.ammo++;
+        if(this.ammo>3){
+          this.ammo = 3;
+        }
         this.socket.emit("answerQuestion", true);
         this.createMissile();
         this.scoreText.text = `Score: ${++this.score}`;
       } else {
+        this.numWrong++;
         this.scoreText.text = `Score: ${--this.score}`;
         this.socket.emit("answerQuestion", false);
 
@@ -480,7 +611,7 @@ export class NetworkedComponent implements OnInit, OnDestroy {
       this.canAnswer = false;
       setTimeout(() => {
         this.canAnswer = true;
-      }, 2000);
+      }, 400);
     }
   }
 
@@ -488,7 +619,6 @@ export class NetworkedComponent implements OnInit, OnDestroy {
   nextQuestion() {
     this.questionIndex++;
     if (this.questionIndex >= this.questions.length) {
-      this.gameOver();
       return;
     }
     // questionIndex = questionIndex % questions.length;
@@ -507,11 +637,43 @@ export class NetworkedComponent implements OnInit, OnDestroy {
 
   }
 
-
+  canFire = true;
   update() {
+    this.ammo1.y = this.spaceship.y-this.spaceship.height;
+    this.ammo1.x = this.spaceship.x-this.ammo1.width;
+    this.ammo2.y = this.spaceship.y-this.spaceship.height;
+    this.ammo2.x = this.spaceship.x;
+    this.ammo3.y = this.spaceship.y-this.spaceship.height;
+    this.ammo3.x = this.spaceship.x+this.ammo1.width;
+
+      this.ammo1.alpha = 0.1;
+      this.ammo2.alpha = 0.1;
+      this.ammo3.alpha = 0.1;
+
+    if(this.ammo > 0){
+      this.ammo1.alpha = 1;
+    }
+    if(this.ammo > 1){
+      this.ammo2.alpha = 1;
+    }
+    if(this.ammo == 3){
+      this.ammo3.alpha = 1;
+    }
+
+    if (!this.isGameOver && this.questionIndex >= this.questions.length && !this.teammateHasConnected || !this.isGameOver && this.questionIndex >= this.questions.length && this.teammateQuestionIndex >= this.questions.length) {
+      this.gameOver();
+    }
+    if(this.spaceship.x<0){
+      this.spaceship.x = this.game.width;
+    }
+    if(this.spaceship.x>this.game.width){
+      this.spaceship.x = 0;
+    }
+
     this.framesWithoutTeammate++;
     if (this.framesWithoutTeammate > 300) {
       this.socket.emit('cleanRoom', this.quizId);
+      this.teammateHasConnected = false;
       this.framesWithoutTeammate = 0;
     }
     this.sendPosition(this.spaceship.x);
@@ -523,7 +685,15 @@ export class NetworkedComponent implements OnInit, OnDestroy {
       this.spaceship.y = this.game.height * 0.5;
       this.spaceship_networked.y = this.game.height * 0.5;
 
-
+      if(this.fireKey.isDown && this.canFire && this.ammo>0){
+        this.ammo--;
+        this.canFire = false;
+        this.createMissile();
+        this.fireText.visible = false;
+      }
+      if(!this.fireKey.isDown){
+        this.canFire = true;
+      }
       this.asteroidUpdate();
       this.starfield.tilePosition.y += 1;
       if (this.oneKey.isDown) {
@@ -551,9 +721,13 @@ export class NetworkedComponent implements OnInit, OnDestroy {
         this.fourKeyIcon.alpha = 0.7;
       }
       if (this.aKey.isDown) {
+        this.moveText.visible = false;
+
         this.spaceship.body.velocity.x = -this.game.width * 0.3;
       }
       if (this.dKey.isDown) {
+        this.moveText.visible = false;
+
         this.spaceship.body.velocity.x = +this.game.width * 0.3;
       }
       if (!this.aKey.isDown && !this.dKey.isDown) {
@@ -570,21 +744,19 @@ export class NetworkedComponent implements OnInit, OnDestroy {
 
   }
   moveTeammate() {
-    var tween = this.game.add.tween(this.spaceship_networked).to({ x: this.game.world.randomX }, 4000, "Quart.easeOut");
-    // tweenB = game.add.tween(spriteB).to( { x: 600 }, 2000, "Quart.easeOut");
-    // tween.start();
-    var mis = this.createMissile();
-    mis.x = this.spaceship_networked.x;
-    // tween.onComplete.addOnce(()=>{moveTeammate()});
+    // var tween = this.game.add.tween(this.spaceship_networked).to({ x: this.game.world.randomX }, 4000, "Quart.easeOut");
+    
   }
-
+  
 
 
   gameOver() {
+    console.log("gameOver");
     this.isGameOver = true;
     this.questionText.text = `You completed the game!\nYou scored ${this.score}!\nThanks for playing!`;
     this.questionText.fontSize = this.fontSizer(this.questionText, this.game) * 0.7;
     this.questionText.y = this.game.world.centerY;
+    this.saveQuestions();
 
     this.oneKeyIcon.destroy();
     this.twoKeyIcon.destroy();
@@ -596,10 +768,6 @@ export class NetworkedComponent implements OnInit, OnDestroy {
     this.fourKeyText.destroy();
     setTimeout(() => {
       this.globalRouter.navigate(['/dashboard']);
-      this.resetVariables();
-      this.isGameOver = false;
-      this.game.destroy();
-      this.questionIndex = -1;
     }, 3000);
   }
   fontSizer(text, frame) {
@@ -622,17 +790,40 @@ export class NetworkedComponent implements OnInit, OnDestroy {
     this.questionText.text = "Press [1] to start."
   }
   framesWithoutTeammate = 0;
+  tween;
+  
   getNetworkData() {
-    this.socket.on('updateCords', (x) => {
+    this.socket.on('updateCords', (xPos) => {
       this.framesWithoutTeammate = 0;
       if (!this.teammateHasConnected) {
         this.teamateConnected();
       }
       this.teammateHasConnected = true;
       this.showGame = true;
-      this.spaceship_networked.x = x * this.game.width;
+      if(!this.tween.isRunning){
+        this.tween = this.game.add.tween(this.spaceship_networked).to( { x: xPos * this.game.width }, 100, "Linear", true);
+
+      }
+
     });
     this.socket.on('updateScore', (delta) => {
+      if(delta < 0){
+        setTimeout(() => {
+          this.spaceship_networked.visible = true;
+          setTimeout(() => {
+            this.spaceship_networked.visible = false;
+            setTimeout(() => {
+              this.spaceship_networked.visible = true;
+              setTimeout(() => {
+                this.spaceship_networked.visible = false;
+                setTimeout(() => {
+                  this.spaceship_networked.visible = true;
+                }, 100);
+              }, 100);
+            }, 100);
+          }, 100);
+        }, 100);
+      }
       if (this.canUpdateScore) {
         this.canUpdateScore = false;
         console.log("update score");
@@ -645,7 +836,6 @@ export class NetworkedComponent implements OnInit, OnDestroy {
 
     });
     this.socket.on('updateQuestion', (wasCorrect) => {
-      console.log("update question");
       if (this.canUpdateQuestion) {
         this.canUpdateQuestion = false;
         setTimeout(() => {
@@ -659,11 +849,15 @@ export class NetworkedComponent implements OnInit, OnDestroy {
         } else {
           this.scoreText.text = `Score: ${--this.score}`;
         }
-        this.nextQuestion();
+        this.teammateQuestionIndex++;
+        if(this.teammateQuestionIndex == 1){
+          this.nextQuestion();
+        }
       }
     });
 
   }
+  teammateQuestionIndex = 0;
 }
 
 

@@ -21,7 +21,7 @@ const routes: Routes = [{
     path: '',
     component: WelcomePageComponent
   }, { 
-    path: 'play',
+    path: 'demo',
     component: GameComponent
   },{ 
     path: 'play/solo',

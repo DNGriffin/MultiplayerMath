@@ -1,4 +1,5 @@
-<div [hidden]="!showGame" id="networked"></div>
+<div [hidden]="!showGame" id="networked"><button type="button" [routerLink]="['/dashboard']" id="game-quit" class="btn btn-light">Quit</button>
+</div>
 <div [hidden]="showGame">
   <app-navbar-logged-in></app-navbar-logged-in>
   <br><br>

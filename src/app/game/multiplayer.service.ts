@@ -1,7 +1,7 @@
 import * as io from 'socket.io-client';
 
 export class MultiplayerService {
-    private url = 'http://localhost:3000';
+    private url = 'https://ec2-3-136-112-3.us-east-2.compute.amazonaws.com:3000';
     private socket;    
 
     constructor() {

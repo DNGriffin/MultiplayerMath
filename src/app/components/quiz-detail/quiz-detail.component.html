@@ -6,6 +6,7 @@
 <div class="quizLearningObjective">
   <p>{{ getQuizLearningObjective() }}</p>
 </div>
+
 <h3 class="sectionHeader">Play Game</h3>
 <div class="linkTableDiv">
   <table>
@@ -21,14 +22,6 @@
       </td>
     </tr>
     <tr>
-      <td class="buttonDiv"><button (click)="routeToGame($event)" type="button" class="gameButton btn btn-primary btn-sm">Local Multiplayer</button></td>
-      <td class="description">
-        Play a local multiplayer version of the game. Player one will use the number 
-        keys to select answers that appear on the left side of the screen. Player two
-        will use the mouse to select answers that appear on the right side of the screen.
-      </td>
-    </tr>
-    <tr>
       <td class="buttonDiv"><button (click)="routeToOnlineGame($event)" type="button" class="gameButton btn btn-primary btn-sm">Online Multiplayer</button></td>
       <td class="description">
         Play an online multiplayer version of the game. Click the link, and wait for an opponent to
@@ -36,6 +29,12 @@
       </td>
     </tr>
   </table>      
+</div>
+<br>
+<h3 class="sectionHeader">How to play</h3>
+<div class="quizLearningObjective">
+  <p>Answer questions using keys [1], [2], [3], and [4].</p>
+  <p>Guide your spaceship around incoming asteroids using [A] and [D].</p>
 </div>
 <br><br>
 <app-quiz-stat></app-quiz-stat>

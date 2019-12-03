@@ -5,104 +5,53 @@ import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { LocationStrategy } from '@angular/common';
 import { AngularFireAuth } from '@angular/fire/auth';
-var game: Phaser.Game;
-var database: AngularFirestore = null;
-var id;
-var quizTitle;
-var globalRouter;
-var auth;
+
 @Component({
   selector: 'app-singleplayer',
   templateUrl: './singleplayer.component.html',
   styleUrls: ['./singleplayer.component.scss']
 })
 export class SingleplayerComponent implements OnInit {
+  game: Phaser.Game;
+  database: AngularFirestore = null;
+  id;
+  quizTitle;
+  globalRouter;
+  auth;
+  oneKey: Phaser.Key;
+  twoKey: Phaser.Key;
+  threeKey: Phaser.Key;
+  fourKey: Phaser.Key;
+  fireKey: Phaser.Key;
 
-  constructor(private db: AngularFirestore, private router: Router, location: LocationStrategy, private af: AngularFireAuth
-  ) {
-    auth = af;
-    location.onPopState(() => {
-      if (!destroyed) {
-        destroyed = true;
-        game.destroy();
-        console.log("destroy game");
-        resetVariables();
-      }
-    });
-    if (!this.router.getCurrentNavigation().extras.queryParams) {
-      this.router.navigate(['/dashboard']);
-    }
-    id = this.router.getCurrentNavigation().extras.queryParams.id;
-    quizTitle = this.router.getCurrentNavigation().extras.queryParams.title;
+  aKey: Phaser.Key;
+  dKey: Phaser.Key;
+  oneKeyIcon: Phaser.Sprite;
+  twoKeyIcon: Phaser.Sprite;
+  threeKeyIcon: Phaser.Sprite;
+  fourKeyIcon: Phaser.Sprite;
+  oneKeyText: Phaser.Text;
+  twoKeyText: Phaser.Text;
+  threeKeyText: Phaser.Text;
+  fourKeyText: Phaser.Text;
 
-    console.log(quizTitle);
-    globalRouter = router;
-
-    console.log(id);
-    database = db;
-    loadQuestions();
-    game = new Game(window.innerWidth, window.innerHeight, AUTO, 'singleplayer', { preload: preload, create: create, update: update, render: render });
-  }
-
-  ngOnInit() {
-    destroyed = false;
-  }
-
-}
-
-var oneKey: Phaser.Key;
-var twoKey: Phaser.Key;
-var threeKey: Phaser.Key;
-var fourKey: Phaser.Key;
-
-var aKey: Phaser.Key;
-var dKey: Phaser.Key;
+  moveText: Phaser.Text;
+  fireText: Phaser.Text;
 
 
-var oneKeyIcon: Phaser.Sprite;
-var twoKeyIcon: Phaser.Sprite;
-var threeKeyIcon: Phaser.Sprite;
-var fourKeyIcon: Phaser.Sprite;
-var oneKeyText: Phaser.Text;
-var twoKeyText: Phaser.Text;
-var threeKeyText: Phaser.Text;
-var fourKeyText: Phaser.Text;
-
-
-var spaceship: Phaser.Sprite;
-
-var questionText: Phaser.Text;
-var scoreText: Phaser.Text;
-var score = 0;
-
-
-var starfield;
-var asteroid1, asteroid2, asteroid3, asteroid4, asteroid5;
-
-// stats
-var numCorrect = 0;
-var numWrong = 0;
-var incorrectQuestionsSession = [];
-var incorrectQuestionsGlobal = [];
-var numPlays = 0;
-var averagePercentCorrect = 0;
-var highScore = 0;
-var highScoreEmail = "";
-var quizDocId = "";
-var topScoreList = [];
-
-var questions = [["Press any key to start?", "", "", "", ""],
-["What is 6x/6?", "x", "6", "1", "0"],
-["What is 3(x+2x)", "9x", "9x^2", "6x", "9"],
-["What is 5x-2?", "5x-2", "5x", "3x", "3"],
-["What is (3x-3x)*3x?", "0", "9x", "27x", "9"]
-]
-
-var destroyed = false;
-
-function resetVariables() {
-  questionIndex = -1;
+  
+  
+  spaceship: Phaser.Sprite;
+  
+  questionText: Phaser.Text;
+  scoreText: Phaser.Text;
   score = 0;
+  ammo = 3;
+  
+  starfield;
+  asteroid1; asteroid2; asteroid3; asteroid4; asteroid5;
+  
+  // stats
   numCorrect = 0;
   numWrong = 0;
   incorrectQuestionsSession = [];
@@ -113,446 +62,591 @@ function resetVariables() {
   highScoreEmail = "";
   quizDocId = "";
   topScoreList = [];
-}
-var difficulties = [];
-var difficulty;
-function loadQuestions() {
-  console.log("load quesitons");
-
-  // globalData = database.collection('quizes', ref => ref.where('title', '==', quizTitle).limit(1)).snapshotChanges();
-  var globalData;
-  globalData = database.collection('quizes', ref => ref.where('title', '==', quizTitle)).snapshotChanges();
-  globalData.subscribe(
-    (res) => {
-      var data = res[0].payload.doc.data();
-      quizDocId = res[0].payload.doc.id;
-      var tempQuestions = data.questions;
-      var shouldInitStats
-      if (data.highScore) {
-        incorrectQuestionsGlobal = data.incorrectQuestionsGlobal;
-        numPlays = data.numPlays;
-        averagePercentCorrect = data.averagePercentCorrect;
-        highScore = data.highScore;
-        highScoreEmail = data.highScoreEmail;
-        topScoreList = data.topScoreList;
-      } else {
-        shouldInitStats = true;
-      }
-
-      var formattedQuestion = [];
-      questions = [];
-      var isInTopScore = false;
-      for (var i = 0; i < topScoreList.length; i++) {
-        if (topScoreList[i].email == auth.auth.currentUser.email) {
-          isInTopScore = true;
-        }
-      }
-
-      if (!isInTopScore) {
-        var topScore = { email: auth.auth.currentUser.email, score: 0 };
-        topScoreList.push(topScore);
-      }
-      console.log(`tempQuestions length: ${tempQuestions.length}`);
-      for (var key in tempQuestions) {
-        console.log(`question length key: ${tempQuestions[key].question.length}`);
-
-        if (tempQuestions[key].question.length > 1) {
-          formattedQuestion = [];
-          formattedQuestion[0] = tempQuestions[key].question;
-          formattedQuestion[1] = tempQuestions[key].answer;
-          formattedQuestion[2] = tempQuestions[key].fake1;
-          formattedQuestion[3] = tempQuestions[key].fake2;
-          formattedQuestion[4] = tempQuestions[key].fake3;
-          if (shouldInitStats) {
-            incorrectQuestionsGlobal.push(0);
-          }
-          incorrectQuestionsSession.push(0);
-          difficulties.push(tempQuestions[key].difficulty);
-          questions.push(formattedQuestion);
-
-        }
-      }
-      console.log(`questions length: ${questions.length}`);
-
-    },
-    (err) => console.log(err),
-    () => nextQuestion()
-  );
-}
-function saveQuestions() {
-  for (var i = 0; i < topScoreList.length; i++) {
-    if (topScoreList[i].email == auth.auth.currentUser.email && score > topScoreList[i].score) {
-      topScoreList[i].score = score;
-    }
-  }
-  if (score > highScore) {
-    highScore = score;
-    highScoreEmail = auth.auth.currentUser.email;
-  }
-  var percentCorrect = numCorrect / (numWrong + numCorrect);
-  averagePercentCorrect = (percentCorrect + averagePercentCorrect * numPlays) / (numPlays + 1);
-  numPlays++;
-  console.log(incorrectQuestionsGlobal);
-  console.log("global^ session v");
-  console.log(incorrectQuestionsSession);
-
-  for (var i = 0; i < incorrectQuestionsSession.length; i++) {
-    if (i >= incorrectQuestionsGlobal.length) {
-      incorrectQuestionsGlobal.push(0);
-    }
-    incorrectQuestionsGlobal[i] += incorrectQuestionsSession[i];
-  }
-  console.log(incorrectQuestionsGlobal);
-  console.log("global^ session v");
-  console.log(incorrectQuestionsSession);
-  topScoreList = topScoreList.sort((a, b) => parseInt(b.score) - parseInt(a.score));
-
-  database.doc(`quizes/${quizDocId}`).update(
-    {
-      highScore: highScore,
-      highScoreEmail: highScoreEmail,
-      numPlays: numPlays,
-      averagePercentCorrect: averagePercentCorrect,
-      incorrectQuestionsGlobal: incorrectQuestionsGlobal,
-      topScoreList: topScoreList
-
-    });
-}
-function preload() {
-  game.load.spritesheet('missile', 'assets/games/missilesheet.png', 14, 4, 2);
-
-  game.load.image("1key", "assets/games/1key.png");
-  game.load.image("2key", "assets/games/2key.png");
-  game.load.image("click", "assets/games/click.png");
-
-  game.load.image("3key", "assets/games/3key.png");
-  game.load.image("4key", "assets/games/4key.png");
-  game.load.image('starfield', 'assets/games/starfield.png');
-  game.load.image('spaceship', 'assets/games/spaceship.png');
-  game.load.image('asteroid1', 'assets/games/asteroid1.png');
-}
-var asteroidGroup;
-
-function create() {
+  
+  questions = [["Press any key to start?", "", "", "", ""],
+  ["What is 6x/6?", "x", "6", "1", "0"],
+  ["What is 3(x+2x)", "9x", "9x^2", "6x", "9"],
+  ["What is 5x-2?", "5x-2", "5x", "3x", "3"],
+  ["What is (3x-3x)*3x?", "0", "9x", "27x", "9"]
+  ]
+  
   destroyed = false;
-  asteroid1 = game.add.sprite(game.world.randomX, -game.world.randomY, "asteroid1");
-  asteroid2 = game.add.sprite(game.world.randomX, -game.world.randomY, "asteroid1");
-  asteroid3 = game.add.sprite(game.world.randomX, -game.world.randomY, "asteroid1");
-  asteroid4 = game.add.sprite(game.world.randomX, -game.world.randomY, "asteroid1");
-  asteroid5 = game.add.sprite(game.world.randomX, -game.world.randomY, "asteroid1");
+  difficulties = [];
+  difficulty;
+  asteroidGroup;
+  canAnswer = true;
+  isGameOver = false;
+  questionIndex = -1;
+  ans = "";
+  isLeftTurn = true;
 
-  game.physics.startSystem(Phaser.Physics.ARCADE);
-  game.physics.arcade.gravity.y = 100;
-
-  starfield = game.add.tileSprite(0, 0, game.width, game.height, 'starfield');
-
-  oneKeyIcon = game.add.sprite(game.width * 0.2, game.height * 0.2, "1key");
-  twoKeyIcon = game.add.sprite(oneKeyIcon.x, oneKeyIcon.y + oneKeyIcon.height * 1.5, "2key");
-  threeKeyIcon = game.add.sprite(oneKeyIcon.x, twoKeyIcon.y + twoKeyIcon.height * 1.5, "3key");
-  fourKeyIcon = game.add.sprite(oneKeyIcon.x, threeKeyIcon.y + threeKeyIcon.height * 1.5, "4key");
-
-  spaceship = game.add.sprite(game.width * 0.5, game.height * 0.8, "spaceship");
-  spaceship.anchor.set(0.5);
-  game.physics.enable(spaceship, Phaser.Physics.ARCADE);
-  spaceship.scale.set(2, 2);
-  spaceship.body.gravity.y = 0;
-
-  asteroidGroup = game.add.group();
-  asteroidGroup.add(asteroid1);
-  asteroidGroup.add(asteroid2);
-  asteroidGroup.add(asteroid3);
-  asteroidGroup.add(asteroid4);
-  asteroidGroup.add(asteroid5);
-  asteroidGroup.forEach(function (sprite) {
-    sprite.anchor.setTo(0.5);
-    game.physics.enable(sprite, Phaser.Physics.ARCADE);
-    sprite.body.angularVelocity = Math.random() * 200;
-    sprite.body.angularDrag = 3;
-    sprite.body.allowGravity = true;
-    var asteroidWidth = game.height * .10 + game.height * 0.15 * Math.random();
-    sprite.width = asteroidWidth;
-    sprite.height = asteroidWidth;
-  })
-
-  questionText = game.add.text(game.world.centerX, game.height * 0.15, "Are you ready to start? Press the [1] key");
-  questionText.anchor.set(0.5);
-  oneKeyText = game.add.text(game.width * 0.2 + oneKeyIcon.width, game.height * 0.2, "Start");
-  twoKeyText = game.add.text(oneKeyIcon.x + oneKeyIcon.width, oneKeyIcon.y + oneKeyIcon.height * 1.5, "Start");
-  threeKeyText = game.add.text(oneKeyIcon.x + oneKeyIcon.width, twoKeyIcon.y + twoKeyIcon.height * 1.5, "Start");
-  fourKeyText = game.add.text(oneKeyIcon.x + oneKeyIcon.width, threeKeyIcon.y + threeKeyIcon.height * 1.5, "Start");
-
-  questionText.fill = "white";
-  oneKeyText.fill = "white";
-  twoKeyText.fill = "white";
-  threeKeyText.fill = "white";
-  fourKeyText.fill = "white";
-  scoreText = game.add.text(game.world.centerX, game.height * 0.05, "Score: 0");
-  scoreText.anchor.set(0.5);
-  scoreText.fill = "white";
-
-  oneKey = game.input.keyboard.addKey(Phaser.Keyboard.ONE);
-  twoKey = game.input.keyboard.addKey(Phaser.Keyboard.TWO);
-  threeKey = game.input.keyboard.addKey(Phaser.Keyboard.THREE);
-  fourKey = game.input.keyboard.addKey(Phaser.Keyboard.FOUR);
-
-  aKey = game.input.keyboard.addKey(Phaser.Keyboard.A);
-  dKey = game.input.keyboard.addKey(Phaser.Keyboard.D);
+  constructor(private db: AngularFirestore, private router: Router, location: LocationStrategy, private af: AngularFireAuth
+  ) {
+    this.preload = this.preload.bind(this);
+    this.asteroidCollide = this.asteroidCollide.bind(this);
+    this.spaceshipCollide = this.spaceshipCollide.bind(this);
 
 
-  game.world.sendToBack(asteroidGroup);
-  game.world.sendToBack(spaceship);
-  game.world.sendToBack(starfield);
+    this.create = this.create.bind(this);
+    this.update = this.update.bind(this);
+    this.render = this.render.bind(this);
 
-}
-function createMissile() {
-  var missile = game.add.sprite(spaceship.x, spaceship.y, "missile");
+    this.auth = af;
+    location.onPopState(() => {
+      if (!this.destroyed) {
+        this.destroyed = true;
+        this.game.destroy();
+        console.log("destroy game");
+        this.resetVariables();
+      }
+    });
+    if (!this.router.getCurrentNavigation().extras.queryParams) {
+      this.router.navigate(['/dashboard']);
+    }
+    this.id = this.router.getCurrentNavigation().extras.queryParams.id;
+    this.quizTitle = this.router.getCurrentNavigation().extras.queryParams.title;
 
-  missile.animations.add('fly2');
-  missile.animations.play('fly2', 15, true);
-  missile.anchor.setTo(0.5);
-  missile.rotation = -Math.PI / 2;
-  missile.width = game.width * .02;
-  missile.height = missile.width * (2 / 7);
-  game.physics.enable(missile, Phaser.Physics.ARCADE);
+    console.log(this.quizTitle);
+    this.globalRouter = router;
 
-  missile.update = function () {
-    var nearestAsteroid: Phaser.Sprite;
-    var nearestDistance = 9999999999;
-    asteroidGroup.forEach(function (sprite) {
-      var distanceBetween = distanceSQ(sprite, missile);
-      if (distanceBetween < nearestDistance) {
-        nearestAsteroid = sprite;
-        nearestDistance = distanceBetween;
-
-      };
-    })
-    missile.rotation = game.physics.arcade.angleBetween(missile, nearestAsteroid);
-    missile.body.velocity.x = Math.cos(missile.rotation) * game.height * 0.4;
-    missile.body.velocity.y = Math.sin(missile.rotation) * game.height * 0.4;
-    game.physics.arcade.collide(missile, asteroidGroup, asteroidCollide);
+    console.log(this.id);
+    this.database = db;
+    this.loadQuestions();
+    this.game = new Game(window.innerWidth, window.innerHeight, AUTO, 'singleplayer', { preload: this.preload, create: this.create, update: this.update, render: this.render });
   }
 
-}
-var canAnswer = true;
-var isGameOver = false;
-function spaceshipCollide(asteroid, space) {
-  scoreText.text = `Score: ${--score}`;
+  ngOnInit() {
+    this.destroyed = false;
+  }
+  resetVariables() {
+    this.questionIndex = -1;
+    this.score = 0;
+    this.numCorrect = 0;
+    this.numWrong = 0;
+    this.incorrectQuestionsSession = [];
+    this.incorrectQuestionsGlobal = [];
+    this.numPlays = 0;
+    this.averagePercentCorrect = 0;
+    this.highScore = 0;
+    this.highScoreEmail = "";
+    this.quizDocId = "";
+    this.topScoreList = [];
+  }
+  
+  loadQuestions() {
+    console.log("load quesitons");
+  
+    // globalData = database.collection('quizes', ref => ref.where('title', '==', quizTitle).limit(1)).snapshotChanges();
+    var globalData;
+    globalData = this.database.collection('quizes', ref => ref.where('title', '==', this.quizTitle)).snapshotChanges();
+    globalData.subscribe(
+      (res) => {
+        var data = res[0].payload.doc.data();
+        this.quizDocId = res[0].payload.doc.id;
+        var tempQuestions = data.questions;
+        var shouldInitStats
+        if (data.highScore) {
+          this.incorrectQuestionsGlobal = data.incorrectQuestionsGlobal;
+          this.numPlays = data.numPlays;
+          this.averagePercentCorrect = data.averagePercentCorrect;
+          this.highScore = data.highScore;
+          this.highScoreEmail = data.highScoreEmail;
+          this.topScoreList = data.topScoreList;
+        } else {
+          shouldInitStats = true;
+        }
+  
+        var formattedQuestion = [];
+        this.questions = [];
+        var isInTopScore = false;
+        for (var i = 0; i < this.topScoreList.length; i++) {
+          if (this.topScoreList[i].email == this.auth.auth.currentUser.email) {
+            isInTopScore = true;
+          }
+        }
+  
+        if (!isInTopScore) {
+          var topScore = { email: this.auth.auth.currentUser.email, score: 0 };
+          this.topScoreList.push(topScore);
+        }
+        console.log(`tempQuestions length: ${tempQuestions.length}`);
+        for (var key in tempQuestions) {
+          console.log(`question length key: ${tempQuestions[key].question.length}`);
+  
+          if (tempQuestions[key].question.length > 1) {
+            formattedQuestion = [];
+            formattedQuestion[0] = tempQuestions[key].question;
+            formattedQuestion[1] = tempQuestions[key].answer;
+            formattedQuestion[2] = tempQuestions[key].fake1;
+            formattedQuestion[3] = tempQuestions[key].fake2;
+            formattedQuestion[4] = tempQuestions[key].fake3;
+            if (shouldInitStats) {
+              this.incorrectQuestionsGlobal.push(0);
+            }
+            this.incorrectQuestionsSession.push(0);
+            this.difficulties.push(tempQuestions[key].difficulty);
+            this.questions.push(formattedQuestion);
+  
+          }
+        }
+        console.log(`questions length: ${this.questions.length}`);
+  
+      },
+      (err) => console.log(err),
+      () => this.nextQuestion()
+    );
+  }
+  saveQuestions() {
+    for (var i = 0; i < this.topScoreList.length; i++) {
+      if (this.topScoreList[i].email == this.auth.auth.currentUser.email && this.score > this.topScoreList[i].score) {
+        this.topScoreList[i].score = this.score;
+      }
+    }
+    if (this.score > this.highScore) {
+      this.highScore = this.score;
+      this.highScoreEmail = this.auth.auth.currentUser.email;
+    }
+    var percentCorrect = this.numCorrect / (this.numWrong + this.numCorrect);
+    this.averagePercentCorrect = (percentCorrect + this.averagePercentCorrect * this.numPlays) / (this.numPlays + 1);
 
-  setTimeout(() => {
-    space.visible = true;
+    console.log(this.incorrectQuestionsGlobal);
+    console.log("global^ session v");
+    console.log(this.incorrectQuestionsSession);
+  
+    for (var i = 0; i < this.incorrectQuestionsSession.length; i++) {
+      if (i >= this.incorrectQuestionsGlobal.length) {
+        this.incorrectQuestionsGlobal.push(0);
+      }
+      this.incorrectQuestionsGlobal[i] += this.incorrectQuestionsSession[i];
+    }
+    console.log(this.incorrectQuestionsGlobal);
+    console.log("global^ session v");
+    console.log(this.incorrectQuestionsSession);
+    this.topScoreList = this.topScoreList.sort((a, b) => parseInt(b.score) - parseInt(a.score));
+  
+    this.database.doc(`quizes/${this.quizDocId}`).update(
+      {
+        highScore: this.highScore,
+        highScoreEmail: this.highScoreEmail,
+        numPlays: this.numPlays+1,
+        averagePercentCorrect: this.averagePercentCorrect,
+        incorrectQuestionsGlobal: this.incorrectQuestionsGlobal,
+        topScoreList: this.topScoreList
+  
+      });
+  }
+  preload() {
+    this.game.load.spritesheet('missile', 'assets/games/missilesheet.png', 14, 4, 2);
+  
+    this.game.load.image("1key", "assets/games/1key.png");
+    this.game.load.image("2key", "assets/games/2key.png");
+    this.game.load.image("click", "assets/games/click.png");
+  
+    this.game.load.image("3key", "assets/games/3key.png");
+    this.game.load.image("4key", "assets/games/4key.png");
+    this.game.load.image('starfield', 'assets/games/starfield.png');
+    this.game.load.image('spaceship', 'assets/games/spaceship.png');
+    this.game.load.image('asteroid1', 'assets/games/asteroid1.png');
+  }
+  
+  create() {
+    this.destroyed = false;
+    this.asteroid1 = this.game.add.sprite(this.game.world.randomX, -this.game.world.randomY, "asteroid1");
+    this.asteroid2 = this.game.add.sprite(this.game.world.randomX, -this.game.world.randomY, "asteroid1");
+    this.asteroid3 = this.game.add.sprite(this.game.world.randomX, -this.game.world.randomY, "asteroid1");
+    this.asteroid4 = this.game.add.sprite(this.game.world.randomX, -this.game.world.randomY, "asteroid1");
+    this.asteroid5 = this.game.add.sprite(this.game.world.randomX, -this.game.world.randomY, "asteroid1");
+  
+    this.game.physics.startSystem(Phaser.Physics.ARCADE);
+    this.game.physics.arcade.gravity.y = 100;
+  
+    this.starfield = this.game.add.tileSprite(0, 0, this.game.width, this.game.height, 'starfield');
+  
+    this.oneKeyIcon = this.game.add.sprite(this.game.width * 0.2, this.game.height * 0.2, "1key");
+    this.twoKeyIcon = this.game.add.sprite(this.oneKeyIcon.x, this.oneKeyIcon.y + this.oneKeyIcon.height * 1.5, "2key");
+    this.threeKeyIcon = this.game.add.sprite(this.oneKeyIcon.x, this.twoKeyIcon.y + this.twoKeyIcon.height * 1.5, "3key");
+    this.fourKeyIcon = this.game.add.sprite(this.oneKeyIcon.x, this.threeKeyIcon.y + this.threeKeyIcon.height * 1.5, "4key");
+  
+    this.spaceship = this.game.add.sprite(this.game.width * 0.5, this.game.height * 0.8, "spaceship");
+    this.spaceship.anchor.set(0.5);
+    this.game.physics.enable(this.spaceship, Phaser.Physics.ARCADE);
+    this.spaceship.scale.set(2, 2);
+    this.spaceship.body.gravity.y = 0;
+  
+    this.asteroidGroup = this.game.add.group();
+    this.asteroidGroup.add(this.asteroid1);
+    this.asteroidGroup.add(this.asteroid2);
+    this.asteroidGroup.add(this.asteroid3);
+    this.asteroidGroup.add(this.asteroid4);
+    this.asteroidGroup.add(this.asteroid5);
+    this.asteroidGroup.forEach( (sprite) => {
+      sprite.anchor.setTo(0.5);
+      this.game.physics.enable(sprite, Phaser.Physics.ARCADE);
+      sprite.body.angularVelocity = Math.random() * 200;
+      sprite.body.angularDrag = 3;
+      sprite.body.allowGravity = true;
+      var asteroidWidth = this.game.height * .10 + this.game.height * 0.15 * Math.random();
+      sprite.width = asteroidWidth;
+      sprite.height = asteroidWidth;
+    })
+  
+    this.questionText = this.game.add.text(this.game.world.centerX, this.game.height * 0.15, "Are you ready to start? Press the [1] key");
+    this.questionText.anchor.set(0.5);
+    this.oneKeyText = this.game.add.text(this.game.width * 0.2 + this.oneKeyIcon.width, this.game.height * 0.2, "Start");
+    this.twoKeyText = this.game.add.text(this.oneKeyIcon.x + this.oneKeyIcon.width, this.oneKeyIcon.y + this.oneKeyIcon.height * 1.5, "Start");
+    this.threeKeyText = this.game.add.text(this.oneKeyIcon.x + this.oneKeyIcon.width, this.twoKeyIcon.y + this.twoKeyIcon.height * 1.5, "Start");
+    this.fourKeyText = this.game.add.text(this.oneKeyIcon.x + this.oneKeyIcon.width, this.threeKeyIcon.y + this.threeKeyIcon.height * 1.5, "Start");
+  
+    this.moveText = this.game.add.text(this.game.width * 0.5, this.game.height * 0.4, "Press A and D to Move!");
+    this.moveText.anchor.set(0.5);
+    this.moveText.fill = "white";
+
+    this.fireText = this.game.add.text(this.game.width * 0.5, this.game.height * 0.6, "Press SPACE to fire a Missile!");
+    this.fireText.anchor.set(0.5);
+    this.fireText.fill = "white";
+
+    this.questionText.fill = "white";
+    this.oneKeyText.fill = "white";
+    this.twoKeyText.fill = "white";
+    this.threeKeyText.fill = "white";
+    this.fourKeyText.fill = "white";
+    this.scoreText = this.game.add.text(this.game.world.centerX, this.game.height * 0.05, "Score: 0");
+    this.scoreText.anchor.set(0.5);
+    this.scoreText.fill = "white";
+  
+    this.oneKey = this.game.input.keyboard.addKey(Phaser.Keyboard.ONE);
+    this.twoKey = this.game.input.keyboard.addKey(Phaser.Keyboard.TWO);
+    this.threeKey = this.game.input.keyboard.addKey(Phaser.Keyboard.THREE);
+    this.fourKey = this.game.input.keyboard.addKey(Phaser.Keyboard.FOUR);
+    this.fireKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+
+  
+    this.aKey = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
+    this.dKey = this.game.input.keyboard.addKey(Phaser.Keyboard.D);
+  
+  
+    this.game.world.sendToBack(this.asteroidGroup);
+    this.game.world.sendToBack(this.spaceship);
+    this.game.world.sendToBack(this.starfield);
+    this.ammo1 = this.createMissileAmmo();
+    this.ammo2 = this.createMissileAmmo();
+    this.ammo3 = this.createMissileAmmo();
+
+  
+  }
+  ammo1;
+  ammo2;
+  ammo3;
+  createMissileAmmo(){
+    var missile = this.game.add.sprite(this.spaceship.x, this.spaceship.y, "missile");
+    missile.animations.add('fly2');
+    missile.animations.play('fly2', 15, true);
+    missile.anchor.setTo(0.5);
+    missile.rotation = -Math.PI / 2;
+    missile.width = this.game.width * .02;
+    missile.height = missile.width * (2 / 7);
+    return missile;
+  }
+  createMissile() {
+    var missile = this.game.add.sprite(this.spaceship.x, this.spaceship.y, "missile");
+    missile.animations.add('fly2');
+    missile.animations.play('fly2', 15, true);
+    missile.anchor.setTo(0.5);
+    missile.rotation = -Math.PI / 2;
+    missile.width = this.game.width * .02;
+    missile.height = missile.width * (2 / 7);
+    this.game.physics.enable(missile, Phaser.Physics.ARCADE);
+  
+    missile.update =  () => {
+      var nearestAsteroid: Phaser.Sprite;
+      var nearestDistance = 9999999999;
+      this.asteroidGroup.forEach((sprite) => {
+        var distanceBetween = this.distanceSQ(sprite, missile);
+        if (distanceBetween < nearestDistance) {
+          nearestAsteroid = sprite;
+          nearestDistance = distanceBetween;
+  
+        };
+      })
+      missile.rotation = this.game.physics.arcade.angleBetween(missile, nearestAsteroid);
+      missile.body.velocity.x = Math.cos(missile.rotation) * this.game.height * 0.4;
+      missile.body.velocity.y = Math.sin(missile.rotation) * this.game.height * 0.4;
+      this.game.physics.arcade.collide(missile, this.asteroidGroup, this.asteroidCollide);
+    }
+  
+  }
+  
+  spaceshipCollide(asteroid, space) {
+    this.scoreText.text = `Score: ${--this.score}`;
+  
     setTimeout(() => {
-      space.visible = false;
+      space.visible = true;
       setTimeout(() => {
-        space.visible = true;
+        space.visible = false;
         setTimeout(() => {
-          space.visible = false;
+          space.visible = true;
           setTimeout(() => {
-            space.visible = true;
+            space.visible = false;
+            setTimeout(() => {
+              space.visible = true;
+            }, 100);
           }, 100);
         }, 100);
       }, 100);
     }, 100);
-  }, 100);
-  space.visible = false;
-  asteroid.y = game.height * 2;
-}
-
-function render() {
-  // game.debug.body(spaceship);
-  // asteroidGroup.forEach(function (sprite) {
-  //   game.debug.body(sprite);
-
-  // })
-
-}
-function asteroidUpdate() {
-
-  if (!isGameOver) {
-    var numAsteroids = 0;
-    if (difficulty == "easy") {
-      numAsteroids = 5;
-    }
-    if (difficulty == "medium") {
-      numAsteroids = 3;
-    }
-    if (difficulty == "hard") {
-      numAsteroids = 1;
-    }
-    var numAboveBottomScreen = 0;
-
-    asteroidGroup.forEach(function (sprite) {
-
-      if (sprite.y < game.height) {
-        numAboveBottomScreen++;
-      }
-    })
-    asteroidGroup.forEach(function (sprite) {
-      var rand = Math.floor(Math.random() * 200);
-      if (sprite.y > sprite.height + game.height + rand && numAboveBottomScreen < numAsteroids) {
-        numAboveBottomScreen++;
-        sprite.y = -sprite.height;
-        sprite.body.angularVelocity = Math.random() * 200 - Math.random() * 200;
-        sprite.x = game.world.randomX;
-        var asteroidWidth = game.height * .10 + game.height * 0.15 * Math.random();
-        sprite.width = asteroidWidth;
-        sprite.height = asteroidWidth;
-      }
-      if (sprite.body.velocity.y > 200) {
-        sprite.body.velocity.y = 200;
-      }
-    })
+    space.visible = false;
+    asteroid.y = this.game.height * 2;
   }
-}
-function distanceSQ(object, target) {
-  var xDif = object.x - target.x;
-  var yDif = object.y - target.y;
-  return (xDif * xDif) + (yDif * yDif);
+  
+  render() {
+    // game.debug.body(spaceship);
+    // asteroidGroup.forEach(function (sprite) {
+    //   game.debug.body(sprite);
+  
+    // })
+  
+  }
+  canFire = false;
+  asteroidUpdate() {
+  
+    if (!this.isGameOver) {
+      if(this.fireKey.isDown && this.canFire && this.ammo>0){
+        this.ammo--;
+        this.canFire = false;
+        this.createMissile();
+        this.fireText.visible = false;
+      }
+      if(!this.fireKey.isDown){
+        this.canFire = true;
+      }
 
-};
-function asteroidCollide(missile, asteroid) {
-  missile.kill();
-  asteroid.y = game.height * 2;
-}
-function answerQuestion(index) {
-  if (canAnswer) {
-    var selectAns;
-    if (index == 1) {
-      selectAns = oneKeyText.text;
-    } if (index == 2) {
-      selectAns = twoKeyText.text;
-    } if (index == 3) {
-      selectAns = threeKeyText.text;
-    } if (index == 4) {
-      selectAns = fourKeyText.text;
+      var numAsteroids = 0;
+      if (this.difficulty == "easy") {
+        numAsteroids = 5;
+      }
+      if (this.difficulty == "medium") {
+        numAsteroids = 3;
+      }
+      if (this.difficulty == "hard") {
+        numAsteroids = 1;
+      }
+      var numAboveBottomScreen = 0;
+  
+      this.asteroidGroup.forEach( (sprite) => {
+  
+        if (sprite.y < this.game.height) {
+          numAboveBottomScreen++;
+        }
+      })
+      this.asteroidGroup.forEach((sprite) => {
+        var rand = Math.floor(Math.random() * 200);
+        if (sprite.y > sprite.height + this.game.height + rand && numAboveBottomScreen < numAsteroids) {
+          numAboveBottomScreen++;
+          sprite.y = -sprite.height;
+          sprite.body.angularVelocity = Math.random() * 200 - Math.random() * 200;
+          sprite.x = this.game.world.randomX;
+          var asteroidWidth = this.game.height * .10 + this.game.height * 0.15 * Math.random();
+          sprite.width = asteroidWidth;
+          sprite.height = asteroidWidth;
+        }
+        if (sprite.body.velocity.y > 200) {
+          sprite.body.velocity.y = 200;
+        }
+        console.log(this.questionIndex);
+        if (this.questionIndex == -1) {
+          sprite.body.velocity.y = 0;
+        }
+      })
     }
-    if (selectAns == ans) { //if ans correct
-      createMissile();
-      scoreText.text = `Score: ${++score}`;
-      numCorrect++;
-    } else {
-      if (questionIndex >= 0 && questionIndex < questions.length) {
-        incorrectQuestionsSession[questionIndex]++;
-        numWrong++;
+  }
+  distanceSQ(object, target) {
+    var xDif = object.x - target.x;
+    var yDif = object.y - target.y;
+    return (xDif * xDif) + (yDif * yDif);
+
+  };
+  asteroidCollide(missile, asteroid) {
+    missile.kill();
+    asteroid.y = this.game.height * 2;
+  }
+  answerQuestion(index) {
+    if (this.canAnswer) {
+      var selectAns;
+      if (index == 1) {
+        selectAns = this.oneKeyText.text;
+      } if (index == 2) {
+        selectAns = this.twoKeyText.text;
+      } if (index == 3) {
+        selectAns = this.threeKeyText.text;
+      } if (index == 4) {
+        selectAns = this.fourKeyText.text;
+      }
+      if (selectAns == this.ans) { //if ans correct
+        this.createMissile();
+        this.scoreText.text = `Score: ${++this.score}`;
+        this.numCorrect++;
+        this.ammo++;
+        if(this.ammo>3){
+          this.ammo = 3;
+        }
+      } else {
+        if (this.questionIndex >= 0 && this.questionIndex < this.questions.length) {
+          this.incorrectQuestionsSession[this.questionIndex]++;
+          this.numWrong++;
+        }
+      }
+      this.nextQuestion();
+      this.canAnswer = false;
+      setTimeout(() => {
+        this.canAnswer = true;
+      }, 400);
+    }
+  }
+  
+  
+  nextQuestion() {
+    this.questionIndex++;
+    if (this.questionIndex >= this.questions.length) {
+      console.log(`question index: ${this.questionIndex}`);
+      console.log(`question length: ${this.questions.length}`);
+  
+      this.gameOver();
+      return;
+    }
+    // questionIndex = questionIndex % questions.length;
+    this.questionText.text = this.questions[this.questionIndex][0];
+    this.ans = this.questions[this.questionIndex][1];
+    var tempAnswers = [];
+    for (var i = 1; i < this.questions[this.questionIndex].length; i++) {
+      tempAnswers.push(this.questions[this.questionIndex][i]);
+    }
+    tempAnswers = tempAnswers.sort(() => Math.random() - 0.5);
+    this.oneKeyText.text = tempAnswers[0];
+    this.twoKeyText.text = tempAnswers[1];
+    this.threeKeyText.text = tempAnswers[2];
+    this.fourKeyText.text = tempAnswers[3];
+    this.difficulty = this.difficulties[this.questionIndex];
+  }
+  update() {
+    this.ammo1.y = this.spaceship.y-this.spaceship.height;
+    this.ammo1.x = this.spaceship.x-this.ammo1.width;
+    this.ammo2.y = this.spaceship.y-this.spaceship.height;
+    this.ammo2.x = this.spaceship.x;
+    this.ammo3.y = this.spaceship.y-this.spaceship.height;
+    this.ammo3.x = this.spaceship.x+this.ammo1.width;
+
+      this.ammo1.alpha = 0.1;
+      this.ammo2.alpha = 0.1;
+      this.ammo3.alpha = 0.1;
+
+    if(this.ammo > 0){
+      this.ammo1.alpha = 1;
+    }
+    if(this.ammo > 1){
+      this.ammo2.alpha = 1;
+    }
+    if(this.ammo == 3){
+      this.ammo3.alpha = 1;
+    }
+    
+    if(this.spaceship.x<0){
+      this.spaceship.x = this.game.width;
+    }
+    if(this.spaceship.x>this.game.width){
+      this.spaceship.x = 0;
+    }
+    this.asteroidGroup.forEach((sprite) => {
+      this.game.physics.arcade.collide(sprite, this.spaceship, this.spaceshipCollide);
+    })
+  
+    if (!this.isGameOver) {
+  
+      this.spaceship.y = this.game.height * 0.5;
+  
+      this.asteroidUpdate();
+      this.starfield.tilePosition.y += 1;
+      if (this.oneKey.isDown) {
+        this.oneKeyIcon.alpha = 1;
+        this.keyHandler(1);
+      } else {
+        this.oneKeyIcon.alpha = 0.7;
+      }
+      if (this.twoKey.isDown) {
+        this.twoKeyIcon.alpha = 1;
+        this.keyHandler(2);
+      } else {
+        this.twoKeyIcon.alpha = 0.7;
+      }
+      if (this.threeKey.isDown) {
+        this.keyHandler(3);
+        this.threeKeyIcon.alpha = 1;
+      } else {
+        this.threeKeyIcon.alpha = 0.7;
+      }
+      if (this.fourKey.isDown) {
+        this.keyHandler(4);
+        this.fourKeyIcon.alpha = 1;
+      } else {
+        this.fourKeyIcon.alpha = 0.7;
+      }
+      if (this.aKey.isDown) {
+        this.spaceship.body.velocity.x = -this.game.width * 0.3;
+        this.moveText.visible = false;
+      }
+      if (this.dKey.isDown) {
+        this.spaceship.body.velocity.x = +this.game.width * 0.3;
+        this.moveText.visible = false;
+
+      }
+      if (!this.aKey.isDown && !this.dKey.isDown) {
+        this.spaceship.body.velocity.x = 0;
       }
     }
-    nextQuestion();
-    canAnswer = false;
+  }
+  
+  
+  keyHandler(num) {
+    this.answerQuestion(num);
+  }
+  
+  
+  gameOver() {
+    this.isGameOver = true;
+    this.questionText.text = `The completed the game!\nYou scored ${this.score}!\nThanks for playing!`;
+    this.questionText.fontSize = this.fontSizer(this.questionText, this.game) * 0.7;
+    this.questionText.y = this.game.world.centerY;
+    this.saveQuestions();
+    this.oneKeyIcon.destroy();
+    this.twoKeyIcon.destroy();
+    this.threeKeyIcon.destroy();
+    this.fourKeyIcon.destroy();
+    this.oneKeyText.destroy();
+    this.twoKeyText.destroy();
+    this.threeKeyText.destroy();
+    this.fourKeyText.destroy();
     setTimeout(() => {
-      canAnswer = true;
-    }, 500);
+      this.globalRouter.navigate(['/dashboard']);
+      this.resetVariables();
+      this.isGameOver = false;
+      this.game.destroy();
+      this.questionIndex = -1;
+    }, 3000);
   }
-}
-
-var questionIndex = -1;
-var ans = "";
-var isLeftTurn = true;
-function nextQuestion() {
-  questionIndex++;
-  if (questionIndex >= questions.length) {
-    console.log(`question index: ${questionIndex}`);
-    console.log(`question length: ${questions.length}`);
-
-    gameOver();
-    return;
-  }
-  // questionIndex = questionIndex % questions.length;
-  questionText.text = questions[questionIndex][0];
-  ans = questions[questionIndex][1];
-  var tempAnswers = [];
-  for (var i = 1; i < questions[questionIndex].length; i++) {
-    tempAnswers.push(questions[questionIndex][i]);
-  }
-  tempAnswers = tempAnswers.sort(() => Math.random() - 0.5);
-  oneKeyText.text = tempAnswers[0];
-  twoKeyText.text = tempAnswers[1];
-  threeKeyText.text = tempAnswers[2];
-  fourKeyText.text = tempAnswers[3];
-  difficulty = difficulties[questionIndex];
-}
-function update() {
-  asteroidGroup.forEach(function (sprite) {
-    game.physics.arcade.collide(sprite, spaceship, spaceshipCollide);
-  })
-
-  if (!isGameOver) {
-
-    spaceship.y = game.height * 0.5;
-
-    asteroidUpdate();
-    starfield.tilePosition.y += 1;
-    if (oneKey.isDown) {
-      oneKeyIcon.alpha = 1;
-      keyHandler(1);
-    } else {
-      oneKeyIcon.alpha = 0.7;
-    }
-    if (twoKey.isDown) {
-      twoKeyIcon.alpha = 1;
-      keyHandler(2);
-    } else {
-      twoKeyIcon.alpha = 0.7;
-    }
-    if (threeKey.isDown) {
-      keyHandler(3);
-      threeKeyIcon.alpha = 1;
-    } else {
-      threeKeyIcon.alpha = 0.7;
-    }
-    if (fourKey.isDown) {
-      keyHandler(4);
-      fourKeyIcon.alpha = 1;
-    } else {
-      fourKeyIcon.alpha = 0.7;
-    }
-    if (aKey.isDown) {
-      spaceship.body.velocity.x = -game.width * 0.3;
-    }
-    if (dKey.isDown) {
-      spaceship.body.velocity.x = +game.width * 0.3;
-    }
-    if (!aKey.isDown && !dKey.isDown) {
-      spaceship.body.velocity.x = 0;
-    }
-  }
-}
-
-
-function keyHandler(num) {
-  answerQuestion(num);
-}
-
-
-function gameOver() {
-  isGameOver = true;
-  questionText.text = `The completed the game!\nYou scored ${score}!\nThanks for playing!`;
-  questionText.fontSize = fontSizer(questionText, game) * 0.7;
-  questionText.y = game.world.centerY;
-  saveQuestions();
-  oneKeyIcon.destroy();
-  twoKeyIcon.destroy();
-  threeKeyIcon.destroy();
-  fourKeyIcon.destroy();
-  oneKeyText.destroy();
-  twoKeyText.destroy();
-  threeKeyText.destroy();
-  fourKeyText.destroy();
-  setTimeout(() => {
-    globalRouter.navigate(['/dashboard']);
-    resetVariables();
-    isGameOver = false;
-    game.destroy();
-    questionIndex = -1;
-  }, 3000);
-}
-function fontSizer(text, frame) {
-  var fontSize = 80;
-  text.fontSize = fontSize;
-  while (text.width > frame.width) {
-    fontSize -= 1;
+  fontSizer(text, frame) {
+    var fontSize = 80;
     text.fontSize = fontSize;
+    while (text.width > frame.width) {
+      fontSize -= 1;
+      text.fontSize = fontSize;
+    }
+    text.fontSize = fontSize * 0.98;
+    return fontSize * 0.98;
+  
   }
-  text.fontSize = fontSize * 0.98;
-  return fontSize * 0.98;
 
 }
+
+
+
+
 
