@@ -772,6 +772,7 @@ export class NetworkedComponent implements OnInit, OnDestroy {
     this.threeKeyText.destroy();
     this.fourKeyText.destroy();
     setTimeout(() => {
+      this.resetVariables();
       this.globalRouter.navigate(['/dashboard']);
     }, 3000);
   }
