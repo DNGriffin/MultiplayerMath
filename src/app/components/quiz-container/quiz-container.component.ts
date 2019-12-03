@@ -63,6 +63,7 @@ export class QuizContainerComponent implements OnInit {
         } else {
           this.getGenreQuizzes(this.sectionTitle);
         }
+        break;
       }
       default: {
         this.getSearchResults(this.sectionTitle);
@@ -72,7 +73,7 @@ export class QuizContainerComponent implements OnInit {
   }
 
   getMyQuizes(){
-    var myQuizes = this.db.collection('quizes', ref => ref.where('userEmail', '==', this.afAuth.auth.currentUser.email).orderBy('createdAt', 'desc')).snapshotChanges();
+    var myQuizes = this.db.collection('quizes', ref => ref.where('userEmail', '==', this.afAuth.auth.currentUser.email).orderBy('numLikes', 'desc')).snapshotChanges();
     myQuizes.subscribe(
       (res) => {
         for(var j = 0;j < res.length; j++){
@@ -108,7 +109,7 @@ export class QuizContainerComponent implements OnInit {
   }
 
   getSubscriptionQuizzes(email: string, accessCode: string){
-    var subscriptionQuizzes = this.db.collection('quizes', ref => ref.where('userEmail', '==', email).where('quizAccessCode', '==', accessCode)).snapshotChanges();
+    var subscriptionQuizzes = this.db.collection('quizes', ref => ref.where('userEmail', '==', email).where('quizAccessCode', '==', accessCode).orderBy('numLikes', 'desc')).snapshotChanges();
     subscriptionQuizzes.subscribe(
       (res) => {
         for(var j = 0;j < res.length; j++){
@@ -194,7 +195,7 @@ export class QuizContainerComponent implements OnInit {
       (res) => {
         for(var j = 0;j < res.length; j++){
           var data: any = res[j].payload.doc.data();
-          if(data.quizPublicAccess && data.userEmail != "admin@mmath.com") {
+          if(data.quizPublicAccess) {
             if(!this.quizIds.includes(res[j].payload.doc.id)) {
               this.quizIds.push(res[j].payload.doc.id);
               this.playableQuizes.push(data);
