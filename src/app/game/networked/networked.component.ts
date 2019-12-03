@@ -330,7 +330,7 @@ export class NetworkedComponent implements OnInit, OnDestroy {
       {
         highScore: this.highScore,
         highScoreEmail: this.highScoreEmail,
-        numPlays: this.numPlays+1,
+        numPlays: this.numPlays+2,
         averagePercentCorrect: this.averagePercentCorrect,
         incorrectQuestionsGlobal: this.incorrectQuestionsGlobal,
         topScoreList: this.topScoreList

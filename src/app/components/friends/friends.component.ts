@@ -124,6 +124,7 @@ export class FriendsComponent implements OnInit {
     );
   }
   sendRequest(id, requests){
+    alert("Sent Friend Request");
     requests = requests.filter(req => req != this.email);
     requests.push(this.email);
     this.db.doc(`users/${id}`).update({
@@ -144,6 +145,11 @@ export class FriendsComponent implements OnInit {
     this.requests = this.requests.filter(req => req != email);
     this.db.doc(`users/${this.docId}`).update({
       requests: this.requests
+    });
+  }
+  clearInvites(){
+    this.db.doc(`users/${this.docId}`).update({
+      invites: []
     });
   }
 

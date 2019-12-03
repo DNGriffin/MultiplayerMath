@@ -1,6 +1,30 @@
 td button{
-    margin-right: 2px;
+    // margin: 2px;
 }
 .request{
     line-height: 2vh;
+}
+#clearInvites{
+    display: inline-block;
+    
+}
+#outer
+{
+    width:100%;
+    text-align: center;
+}
+.inner
+{
+    
+    display: inline-block;
+}
+.inner button
+{
+    
+    margin-left: 6px;
+    padding-bottom: 5px;
+    margin-bottom: 3px;
+}
+.fa-minus-circle:hover{
+cursor:pointer;
 }
