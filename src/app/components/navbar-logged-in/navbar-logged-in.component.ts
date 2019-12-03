@@ -4,6 +4,7 @@ import { FormBuilder } from '@angular/forms';
 import { SubscriptionService } from 'src/app/subscriptions/subscription.service';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { AngularFireAuth } from '@angular/fire/auth';
+import { AuthService } from '../core/auth.service';
 
 @Component({
   selector: 'app-navbar-logged-in',
@@ -21,6 +22,7 @@ export class NavbarLoggedInComponent implements OnInit {
     private subscriptionService: SubscriptionService,
     private db: AngularFirestore,
     private afAuth: AngularFireAuth,
+    private authService: AuthService
   ) {
     afAuth.auth.onAuthStateChanged((user)=> {
       if (user) {
@@ -57,6 +59,9 @@ export class NavbarLoggedInComponent implements OnInit {
     this.router.navigateByUrl('/dashboard', { skipLocationChange: true }).then(() => {
       this.router.navigate([`../searchQuiz/${this.searchTerm}`]);
     });
+  }
+  logoutFromSite(){
+    this.authService.doLogout();
   }
 
 }

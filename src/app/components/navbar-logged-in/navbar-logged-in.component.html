@@ -7,13 +7,13 @@
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="nav navbar-nav mr-auto">
       <li class="nav-item">
-        <a routerLink="/createQuiz" class="nav-link" href="#">Create Quiz</a>
+        <a routerLink="/createQuiz" class="nav-link">Create Quiz</a>
       </li>
       <li class="nav-item">
-        <a routerLink="/subscriptions" class="nav-link" href="#">Subscriptions</a>
+        <a routerLink="/subscriptions" class="nav-link">Subscriptions</a>
       </li>
       <li class="nav-item">
-        <a routerLink="/friends" class="nav-link" href="#">Friends<span [hidden]="requests.length+invites.length == 0" class="badge badge-light">{{requests.length+invites.length}}</span></a>
+        <a routerLink="/friends" class="nav-link">Friends<span [hidden]="requests.length+invites.length == 0" class="badge badge-light">{{requests.length+invites.length}}</span></a>
       </li>
     </ul>
     <ul class="navbar-nav">
@@ -26,7 +26,7 @@
     </ul>
     <ul class="nav navbar-nav ml-auto">
       <li class="nav-item">
-        <a routerLink="" class="nav-link" href="#">Logout</a>
+        <a (click)="logoutFromSite()" routerLink="" class="nav-link">Logout</a>
       </li>
     </ul>
   </div>

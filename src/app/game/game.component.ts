@@ -273,7 +273,9 @@ import { AngularFireAuth } from '@angular/fire/auth';
   }
   
   spaceshipCollide(asteroid, space) {
-    this.scoreText.text = `Score: ${--this.score}`;
+    if(!this.isGameOver){
+      this.scoreText.text = `Score: ${--this.score}`;
+    }
   
     setTimeout(() => {
       space.visible = true;

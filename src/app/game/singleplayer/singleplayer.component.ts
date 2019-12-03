@@ -377,7 +377,9 @@ export class SingleplayerComponent implements OnInit {
   }
   
   spaceshipCollide(asteroid, space) {
-    this.scoreText.text = `Score: ${--this.score}`;
+    if(!this.isGameOver){
+      this.scoreText.text = `Score: ${--this.score}`;
+    }
   
     setTimeout(() => {
       space.visible = true;

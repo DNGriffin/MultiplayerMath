@@ -489,8 +489,9 @@ export class NetworkedComponent implements OnInit, OnDestroy {
   }
 
   spaceshipCollide(asteroid, space) {
-    this.scoreText.text = `Score: ${--this.score}`;
-    this.socket.emit("changeScore", -1);
+    if(!this.isGameOver){
+      this.scoreText.text = `Score: ${--this.score}`;
+    }    this.socket.emit("changeScore", -1);
 
 
     setTimeout(() => {
